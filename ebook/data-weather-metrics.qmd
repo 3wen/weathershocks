@@ -59,8 +59,8 @@ Let us add the year, month, month name and day of year to the rows of the datase
 country_weather_daily <- 
   country_weather_daily |> 
     dplyr::mutate(
-      year       = lubridate::year(date),
-      month      = lubridate::month(date),
+      year = lubridate::year(date),
+      month = lubridate::month(date),
       month_name = lubridate::month(
         date, abbr = FALSE, label = TRUE, locale = "en_US"
       ),
@@ -69,7 +69,598 @@ country_weather_daily <-
 ```
 
 
-```{r, eval=FALSE}
+## Potential Evapotranspiration
 
+We have daily precipitation $P_t$, minimum temperatures $\text{Tmin}_{t}$ and maximum temperatures $\text{Tmax}_{t}$ at the grid cell level. We are interested in building a soil moisture index which requires to compute the evapotranspiration in a prior step. We follow the approach presented in @dingman2015physical (pp. 299--300, _Box 6.8: Thornthwaite-Type Monthly Water-Balance Model_) and recalled in Appendix S1 of @Lutz_2010.
+
+
+
+### Potential Evapotranspiration
+
+The daily PET (in mm/day) writes (assumed to be from @Hamon_1964, but the article cannot be found on the Internet ; @dingman2015physical Eq. 6.68 p. 294):
+$$
+\text{PET}_t =
+\begin{cases}
+0, & \text{if }\mathrm{Tmean}_t \le 0^\circ\mathrm{C},\\
+29.8 \times \text{DL}_t \times \dfrac{e^\star(\mathrm{Tmean}_t)}{\mathrm{Tmean}_t + 273.2}, & \mathrm{otherwise},
+\end{cases}
+$${#eq-pet}
+
+where $\text{DL}_t$ is the day length of day $t$, expressed in hours and $e^\star(\cdot)$ gives the saturation vapour pressure. 
+
+$\text{Tmean}_t$ is the daily average temperature:
+$$
+\mathrm{Tmean}_t = \frac{\mathrm{Tmin}_t + \mathrm{Tmax}_t}{2}.
+$${#eq-temp-mean}
+
+
+:::{.callout-note collapse="true"}
+
+#### How to compute day length $\text{DL}_t$? 
+
+The methodology to compute day length is given in Appendix D of @dingman2015physical. It writes:
+
+$$
+\text{DL}_t = \frac{24}{\pi}\omega_s,
+$${#eq-dl}
+
+where $\omega_s$ (in radians) is the sunrise hour angle. At sunrise and sunset, the solar zenith angle $\theta_z$ equals $90^\circ + h_0$, where $h_0$ is the apparent altitude of the Sun's center at sunrise. The sunrise hour angle $\omega_s$ satisfies:
+$$
+\cos(\omega_s) = \dfrac{\sin(h_0) - \sin(\Lambda) \sin(\delta)}{\cos(\Lambda) \cos(\delta)},
+$${#eq-cos-omega}
+with $\Lambda$ the latitude (in radians), $\delta$ the solar declination (in radians) and $h_0 \approx -0.833^\circ$.
+
+The solar declination in radians writes (@Campbell_1998):
+$$
+\sin^{-1}(0.39795 \times \cos(0.2163108 + 2 \tan^{-1}(0.9671396 \times \tan(0.0086 \times (\text{doy}_t - 186))) ))
+$${#eq-solar-declination}
+
+:::
+
+
+:::{.callout-note collapse="true"}
+
+#### How to compute saturation vapour pressure $e^\star(T)$?
+
+The saturation vapour pressure $e^\star(\cdot)$ (in k pascals) is given, for a temperature $T$ (in °C), by (@dingman2015physical, Box 2.2 p.99):
+$$
+e^\star(T) = 0.611 \exp\left(\frac{17.27\times T}{T + 237.3}\right)
+$${#eq-svp}
+
+:::
+
+
+Let us compute the daily potential evapotranspiration in R. We define two functions: 
+
+- `decl_angle()`{.R}, which computes the solar declination in radians for a given day-of-year (the code is from {TrenchR}),
+- `daylength_hours()`{.R}, which computes the day length (in hours) for a given day-of-year, at a given latitude.
+
+```{r define-decl_angle}
+#| code-fold: true
+#| code-summary: The `decl_angle()`{.R} function.
+#' @title Solar Declination in Radians (from {TrenchR})
+#' 
+#' @description The function calculates solar declination, which is the angular 
+#'  distance of the sun north or south of the earth’s equator, based on the day 
+#'   of year (Campbell and Norman, 1998)
+#' 
+#' @param doy Day of year (1-366).
+#' 
+#' @returns The declination angle (in radians).
+#'
+#' @references
+#' Campbell GS, Norman JM (1998). Introduction to environmental biophysics, 
+#'  2nd ed. edition. Springer, New York. ISBN 0387949372.
+decl_angle <- function (doy) {
+  
+  doy <- (doy - 1) %% 365 + 1
+  
+  rev_ang <- 0.2163108 + 2 * atan(0.9671396 * tan(0.0086 * (doy -186))) 
+  asin(0.39795 * cos(rev_ang)) 
+  
+}
+```
+
+
+```{r define-daylength_hours}
+#| code-fold: true
+#| code-summary: The `daylength_hours()`{.R} function.
+#' Day length (in hours)
+#' 
+#' @param lat_deg Latitude (in degrees)
+#' @param doy Day of year (1-366).
+#' 
+daylength_hours <- function(lat_deg, doy) {
+  
+  lambda <- lat_deg * pi / 180
+  delta <- decl_angle(doy)
+  h0 <- -0.833 * pi / 180 # apparent sunrise altitude
+  
+  # General sunrise equation with altitude:
+  # cos(ws) = (sin(h0) - sin(lambda) sin(delta)) / (cos(lambda) cos(delta))
+  num <- sin(h0) - sin(lambda) * sin(delta)
+  den <- cos(lambda) * cos(delta)
+  cos_ws <- num / den
+  cos_ws <- pmin(pmax(cos_ws, -1), 1) # clamp to [-1,1]
+  ws <- acos(cos_ws)
+  
+  (24/pi) * ws
+}
+```
+
+
+```{r define-PET}
+country_weather_daily <- 
+  country_weather_daily |> 
+  mutate(
+    temp_mean = (temp_min + temp_max) / 2,
+    dl_hours  = daylength_hours(latitude, day_of_year)
+  ) |> 
+  arrange(cell_id, date) |> 
+  # Daily PET (Hamon)
+  mutate(
+    esat = 0.611 * exp(17.27 * temp_mean / (temp_mean + 237.3)), # kPa
+    PET_daily = 29.8 * dl_hours * (esat / (temp_mean + 273.2)), # mm/day
+    PET_daily = if_else(temp_mean <= 0, 0, PET_daily) # Hamon convention
+  )
+```
+
+## Water Deficit (Water Balance)
+
+The equation for soil water balance depends on whether water input ($W_t$) exceeds potential evapostranspiration (@Lutz_2010):
+
+$$
+\text{SW}_t = \begin{cases}
+\min \left\{S_\text{max}, (W_t - \text{PET}_t) + \text{SW}_{t-1}\right\},& \text{if } W_t \geq \text{PET}_{t},\\
+\text{SW}_{t-1} - \Delta_{\text{soil},t}, & \text{otherwise}, 
+\end{cases}
+$${#eq-soil-water-balance}
+
+where $\Delta_{\text{soil},t}$ is the fraction removed from storage:
+$$
+\Delta_{\text{soil},t} = \text{SW}_{t-1} \times\left( 1 - \exp\left(-\dfrac{\text{PET}_t - W_t}{S_\text{max}}\right)\right),
+$${#eq-delta-soil}
+
+$S_{\text{max}}$ is the soil water-holding capacity in the top 200 cm of the soil profile. Ideally, this should be given from recorded values. We do not have this here, so we will use a value of 150mm:
+
+> The current NIWA water balance model uses a fixed soil moisture capacity of 150 mm of water, based on a typical loam soil. <https://niwa.co.nz/sites/default/files/NZDI_more_info.pdf> (_New Zealand Drought Index and Drought Monitor Framework_).
+
+The actual evapotranspiration, $\text{AET}_t$ writes:
+$$
+\text{AET}_t = \begin{cases}
+\text{PET}_t, & \text{if } W_t \geq \text{PET}_{t},\\
+W_t + \Delta_{\text{soil},t}, & \text{otherwise}.
+\end{cases}
+$$
+
+The deficit writes:
+$$
+D_t = \text{PET}_t - \text{AET}_t.
+$$
+
+:::{.callout-note collapse="true"}
+
+#### How to compute water input $W_t$ with daily data?
+
+Daily snowmelt is often estimated using a degree-day approach, which assumes that melt is proportional to the number of degrees by which air temperature exceeds a threshold (typically 0°C). This formulation applies only to the existing snowpack, ensuring that snow deposited on a given day cannot melt immediately.
+
+
+Following the standard degree-day formulation (@dingman2015physical, Eq. 5.71), the daily snowmelt is written as a linear function of air temperature:
+$$
+\text{Melt}_t = \min\left\{\text{DDF} \times \max(\mathrm{Tmean}_t - T_0,\, 0),\, \text{Pack}_{t-1}\right\}
+$${#eq-snowmelt-dd}
+
+where $\text{DDF}$ is the degree-day factor (mm day$^{-1}$°C$^{-1}$), typically in the range 2–5 mm day$^{-1}$°C$^{-1}$ depending on snow properties and surface conditions. The parameter $T_0$ is the threshold temperature for melting (which is always set as 0°C). $\mathrm{Tmean}_t$ is the daily mean air temperature (see @eq-temp-mean). $\text{Pack}_{t-1}$ is the snow water equivalent remaining from the previous day.
+
+The snowpack evolves according to the mass balance:
+$$
+\text{Pack}_t = \text{Pack}_{t-1} + \text{Snow}_t - \text{Melt}_t.
+$$
+
+The snow pack equation is recursive. We simply set the start value at 0 for the first date of the sequence of values within a cell.
+
+$\text{Snow}_t$ is the amount of snow, which is the amount of precipitation if the average daily temperature is lower or equal to $T_0$, and 0 otherwise:
+$$
+\text{Snow}_t = \begin{cases}
+P_t, & \text{if } T_{\text{mean}_t} \leq T_0 \\
+0, & \text{otherwise}.
+\end{cases}
+$${#eq-snow}
+
+Conversely, the amount of rain is defined as:
+$$
+\text{Rain}_t = \begin{cases}
+P_t, & \text{if } T_{\text{mean}_t} > T_0 \\
+0, & \text{otherwise}.
+\end{cases}
+$${#eq-rain}
+
+
+The total water input to the soil becomes:
+$$
+W_t = \text{Rain}_t + \text{Melt}_t.
+$$
+
+:::
+
+:::{.callout-note collapse="true"}
+
+#### How to compute water input $W_t$ with monthly data?
+
+**Melt Factor and Rain/Snow Partition**
+
+The monthly precipitation can be divided into a rain fraction $\text{Rain}_t$ and a snow fraction $\text{Snow}_t$. To do so, we define the melt factor $F_t$:
+$$
+F_t = \begin{cases}
+0, & \text{if }\text{Tmean}_t \leq 0^\circ,\\
+0.167 \times \text{Tmean}_t, & \text{if } 0^\circ <\text{Tmean}_t \leq 6^\circ,\\
+0, & \text{if }\text{Tmean}_t > 6^\circ.
+\end{cases}
+$${#eq-melt-factor}
+
+where $\text{Tmean}_t$ is the daily average temperature:
+$$
+\mathrm{Tmean}_t = \frac{\mathrm{Tmin}_t + \mathrm{Tmax}_t}{2}.
+$${#eq-temp-mean}
+
+The rain and snow fractions can then be computed as follows:
+$$
+\begin{align}
+\text{Rain}_t & = F_t \times P_t\\
+\text{Snow}_t & = (1 - F_t) \times P_t
+\end{align}
+$${#eq-rain-fraction}
+
+**Recursive Snowpack and Melt**
+
+The melt factor $F_t$ is also used to define snowmelt $\text{Melt}_t$:
+$$
+\text{Melt}_t = F_t \times (\text{Snow}_t + \text{Pack}_{t-1}),
+$${#eq-snow-melt}
+
+where snow pack for a given day is given by:
+$$
+\text{Pack}_t = (1 - F_t)^2 \times P_t + (1 - F_t) \times \text{Pack}_{t-1}
+$${#eq-snow-pack}
+
+The snow pack equation is recursive. We simply set the start value at 0 for the first date of the sequence of values within a cell.
+
+The monthly water input to the soil is obtained as:
+$$
+W_t = \text{Rain}_t + \text{Melt}_t
+$${#eq-water-input}
+
+
+:::
+
+
+Let us first compute water deficit $W_t$.
+
+```{r compute-water-deficit}
+country_weather_daily <- 
+  country_weather_daily |> 
+  mutate(
+    T0 = 0,# freezing temperature
+    rain  = if_else(temp_mean > T0, precip, 0),
+    snow  = if_else(temp_mean <= T0, precip, 0),
+    # Degree-day melt from existing pack only
+    DDF = 3, # mm/day/°C
+    pot_melt = pmax(temp_mean - T0, 0) * DDF
+  ) |> 
+  arrange(cell_id, date) |> 
+  group_by(cell_id) |>
+  # Daily snowpack recursion and melt
+  mutate(
+    pack = {
+      n <- n()
+      out <- numeric(n); prev <- 0
+      for (i in seq_len(n)) {
+        melt_i <- min(pot_melt[i], prev)# melt from previous pack only
+        out[i] <- prev + snow[i] - melt_i
+        prev <- out[i]
+      }
+      out
+    },
+    melt = pmin(lag(pack, default = 0), pot_melt),
+    water_input = rain + melt
+  ) |> 
+  ungroup() |>
+  select(-DDF, -T0, -pot_melt)
+```
+
+
+```{r}
+#| code-fold: true
+#| code-summary: Code if monthly data and not daily
+# This code is not evaluated here since we use daily data
+country_weather_daily <- 
+  country_weather_daily |> 
+  mutate(
+    # Monthly melt factor and rain/snow split
+    melt_factor = case_when(
+      temp_mean <= 0 ~ 0,
+      temp_mean >= 6 ~ 1,
+      TRUE           ~ 0.167 * temp_mean
+    ),
+    rain = melt_factor * precip,
+    snow = (1 - melt_factor) * precip
+  ) |> 
+  arrange(cell_id, date) |> 
+  group_by(cell_id) |>
+  # Monthly snowpack recursion and melt
+  mutate(
+    a = 1 - melt_factor,
+    b = (a^2) * precip, # term added each day
+    c = a, # multiplier on previous pack
+    pack = {
+      init <- 0 # initial PACK for this cell_id
+      # pack_t = b_t + c_t * pack_{t-1}
+      out <- purrr:::accumulate2(
+        b, c,
+        .init = init,
+        .f = function(bi, ci, prev) bi + ci * prev
+      )
+      as.numeric(tail(out, -1)) # drop the initial value
+    },
+    pack_lag = lag(pack, default = 0),
+    melt = melt_factor * (snow + pack_lag),
+    water_input = rain + melt
+  ) |>
+  ungroup() |>
+  select(-a, -b, -c)
+```
+
+
+Then, we can compute soil water balance ($\text{SW}_t$), actual evapotranspiration ($\text{AET}_t$) and soil water deficit $D_t$.
+
+We define the `update_soil_water_deficit()`{.R} function that computes those values for a subset of observation corresponding to a cell, using the following input variables: $W_t$, $\text{PET}_t$, $\text{SW}_{t-1}$ and $S_{\text{max}}$.
+
+```{r define-update_soil_water_deficit}
+#| code-fold: true
+#| code-summary: The `update_soil_water_deficit()`{.R} function.
+#' Compute Soil Water Deficit
+#' 
+#' @param W Water input to the system (in mm).
+#' @param PET Potential evapotranspiration (in mm).
+#' @param S_prev Soil water balance in previous period (in mm).
+#' @param S_max Soil water-holding capacity in the top 200cm of the soil 
+#'  profile (in mm).
+#' 
+#' @returns A list with the following elements:
+#'  - `S_new`: soil water balance,
+#'  - `AET`: evapotranspiration,
+#'  - `surplus`: water surplus,
+#'  - `deficit`: water deficit
+#'  
+update_soil_water_deficit <- function(W, PET, S_prev, S_max) {
+  
+  if (W >= PET) {
+    # Water-abundant day: recharge first, overflow = surplus
+    S_star <- (W - PET) + S_prev
+    # New value for soil water balance
+    S_new <- min(S_star, S_max)
+    
+    AET <- PET # Evapotranspiration
+    surplus <- max(0, S_star - S_max)
+    deficit <- 0
+  } else {
+    # Water-limited day: exponential draw from storage (Dingman/Lutz Eq. 13)
+    D <- PET - W # unmet demand by inputs
+    dSOIL <- S_prev * (1 - exp(-D / S_max))  # fraction removed from storage
+    # New value for soil water balance
+    S_new <- S_prev - dSOIL
+    
+    AET <- W + dSOIL # Evapotranspiration
+    surplus <- 0
+    deficit <- PET - AET
+  }
+  
+  list(
+    S_new = S_new, # Soil water balance
+    AET = AET, # Evapotranspiration
+    surplus = surplus, # Water surplus
+    deficit = deficit # Water deficit
+  )
+}
+```
+
+We use that function on subsets of the dataset where each subset corresponds to a cell.
+```{r compute-soil-moisture}
+# Note: this chunk takes about 3 minutes to run.
+# It is not evaluated here during compilation.
+if (!file.exists("NZL_temprary_water_deficit.rda")) {
+  # Ideally, we would need to use a value at the cell level.
+  Smax_default <- 150
+  
+  country_weather_daily <- 
+    country_weather_daily |>
+    arrange(cell_id, date) |>
+    group_by(cell_id) |>
+    # Prepare new columns
+    mutate(
+      AET = NA_real_, # Evapostranspiration
+      soil_moisture = NA_real_, # Water storage
+      soil_surplus = NA_real_, # Water surplus
+      soil_deficit = NA_real_ # Water deficit
+    ) |>
+    # For each cell, compute soil water deficit recursively
+    group_modify(\(tb, key){
+      n <- nrow(tb)
+      S  <- 0.5 * Smax_default
+      for (i in seq_len(n)) {
+        u <- update_soil_water_deficit(
+          W = tb$water_input[i],
+          PET = tb$PET_daily[i],
+          S_prev = S,
+          S_max = Smax_default
+        )
+        tb$AET[i] <- u$AET
+        tb$soil_moisture[i] <- u$S_new
+        tb$soil_surplus[i] <- u$surplus
+        tb$soil_deficit[i] <- u$deficit
+        S <- u$S_new
+      }
+      tb
+    }) |>
+    ungroup()
+  
+  save(
+    country_weather_daily, 
+    file = "NZL_temprary_water_deficit.rda"
+  )
+} else {
+  load("NZL_temprary_water_deficit.rda")
+}
+
+country_weather_daily
+```
+
+
+## Soil Moisture Deficit Index (SMDI)
+
+The Soil Moisture Deficit Index (SMDI, see @Narasimhan_2005), turns daily soil water storage into a weekly drought/wetness index which takes values on $[-4,4]$ and which is comparable across locations and seasons. Negative values indicate dry conditions whereas positive values indicate wet conditions.
+
+Since we have daily observation, we need to compute weekly values for soil moisture. We assign each day to one of 52 fixed 7-day blocks starting on January 1:
+$$
+\text{week} = \min\left(\left\lfloor\frac{\text{yday}-1}{7}\right\rfloor + 1,\ 52\right).
+$$
+Note that we do not use the `week()`{.R} function from {lubridate} to avoid ISO weeks (which can have 53).
+
+Then, for each grid cell (i), year (y), and week (w), compute the weekly mean available soil water:
+$$
+\mathrm{SW}_{i,y,w} = \frac{1}{n_{i,y,w}} \sum_{t \in (i,y,w)} \text{SW}_t,
+$${#eq-weekly-sw}
+
+where $\text{SW}_t$ is the soil water balance (in mm), previously computed (see @eq-soil-water-balance).
+
+```{r define-sw_weekly}
+# First assign each day to one of the 52 weeks
+country_weather_daily <- 
+  country_weather_daily |>
+  mutate(
+    # week = lubridate::week(date) # includes 53...
+    week = pmin(((yday(date) - 1) %/% 7) + 1, 52) # 1-52
+  )
+
+# Then compute the average availabe soil water at the cell level
+sw_weekly <- 
+  country_weather_daily |> 
+  group_by(cell_id, year, week) |>
+  summarise(SW = mean(soil_moisture, na.rm = TRUE), .groups = "drop")
+```
+
+The long-term weekly statistics at the cell level then need to be computed:
+
+- $\text{MSW}_{i,w}$: the median of $\text{SW}_{i,y,w}$ over a long period (the entire sample, here),
+- $\text{SW}_{\text{min},i,w}$: the min of $\text{SW}_{i,y,w}$ over the same long period.
+- $\text{SW}_{\text{max},i,w}$: the max of $\text{SW}_{i,y,w}$ over the same long period.
+
+```{r define-sw_lt}
+# Long-term weekly statistics
+sw_lt <- 
+  sw_weekly |>
+  group_by(cell_id, week) |>
+  summarise(
+    MSW = median(SW, na.rm = TRUE),
+    SW_min = min(SW, na.rm = TRUE),
+    SW_max = max(SW, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+
+The weekly soil-water anomaly are then computed, in percent. For each (cell, year, week), a piecewise, range-normalized anomaly is computed as follows:
+$$
+\text{SD}_{i,y,w} =
+\begin{cases}
+100 \dfrac{\text{SW}_{i,y,w} - \text{MSW}_{i,w}}{\text{MSW}_{i,w}-\text{SW}_{\min,i,w}}, & \text{if } \text{SW}_{i,y,w} \le \text{MSW}_{i,w},\\
+100 \dfrac{\text{SW}_{i,y,w} - \text{MSW}_{i,w}}{\text{SW}_{\max,i,w}-\mathrm{MSW}_{i,w}}, & \text{otherwise}
+\end{cases}
+$${#eq-soil-water-anomaly}
+
+Weekly soil water anomalies $\text{SD}_{i,y,w}$ will be negative when they are drier than the median for that week, positive when wetter, and naturally scaled by the local weekly climatological range.
+
+```{r define-sw_anom}
+# Soil water deficit (%)
+sw_anom <- 
+  sw_weekly |>
+  left_join(sw_lt, by = c("cell_id", "week")) |>
+  mutate(
+    SD = if_else(
+      SW <= MSW,
+      100 * (SW - MSW) / pmax(MSW - SW_min, 1e-9),
+      100 * (SW - MSW) / pmax(SW_max - MSW, 1e-9)
+    )
+  )
+```
+
+You may have notice that in the previous code, the denominator is 'protected' with a tiny value ($10^{-9}$) to avoid division by zero in flat climates.
+
+The last step consists in computing the SMDI in a recursive manner: the SMDI carries persistence via a first-order recursion within each calendar year:
+$$
+\begin{align*}
+\text{SMDI}_{i,y,1} & = \frac{\text{SD}_{i,y,1}}{50},\\
+\text{SMDI}_{i,y,w} & = 0.5,\text{SMDI}_{i,y,w-1} + \frac{\text{SD}_{i,y,w}}{50}\quad (w\ge 2).
+\end{align*}
+$${#eq-smdi}
+
+
+
+```{r define-smdi_weekly}
+# SMDI computed recursively, by cell.
+smdi_weekly <- 
+  sw_anom |>
+  arrange(cell_id, year, week) |>
+  group_by(cell_id, year) |>
+  group_modify(\(tb, key) {
+    n <- nrow(tb)
+    smdi <- numeric(n)
+    for (i in seq_len(n)) {
+      if (i == 1 || is.na(smdi[i-1])) {
+        # Initial value
+        smdi[i] <- tb$SD[i] / 50
+      } else {
+        smdi[i] <- 0.5 * smdi[i-1] + tb$SD[i] / 50
+      }
+    }
+    tb$SMDI <- smdi
+    tb
+  }) |>
+  ungroup()
+```
+
+
+Let us have a look at the values for a cell:
+```{r}
+#| fig-cap: SMDI for a cell in New Zealand. Weekly values range from -4 to +4 indicating very dry to very wet conditions.
+#| label: fig-example-smdi-19
+ggplot(
+ data = smdi_weekly |> filter(cell_id == 19) |> mutate(x = year + week/52),
+ mapping = aes(x = x, y = SMDI)
+) +
+  geom_line() +
+  labs(x = NULL)
+```
+
+
+## SPEI
+
+## Monthly Aggregation
+
+```{r define-country_weather_monthly}
+country_weather_monthly <- 
+  country_weather_daily |> 
+  group_by(
+    cell_id, longitude, latitude, country_code, 
+    year, month, month_name
+  ) |> 
+  summarise(
+    precip = sum(precip, na.rm = TRUE), # mm/month
+    temp_min = mean(temp_min, na.rm = TRUE),
+    temp_max = mean(temp_max, na.rm = TRUE),
+    temp_mean = mean(temp_mean,   na.rm = TRUE),
+    PET = sum(PET_daily, na.rm = TRUE), # mm/month
+    .groups = "drop"
+  )
 ```
 
