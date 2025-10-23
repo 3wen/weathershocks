@@ -1,0 +1,385 @@
+# Weather Data: Download {#sec-weather-data-download}
+
+
+:::{.callout-note}
+
+## Objectives of this page
+
+This chapter provides the R codes used to download weather data. The weather data are obtained from the CPC Global Unified Gauge-Based Analysis of Daily Precipitation data provided by the NOAA PSL, Boulder, Colorado, USA, from their website at <https://psl.noaa.gov>.
+
+:::
+
+
+This chapter is compiled to be rendered as an HTML page. To avoid downloading the data everytime a compilation needs to be done, we define a variable, `download_data`, that is set to `FALSE`{.R}. Set the variable to `TRUE`{.R} if you want to download the data while evaluating the codes on your own.
+
+```{r define-download_data}
+download_data <- FALSE
+```
+
+
+
+A few packages are needed:
+
+```{r load-libraries}
+library(raster)
+library(ncdf4)
+library(tidyverse)
+library(sf)
+library(stars)
+```
+
+We have shown in [Chapter -@sec-utils] some theme functions for plots. These functions are written in an R script that we can load to have access to those functions.
+```{r source_utils}
+source("../scripts/functions/utils.R")
+```
+
+We extracted countries' boundaries in [Chapter -@sec-countries-maps].
+```{r load-maps}
+load("../Data/Maps/GADM-4.1/maps_level_0.RData")
+```
+
+
+We focus on the following countries defined in [Chapter -@sec-countries-maps]
+```{r load-tb_countries}
+load("../output/tb_countries.rda")
+tb_countries
+```
+
+
+
+## Download and Extract Data {#sec-extract-raw-data}
+
+Let us import the raw grid data into R. We proceed in three steps: 
+
+1. First, we download the daily data from the NOAA PSL's website, covering the period from 1980 to 2024. Each file containing the raw data correspond to a year and a metric (precipitation, min temperature, max temperature).
+2. Second, using a function that we define, we extract the cells of the grid that correspond to each country. For each year, country, and metric we save the extracted raw data in a RData file.
+3. Third, we load all the extracted daily data into R and create a tibble for each country.
+
+
+The function from the second step is the following:
+```{r define-extract_daily_grid}
+#' From the NetCDF file, extract the daily temperatures (min or max) of the
+#' grid. Creates a tibble in which each row corresponds to a cell of the grid
+#' with the following columns:
+#'  - longitude: longitude of the centroid of the cell
+#'  - latitude: latitude of the centroid of the cell
+#'  - grid_id: country code x numerical identifier
+#'  - intersect_area: area of the intersection between the country and the
+#'    cell
+#'  - country code: ISO-3 country code
+#'  - geometry: the coordinates of the cell
+#'  - value: total daily precipitation
+#'  - date: YYYY-MM-DD date
+#' The tibble is saved in `../data/Weather/CPC/grid_daily_precip/`
+#'
+#' @param file Full path to the netCDF precipitation file.
+#' @param tb_countries Tibble with the ISO-3 country code (`tb_countries`),
+#'   the name of the country (`country_name`), the short name of the country 
+#'   (`country_name_short`) and a name suitable for a filename 
+#'   (`country_name_clear`).
+#' @param country_names Name of the countries for which to extract daily obs.
+#' @param maps_level_0 List of level 0 borders from shapefiles provided by GDAM.
+#' @param value_type Type of values retrieved (`"precip"`, `"tmin"` or `"max"`).
+#' 
+extract_daily_grid <- function(file,
+                               tb_countries,
+                               country_names,
+                               maps_level_0, 
+                               value_type = c("precip", "tmin", "tmax")) {
+  # Extract the year of the observation from the file name
+  year <- str_extract(file, str_c(value_type, "\\.([[:digit:]]*)\\.nc")) |>
+    str_remove(str_c(value_type, "\\.")) |>
+    str_remove("\\.nc")
+  
+  # Raster Brick
+  weather_data_raw <- brick(file)
+  weather_data <- rotate(weather_data_raw)
+  
+  cli::cli_progress_bar(total = nrow(tb_countries))
+  # for (country_name in tb_countries$country_name) {
+  for (country_name in country_names) {
+    # Corresponding ISO code
+    country_code <- tb_countries |>
+      filter(country_name == !!country_name) |>
+      pull("country_code")
+    
+    current_country_map <- maps_level_0[[country_code]]
+    
+    if (country_name %in% c("Fiji", "New Zealand")) {
+      # re-center geographical coordinates for a Pacific view
+      current_country_map <- st_shift_longitude(current_country_map)
+      weather_data_current <- weather_data_raw
+    } else {
+      weather_data_current <- weather_data
+    }
+    
+    current_country_map_large <- st_buffer(current_country_map, dist = 70000)
+    
+    # Crop accordingly to the bounding box (+ some buffer)
+    e_country <- sf::st_bbox(current_country_map)
+    # Enlarge a bit so that more cells are imported for each the country
+    e_country[["xmin"]] <- e_country[["xmin"]] - .5
+    e_country[["xmax"]] <- e_country[["xmax"]] + .5
+    e_country[["ymin"]] <- e_country[["ymin"]] - .5
+    e_country[["ymax"]] <- e_country[["ymax"]] + .5
+    
+    rb_country <- crop(weather_data_current, e_country)
+    
+    # From the Rasterbox to a tibble
+    sf_country <- stars::st_as_stars(rb_country) |>
+      sf::st_as_sf()
+    
+    # Centroids of each cell of the grid
+    centroids <- sf::st_centroid(sf_country)
+    centroids_grid <- as_tibble(sf::st_coordinates(centroids)) |>
+      dplyr::mutate(
+        grid_id = str_c(country_code, row_number(), sep = "_"),
+        country_code = country_code
+      ) |>
+      dplyr::rename(longitude = X, latitude = Y)
+    
+    # Compute the intersection between the country and each cell of the grid
+    intersect_area <- map_dbl(
+      .x = 1:nrow(sf_country),
+      .f = function(i_cell) {
+        inters <- suppressWarnings(suppressMessages(st_intersection(
+          x = sf_country |> slice(i_cell),
+          y = maps_level_0[[country_code]]
+        )))
+        area <- st_area(inters)
+        if (length(area) == 0) area <- 0
+        area
+      }
+    )
+    
+    # Compute the intersection between the augmented country's border
+    # and each cell of the grid
+    intersect_area_larger <- map_dbl(
+      .x = 1:nrow(sf_country),
+      .f = function(i_cell) {
+        inters <- suppressWarnings(suppressMessages(st_intersection(
+          x = sf_country |> slice(i_cell),
+          y = current_country_map_large
+        )))
+        area <- st_area(inters)
+        if (length(area) == 0) area <- 0
+        area
+      }
+    )
+    
+    # Create the grid
+    weather_grid_country <- cbind(sf_country, centroids_grid) |>
+      mutate(
+        intersect_area = intersect_area,
+        intersect_area_larger = intersect_area_larger
+      ) |>
+      tidyr::pivot_longer(
+        cols = -c(
+          geometry, longitude, latitude,
+          grid_id, country_code, intersect_area, intersect_area_larger
+        ),
+        names_to = "date_v"
+      ) |>
+      dplyr::mutate(date = str_remove(date_v, "^X") |> lubridate::ymd()) |>
+      dplyr::select(-date_v) |> 
+      dplyr::filter(intersect_area_larger > 0) |> 
+      dplyr::select(-intersect_area_larger)
+    
+    file_name <- str_c(country_code, "_", year, ".RData")
+    
+    save(
+      weather_grid_country,
+      file = str_c(
+        "../Data/Weather/CPC/grid_daily_", 
+        value_type, "/", file_name
+      )
+    )
+    cli::cli_progress_update(inc = 1)
+  }
+  NULL
+}
+```
+
+The start and end years for the data to download:
+```{r define-start_year}
+start_year <- 1980
+end_year <- 2024
+```
+
+
+We saw in  [Chapter -@sec-countries-maps] that for New Zealand, the bounding box causes issues: the minimum longitude is close to -180° and the maximum is close to +180°. Hence, the bounding box will lead to import too many tiles.
+```{r}
+bboxes <- list(
+  
+)
+bboxes$NZL[["xmin"]] <- 167
+bboxes$NZL[["xmax"]] <- 179
+bboxes$NZL[["ymin"]] <- -48
+bboxes$NZL[["ymax"]] <- -34
+```
+
+
+
+### Precipitation
+
+We create the folder that will contain the raw data and the temporary (year x country) precipitation data.
+
+```{r create-dir-precip}
+if (!dir.exists("../data/Weather/CPC/grid_daily_precip/")) {
+  dir.create("../data/Weather/CPC/grid_daily_precip/", recursive = TRUE)
+}
+```
+
+The URLs of the files we want to download:
+```{r define-url-precip}
+urls <- str_c(
+  "https://downloads.psl.noaa.gov/",
+  "Datasets/cpc_global_precip/precip.", seq(start_year, end_year), ".nc"
+)
+```
+
+Let us loop on these URLs to download the worldwide daily data for each year:
+```{r download-precip-data}
+if (download_data == TRUE) {
+  for (file in urls) {
+    file_name <- str_extract(file, "cpc_global_precip/(.*)$") |>
+      str_remove("cpc_global_precip/")
+    dest_file <- str_c("../data/Weather/CPC/grid_daily_precip/", file_name)
+    download.file(file, destfile = dest_file)
+  }
+}
+```
+
+Then, we can load the raw data in R and apply the `extract_daily_grid()`{.R} function to extract the daily precipitation for each country.
+```{r list-precip-raw, eval=FALSE}
+N <- list.files(
+  "../data/Weather/CPC/grid_daily_precip/",
+  pattern = "*\\.nc", full.names = TRUE
+)
+```
+
+Extracting values for the countries of interest:
+```{r extract-daily-precip, eval=FALSE}
+for(i in 1:length(N)) {
+  cat(str_c(N[i], "\nNumber ", i , "/", length(N)))
+  extract_daily_grid(
+    file = N[i], 
+    tb_countries = tb_countries, 
+    country_names = c("New Zealand"), 
+    maps_level_0 = maps_level_0, 
+    value_type = "precip"
+  )
+}
+```
+
+### Maximum Temperatures
+
+We create the folder that will contain the raw data and the temporary (year x country) maximum temperature data.
+
+```{r create-dir-tmax, eval=FALSE}
+if (!dir.exists("../data/Weather/CPC/grid_daily_tmax/")) {
+  dir.create("../data/Weather/CPC/grid_daily_tmax/")
+}
+```
+
+The URLs of the files we want to download:
+```{r define-url-tmax, eval=FALSE}
+urls <- str_c(
+  "https://downloads.psl.noaa.gov/",
+  "Datasets/cpc_global_temp/tmax.", seq(start_year, end_year), ".nc"
+)
+```
+
+Let us loop on these URLs to download the worldwide daily data for each year:
+```{r download-tmax-data, eval=FALSE}
+if (download_data == TRUE) {
+  for (file in urls) {
+    file_name <- str_extract(file, "cpc_global_temp/(.*)$") |>
+      str_remove("cpc_global_temp/")
+    download.file(
+      file,
+      destfile = str_c("../data/Weather/CPC/grid_daily_tmax/", file_name)
+    )
+  }
+}
+```
+
+Then, we can load the raw data in R and apply the `extract_daily_grid()`{.R} function to extract the daily maximum temperatures for each country.
+```{r list-tmax-raw, eval=FALSE}
+N <- list.files(
+  "../data/Weather/CPC/grid_daily_tmax/",
+  pattern = "*\\.nc", full.names = TRUE
+)
+```
+
+Extracting values for the countries of interest:
+```{r extract-daily-tmax, eval = FALSE}
+for(i in 1:length(N)) {
+  cat(N[i])
+  cat(str_c(N[i], "\nNumber ", i , "/", length(N)))
+  extract_daily_grid(
+    file = N[i], 
+    tb_countries = tb_countries, 
+    country_names = c("New Zealand"), 
+    maps_level_0 = maps_level_0, 
+    value_type = "tmax"
+  )
+}
+```
+
+### Minimum Temperatures
+
+We create the folder that will contain the raw data and the temporary (year x country) minimum temperature data.
+
+```{r create-dir-tmin}
+if (!dir.exists("../data/Weather/CPC/grid_daily_tmin/")) {
+  dir.create("../data/Weather/CPC/grid_daily_tmin/")
+}
+```
+
+The URLs of the files we want to download:
+```{r define-url-tmin}
+urls <- str_c(
+  "https://downloads.psl.noaa.gov/",
+  "Datasets/cpc_global_temp/tmin.", seq(start_year, end_year), ".nc"
+)
+```
+
+Let us loop on these URLs to download the worldwide daily data for each year:
+```{r download-tmin-data, eval=FALSE}
+if (download_data == TRUE) {
+  for (file in urls) {
+    file_name <- str_extract(file, "cpc_global_temp/(.*)$") |>
+      str_remove("cpc_global_temp/")
+    download.file(
+      file,
+      destfile = str_c("../data/Weather/CPC/grid_daily_tmin/", file_name)
+    )
+  }
+}
+```
+
+Then, we can load the raw data in R and apply the `extract_daily_grid()`{.R} function to extract the daily minimum temperatures for each country.
+```{r list-tmin-raw}
+N <- list.files(
+  "../data/Weather/CPC/grid_daily_tmin/",
+  pattern = "*\\.nc", full.names = TRUE
+)
+```
+
+Extracting values for the countries of interest:
+```{r extract-daily-tmin, eval = FALSE}
+for(i in 1:length(N)) {
+  cat(N[i])
+  cat(str_c(N[i], "\nNumber ", i , "/", length(N)))
+  extract_daily_grid(
+    file = N[i], 
+    tb_countries = tb_countries, 
+    country_names = c("New Zealand"), 
+    maps_level_0 = maps_level_0, 
+    value_type = "tmin"
+  )
+}
+```
+
+

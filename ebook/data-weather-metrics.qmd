@@ -1,0 +1,75 @@
+# Weather Data: Metrics {#sec-weather-data}
+
+:::{.callout-note}
+
+## Objectives of this page
+
+This chapter uses the gridded weather data from [Chapter -@sec-weather-data-missing] to construct various metrics. Please refer to the 27 core ETCCDI Climate Change Indices (<https://etccdi.pacificclimate.org/indices.shtml>) for additional metrics that can be constructed.
+
+
+All these metrics will be computed at the grid cell level. Each row of the final dataset will give the values of weather or climate on a daily basis, at the grid cell level.
+
+:::
+
+
+```{r load-required-packages}
+library(tidyverse)
+library(corrplot)
+library(scales)
+library(zoo)
+library(lubridate)
+```
+
+
+
+Let us load the graphs theme functions (See [Chapter -@sec-utils]):
+```{r source_utils}
+source("../scripts/functions/utils.R")
+```
+
+Let us also load the maps for the countries of interest (See [Chapter -@sec-countries-maps])
+```{r load-maps_level_0}
+load("../Data/Maps/GADM-4.1/maps_level_0.RData")
+```
+
+We focus on the following countries defined in [Chapter -@sec-countries-maps]:
+```{r load-tb_countries}
+load("../output/tb_countries.rda")
+```
+
+Lastly, we load the weather data (see [Chapter -@sec-weather-data-missing]):
+```{r load-NGA_daily_weather_corrected}
+load("../data/Weather/CPC/NZL_daily_weather_corrected.rda")
+```
+
+We rename the max and min temperature columns:
+```{r add-min-max}
+country_weather_daily <- 
+  country_weather_daily |> 
+  rename(
+    temp_max = tmax,
+    temp_min = tmin
+  )
+```
+
+
+
+Let us add the year, month, month name and day of year to the rows of the dataset:
+```{r add-year-month-month_name}
+country_weather_daily <- 
+  country_weather_daily |> 
+    dplyr::mutate(
+      year       = lubridate::year(date),
+      month      = lubridate::month(date),
+      month_name = lubridate::month(
+        date, abbr = FALSE, label = TRUE, locale = "en_US"
+      ),
+      day_of_year = lubridate::yday(date)
+    )
+```
+
+
+```{r, eval=FALSE}
+
+```
+

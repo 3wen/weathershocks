@@ -47,3 +47,15 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# .DS_Store files
+**/.DS_Store
+
+# Maps data
+data/Maps/GADM-4.1/maps*.RData
+data/Maps/GADM-4.1/New-Zealand/*.zip
+
+# Weather Data
+data/Weather/CPC/grid_daily_precip/*
+data/Weather/CPC/grid_daily_tmax/*
+data/Weather/CPC/grid_daily_tmin/*

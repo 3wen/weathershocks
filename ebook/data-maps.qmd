@@ -1,0 +1,528 @@
+# Maps {#sec-countries-maps}
+
+:::{.callout-note}
+
+## Objectives of this page
+
+In this chapter, we prepare the map for New Zealand from shapefiles provided by [GADM](https://gadm.org/download_country.html). We use definitions from version 4.1.
+
+:::
+
+We need the following packages:
+```{r library-sf-tidyverse}
+library(sf)
+library(tidyverse)
+```
+
+
+We have shown in [Chapter -@sec-utils] some theme functions for plots. These functions are written in an R script that we can load to have access to those functions.
+```{r source-themes}
+source("../scripts/functions/utils.R")
+```
+
+We need to get the boundaries of New Zealand. We define a tibble with the names of the country as well as its corresponding ISO-3 classification.
+
+```{r define-tb_country}
+tb_countries <- tribble(
+  ~country_code, ~country_name, ~country_name_short,
+  "NZL", "New Zealand", "New Zealand",
+)
+```
+
+We add a column with the name (this will be used to name the folder in which the data will be saved).
+```{r}
+tb_countries <- 
+  tb_countries |> 
+  mutate(
+    country_name_clear = str_replace_all(country_name, " ", "-"),
+    country_name_clear = str_replace_all(country_name_clear, "\'", "-")
+  )
+tb_countries
+```
+
+Let us save this for later use:
+```{r save-tb_countries}
+if (!dir.exists("../output/"))
+  dir.create("../output/", recursive = TRUE)
+save(tb_countries, file = "../output/tb_countries.rda")
+```
+
+
+:::{.callout-note}
+
+The way the previous R codes were written enable to consider multiple countries, not only New Zealand. To do so, the only thing to do is to add rows in the `tb_countries` table so that the latter includes references on more countries.
+
+:::
+
+## Helper Functions
+
+We need three functions for the maps: 
+
+1. one to download the shapefiles from the GADM website,
+2. another one to extract relevant information (administrative units of level 1 to 3),
+3. and a third one to load the data in R.
+
+
+The first function, `download_map()`{.R}:
+```{r define-download_map}
+#' Download GADM shapefile (version 4.1)
+#' 
+#' @param country_name name of the country
+#' @param country_code ISO-3 country code
+#' @param country_name_clear name of the country withour space or \'
+download_map <- function(country_name, country_code, country_name_clear) {
+  file_name <- str_c("gadm41_", country_code, "_shp.zip")
+  url <- str_c("https://geodata.ucdavis.edu/gadm/gadm4.1/shp/", file_name)
+  dest_file <- str_c(
+    "../data/Maps/GADM-4.1/", str_replace_all(country_name_clear, " ", "-"), "/",
+    file_name
+    )
+  download.file(url = url, destfile = dest_file)
+}
+```
+
+And the second one, `import_map()`{.R} which imports the maps data from the shapefile, extracts the 3 layers corresponding to administrative units (if available) and then saves them in the country's directory.
+
+```{r define-import_map}
+#' Imports map data downloaded from GADM, extracts layers and saves the result
+#' 
+#' @param country_name name of the country
+#' @param country_code ISO-3 country code
+#' @param country_name_clear name of the country withour space or \'
+#' 
+#' @returns the `NULL` object
+import_map <- function(country_name, country_code, country_name_clear) {
+  out_directory <- tempfile()
+  dir <- "../data/Maps/GADM-4.1/"
+  file <- str_c(dir, country_name_clear, "/gadm41_", country_code, "_shp.zip")
+  layer_0 <- str_c("gadm41_", country_code, "_0")
+  layer_1 <- str_c("gadm41_", country_code, "_1")
+  layer_2 <- str_c("gadm41_", country_code, "_2")
+
+  unzip(file, exdir = out_directory)
+  map_level_0 <- st_read(dsn = out_directory, layer = layer_0, quiet = TRUE)
+  map_level_1 <- st_read(dsn = out_directory, layer = layer_1, quiet = TRUE)
+  map_level_2 <- try(st_read(dsn = out_directory, layer = layer_2, quiet = TRUE))
+  if (inherits(map_level_2, "try-error")) map_level_2 <- NULL
+  res <- list(
+    map_level_0 = map_level_0,
+    map_level_1 = map_level_1,
+    map_level_2 = map_level_2
+  )
+  res_name <- str_to_lower(str_c(country_code, "_maps"))
+  assign(res_name, res)
+  eval(parse(
+    text = paste0(
+      "save('", res_name,
+      "', file = '", dir, "/", country_name_clear, "/", res_name, ".RData')")
+  ))
+  NULL
+}
+```
+
+
+
+```{r define-load_country_map}
+#' Load the layers of a country's map
+#' 
+#' @param country_name name of the country
+#' @param tb_countries tibble with the names of countries (`country_code`),
+#' the corresponding ISO-3 classification (`country_code`)
+load_country_map <- function(country_name, tb_countries) {
+  current_tb_country <- tb_countries |> filter(country_name == !!country_name)
+  country_code <- current_tb_country$country_code
+  country_name_clear <- current_tb_country$country_name_clear
+  current_folder <- str_c("../data/Maps/GADM-4.1/", country_name_clear)
+  output_name <- str_c(
+    current_folder, "/",
+    str_to_lower(str_c(country_code, "_maps")),
+    ".RData"
+  )
+  load(output_name)
+  object_name <- str_c(str_to_lower(country_code), "_maps")
+  get(object_name)
+}
+```
+
+## Download Data
+
+Let us loop over the countries (just New Zealand here) to download the shapefiles.
+```{r download-shp-gadm, message=FALSE, eval=FALSE}
+cli::cli_progress_bar("Downloading SHP files", total = nrow(tb_countries))
+for (i in 1:nrow(tb_countries)) {
+  current_country_name <- tb_countries$country_name[i]
+  current_country_code <- tb_countries$country_code[i]
+  current_country_name_clear <- tb_countries$country_name_clear[i]
+  
+  current_folder <- str_c("../data/Maps/GADM-4.1/", current_country_name_clear)
+  # If data not already downloaded:
+  # Create folder and download data
+  if (!dir.exists(current_folder)) {
+    dir.create(current_folder, recursive = TRUE)
+    download_map(
+      country_name = current_country_name,
+      country_code = current_country_code,
+      country_name_clear = current_country_name_clear
+    )
+  }
+  cli::cli_progress_update()
+}
+cli::cli_progress_done()
+```
+
+
+## Import Shapefiles
+
+
+Now that the shapefiles were downloaded, we can extract the information from them and save the extracted information into RData files that can be loaded when needed.
+
+
+Let us loop again on the countries. We can do it in a parallel way, to fasten the process.
+```{r extract-layers, eval=FALSE}
+library(future)
+nb_cores <- future::availableCores()-1
+plan(multisession, workers = nb_cores)
+progressr::with_progress({
+  p <- progressr::progressor(steps = nrow(tb_countries))
+  tmp <- furrr::future_map(
+    .x = 1:nrow(tb_countries),#looping on the row numbers
+    .f = ~{
+      current_country_name <- tb_countries$country_name[.x]
+      current_country_code <- tb_countries$country_code[.x]
+      current_country_name_clear <- tb_countries$country_name_clear[.x]
+      # Check if the file already exists
+      current_folder <- str_c("../data/Maps/GADM-4.1/", current_country_name_clear)
+      output_name <- str_c(
+        current_folder, "/",
+        str_to_lower(str_c(current_country_code, "_maps")),
+        ".RData"
+      )
+      if (!file.exists(output_name)) {
+        # If it does not
+        # Import the data and save the extracted information
+      import_map(
+        country_name = tb_countries$country_name[.x],
+        country_code = tb_countries$country_code[.x],
+        country_name_clear = tb_countries$country_name_clear[.x]
+      )
+      }
+      p()
+      NULL
+    }
+  )
+})
+```
+
+## Load Extracted Maps
+
+
+All the maps of interest for the study have been downloaded and the information we are looking for has been extracted. We can easily load the data now. Let us create a list with all the maps from all the countries of interest.
+```{r create-all_maps}
+all_maps <- 
+  map(
+    .x = tb_countries$country_name,
+    .f = ~load_country_map(country_name = .x, tb_countries = tb_countries)
+  )
+names(all_maps) <- tb_countries$country_code
+```
+
+The borders are too precise for what we need to do. Let us simplify the objects (this will allow us to have lighter graph files without loosing too much detail).
+
+### Level 0 (borders)
+
+Level 0 maps corresponds to the countries boundaries.
+
+```{r simplify-maps, warning=FALSE, eval=TRUE}
+# Simplification
+sf_use_s2(FALSE)
+maps_level_0 <- map(all_maps, "map_level_0")
+maps_level_0 <- map(
+  maps_level_0,
+  ~st_simplify(.x, dTolerance = 0.01)
+)
+```
+
+
+We save this file for later use:
+```{r save-maps_level_0}
+save(maps_level_0, file = "../data/Maps/GADM-4.1/maps_level_0.RData")
+```
+
+
+```{r define-maps_level_0_plot}
+maps_level_0_all <- do.call("rbind", maps_level_0)
+maps_level_0_plot <- map(
+  .x = tb_countries$country_name,
+  .f = function(x) {
+    p <- ggplot(
+      data = maps_level_0_all |>
+        filter(COUNTRY == x)
+    ) +
+      geom_sf()
+    if (x %in% c("Fiji", "New Zealand"))
+      p <- p + coord_sf(crs = "+init=epsg:3460")
+    p + theme_map_paper()
+    }
+)
+```
+
+
+
+```{r}
+#| fig-cap: Map of New Zealand
+#| label: fig-map-nz
+#| fig-width: 5
+#| fig-height: 5
+cowplot::plot_grid(
+  plotlist = c(
+    map(
+      .x = maps_level_0_plot,
+      .f = ~.x + theme(legend.position = 'none')
+    )
+  ),
+  labels = tb_countries$country_name_short,
+  label_size = 10
+)
+```
+
+
+### Level 1
+
+Let us consider level 1.
+
+```{r simplify-maps-1, warning=FALSE}
+# Simplification
+sf_use_s2(FALSE)
+maps_level_1 <- map(all_maps, "map_level_1")
+maps_level_1 <- map(
+  maps_level_1,
+  ~st_simplify(.x, dTolerance = 0.01)
+)
+```
+
+
+Saving the object:
+```{r save-maps_level_1}
+save(maps_level_1, file = "../data/Maps/GADM-4.1/maps_level_1.RData")
+```
+
+
+```{r define-maps_level_1_plot}
+maps_level_1_all <- do.call("rbind", maps_level_1)
+maps_level_1_plot <- map(
+  .x = tb_countries$country_name,
+  .f = function(x) {
+    p <- ggplot(
+      data = maps_level_1_all |>
+        filter(COUNTRY == x)
+    ) +
+      geom_sf(mapping = aes(group = ISO_1))
+    if (x %in% c("Fiji", "New Zealand")) 
+      p <- p + coord_sf(crs = "+init=epsg:3460")
+    p + theme_map_paper()
+  }
+)
+```
+
+
+
+```{r}
+#| fig-cap: Map of New Zealand (Regions level 1)
+#| label: fig-map-nz-level-1
+#| fig-width: 5
+#| fig-height: 5
+cowplot::plot_grid(
+  plotlist = c(
+    map(
+      .x = maps_level_1_plot,
+      .f = ~.x + theme(legend.position = 'none')
+    )
+  ),
+  labels = tb_countries$country_name_short,
+  label_size = 10
+)
+```
+
+
+### Level 2
+
+And lastly, we consider level 2.
+
+```{r define-maps_level_2, warning=FALSE}
+maps_level_2 <- map(all_maps, "map_level_2")
+keep <- map_lgl(maps_level_2, ~!is.null(.x))
+maps_level_2 <- map(
+  maps_level_2[keep],
+  ~st_simplify(.x, dTolerance = 0.01)
+)
+```
+
+
+Saving file:
+```{r save-maps_level_2}
+save(maps_level_2, file = "../data/Maps/GADM-4.1/maps_level_2.RData")
+```
+
+```{r}
+maps_level_2_all <- do.call("rbind", maps_level_2)
+maps_level_2_plot <- map(
+  .x = tb_countries$country_name,
+  .f = function(x) {
+    p <- ggplot(
+      data = maps_level_2_all |>
+        filter(COUNTRY == x)
+    ) +
+      geom_sf(mapping = aes(group = GID_2))
+    if (x %in% c("Fiji", "New Zealand"))
+      p <- p + coord_sf(crs = "+init=epsg:3460")
+    p + theme_map_paper()
+  }
+)
+```
+
+
+
+```{r}
+#| fig-cap: Map of New Zealand (Regions level 2)
+#| label: fig-map-nz-level-2
+#| fig-width: 5
+#| fig-height: 5
+cowplot::plot_grid(
+  plotlist = c(
+    map(
+      .x = maps_level_2_plot,
+      .f = ~.x + theme(legend.position = 'none')
+    )
+  ),
+  labels = tb_countries$country_name,
+  label_size = 10
+)
+```
+
+
+## Bounding boxes
+
+When we download gridded weather data, we will focus on the parts of the grid that correspond to New Zealand. Let us get the bounding box of the country to make this task easier. We show the R code to do so here, but we will evaluate it again in [Chapter @-sec-weather-data].
+
+```{r define-bounding-boxes}
+bboxes <- map(maps_level_0, st_bbox)
+```
+
+
+::: {.callout-warning}
+
+### Note
+
+If you re-use this code for the Fiji Islands or New Zealand, be careful. The bounding box needs to be recreated. Otherwise, it is too large, as the coordinates of this country is not convenient to work with using this map projection.
+
+:::
+
+
+```{r}
+#| fig-cap: Map of New Zealand, showing the initial extracted bounding box (blue shaded area delimited with dashed lines).
+#| label: fig-map-nz-bbox
+#| fig-width: 5
+#| fig-height: 5
+#| code-fold: true
+maps_level_0_plot_bbox <- map(
+  .x = tb_countries$country_name,
+  .f = function(x) {
+    current_country_code <- tb_countries |> 
+      filter(country_name == x) |> pull("country_code")
+    bbox <- bboxes[[current_country_code]]
+    p <- ggplot(
+      data = maps_level_0_all |>
+        filter(COUNTRY == x)
+    ) +
+      geom_sf() +
+      annotate(
+        geom = "rect", 
+        xmin = bbox$xmin, xmax = bbox$xmax, 
+        ymin = bbox$ymin, ymax = bbox$ymax,
+        fill = "#56B4E9", alpha = .1, linetype = "dashed", colour = "black"
+      )
+    if (x == "Fiji") p <- p + coord_sf(crs = "+init=epsg:3460")
+    p + theme_map_paper()
+  }
+)
+cowplot::plot_grid(
+  plotlist = c(
+    map(
+      .x = maps_level_0_plot_bbox,
+      .f = ~.x + theme(legend.position = 'none')
+    )
+  ),
+  labels = tb_countries$country_name_short,
+  label_size = 10
+)
+```
+
+For simplicity, we will exclude the Chatham island and the Auckland Islands.
+
+We define the new values for the bounding box:
+```{r define-bbox-nz}
+bboxes$NZL[["xmin"]] <- 167
+bboxes$NZL[["xmax"]] <- 179
+bboxes$NZL[["ymin"]] <- -48
+bboxes$NZL[["ymax"]] <- -34
+```
+
+
+```{r}
+#| fig-cap: Map of New Zealand, showing the extracted bounding box (blue shaded area delimited with dashed lines).
+#| label: fig-map-nz-bbox-2
+#| fig-width: 5
+#| fig-height: 5
+#| code-fold: true
+
+bbox <- bboxes[["NZL"]]
+bbox_sf <- st_as_sfc(st_bbox(bbox), crs = 4326) |> 
+  st_transform(3460)
+bbox_trans <- st_bbox(bbox_sf)
+
+ggplot(
+  data = maps_level_0_all |>
+    filter(COUNTRY == "New Zealand")
+) +
+  geom_sf() +
+  annotate(
+    geom = "rect", 
+    xmin = bbox_trans$xmin, xmax = bbox_trans$xmax, 
+    ymin = bbox_trans$ymin, ymax = bbox_trans$ymax,
+    fill = "#56B4E9", alpha = .1, linetype = "dashed", colour = "black"
+  ) +
+  coord_sf(crs = "+init=epsg:3460")
+```
+
+
+
+## Global Look
+
+Let us have a global look.
+
+We first load a world map from the {maps} package.
+```{r define-world}
+world <- sf::st_as_sf(maps::map('world', plot = FALSE, fill = TRUE)) |> 
+  mutate(ID = ifelse(ID == "Ivory Coast", "Côte d'Ivoire", ID))
+```
+
+
+```{r}
+#| code-fold: true
+#| fig-cap: New Zealand (in Green).
+#| label: fig-map-nz-worldmap
+ggplot(
+  data = world |> 
+    mutate(nz = ID %in% tb_countries$country_name),
+  mapping = aes(fill = nz)
+) +
+  geom_sf() +
+  scale_fill_manual(
+    NULL,
+    values = c("TRUE" = "#009E73", "FALSE" = "lightgray"),
+    guide = "none"
+  ) +
+  theme_map_paper()
+```
+
+

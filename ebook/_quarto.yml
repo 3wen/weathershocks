@@ -1,0 +1,38 @@
+project:
+  type: book
+  output-dir: ../docs
+
+book:
+  title: "Weather Shocks"
+  author:
+  - name: Ewen Gallic
+    orcid: 0000-0003-3740-2620
+    affiliations:
+      - Aix-Marseille School of Economics, Aix-Marseille Univ, France.
+  - name: Gauthier Vermandel
+    orcid: 0000-0001-6241-5875
+    affiliations:
+      - CMAP, Ecole polytechnique, Institut Polytechnique de Paris
+  date: "10/22/2025"
+  chapters:
+    - index.qmd
+    - utils.qmd
+    - part: Data
+      chapters:
+      - data-maps.qmd
+      - data-weather-download.qmd
+      - data-weather-missing.qmd
+      - data-weather-metrics.qmd
+    - references.qmd
+
+bibliography: biblio.bib
+
+format:
+  html:
+    fig-cap-location: top
+    theme: cosmo
+    html-math-method: mathjax
+    include-in-header:
+    - file: mathjax-color.html
+editor: source
+
