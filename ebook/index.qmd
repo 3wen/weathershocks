@@ -1,9 +1,5 @@
 # Index {.unnumbered}
 
-This is a Quarto book.
+This ebook provides some notebooks to help adapting the methodology of our paper _Weather Shock_ (@GallicVermandel_2020_eer) to new contexts or datasets.
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
-
-```{r}
-1 + 1
-```
+The notebooks are in construction, this page will be filled soon.

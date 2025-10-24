@@ -69,7 +69,7 @@ country_weather_daily <-
 ```
 
 
-## Potential Evapotranspiration
+## Potential Evapotranspiration {#sec-pet}
 
 We have daily precipitation $P_t$, minimum temperatures $\text{Tmin}_{t}$ and maximum temperatures $\text{Tmax}_{t}$ at the grid cell level. We are interested in building a soil moisture index which requires to compute the evapotranspiration in a prior step. We follow the approach presented in @dingman2015physical (pp. 299--300, _Box 6.8: Thornthwaite-Type Monthly Water-Balance Model_) and recalled in Appendix S1 of @Lutz_2010.
 
@@ -868,8 +868,83 @@ ggplot(
   labs(x = NULL, y = "SMDI")
 ```
 
-## SPEI
 
+## SPEI {#sec-spei}
+
+We will compute the [Standardized Precipitation-Evapotranspiration Index (SPEI)](https://spei.csic.es/), a versatile drought index that uses climatic data to assess the onset, duration, and severity of drought conditions compared to normal conditions @Vicente_Serrano_2010. The SPEI index relies on the precipitation levels and potential evapotranspiration (estimated in @sec-pet).
+
+The SPEI requires:
+
+- Monthly precipitation $P_m$ and monthly potential evapotranspiration $\text{PET}_m$ as inputs,
+- Water balance: $D_m = P_m - \text{PET}_m$,
+- A scale $k$, usually in $\{1,2,3,6,12,24\}$, which defines the width (in months) for rolling accumulations. This scale thus controls for the magnitude of the memory,
+- A calibration window (we will use 1981--2010).
+
+First, we need to compute monthly aggregation of required weather variables, at the grid cell level.
+
+```{r define-weather_monthly}
+weather_monthly <- 
+  country_weather_daily |> 
+  mutate(ym = floor_date(date, "month")) |> 
+  group_by(cell_id, ym, year, month) |> 
+  summarise(
+    P = sum(precip, na.rm = TRUE), # in mm/month
+    PET = sum(PET_daily, na.rm = TRUE), # in mm/month
+    .groups = "drop"
+  ) |> 
+  arrange(cell_id, year, month) |> 
+  mutate(balance = P - PET)
+  
+weather_monthly
+```
+
+
+**In construction**
+
+```{r}
+# Computes SPEI for a single grid cell
+compute_spei <- function(df, 
+                         scales = c(1, 3, 6, 12),
+                         ref_start = NULL, 
+                         ref_end = NULL) {
+  
+  # Build a ts object for water balance with frequency = 12
+  start_year  <- min(df$year, na.rm = TRUE)
+  start_month <- month(min(df$ym, na.rm = TRUE))
+  bal_ts <- ts(df$balance, start = c(start_year, start_month), frequency = 12)
+  
+  # Run SPEI for each scale
+  spei_list <- lapply(scales, function(k) {
+    if (is.null(ref_start) || is.null(ref_end)) {
+      fit <- SPEI::spei(bal_ts, scale = k, verbose = FALSE)
+    } else {
+      fit <- SPEI::spei(
+        bal_ts, scale = k, 
+        ref.start = ref_start, ref.end = ref_end,
+        verbose = FALSE
+      )
+    }
+    # Extract the fitted standardized values as a numeric vector
+    spei_values <- as.numeric(fit$fitted)
+    tibble(
+      ym = df$ym, 
+      scale = k,
+      !!paste("SPEI", k, sep = "_") := spei_values
+    )
+  })
+  bind_cols(spei_list)
+}
+```
+
+```{r define-ref_start}
+ref_start <- c(1981, 1)
+ref_end <- c(2010, 12)
+```
+
+```{r}
+df <- weather_monthly %>%
+  filter(cell_id == 19)
+```
 
 
 ## Monthly Aggregation

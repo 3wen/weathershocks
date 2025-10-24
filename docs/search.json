@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Weather Shocks",
     "section": "",
-    "text": "Index\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books.\n\n1 + 1\n\n[1] 2",
+    "text": "Index\nThis ebook provides some notebooks to help adapting the methodology of our paper Weather Shock (Gallic and Vermandel (2020)) to new contexts or datasets.\nThe notebooks are in construction, this page will be filled soon.\n\n\n\n\nGallic, Ewen, and Gauthier Vermandel. 2020. “Weather Shocks.” European Economic Review 124 (May): 103409. https://doi.org/10.1016/j.euroecorev.2020.103409.",
     "crumbs": [
       "Index"
     ]
@@ -185,22 +185,11 @@
     ]
   },
   {
-    "objectID": "data-weather-metrics.html#potential-evapotranspiration",
-    "href": "data-weather-metrics.html#potential-evapotranspiration",
+    "objectID": "data-weather-metrics.html#sec-pet",
+    "href": "data-weather-metrics.html#sec-pet",
     "title": "5  Weather Data: Metrics",
     "section": "",
     "text": "5.1.1 Potential Evapotranspiration\nThe daily PET (in mm/day) writes (assumed to be from Hamon (1964), but the article cannot be found on the Internet ; Dingman (2015) Eq. 6.68 p. 294): \\[\n\\text{PET}_t =\n\\begin{cases}\n0, & \\text{if }\\mathrm{Tmean}_t \\le 0^\\circ\\mathrm{C},\\\\\n29.8 \\times \\text{DL}_t \\times \\dfrac{e^\\star(\\mathrm{Tmean}_t)}{\\mathrm{Tmean}_t + 273.2}, & \\mathrm{otherwise},\n\\end{cases}\n\\tag{5.1}\\]\nwhere \\(\\text{DL}_t\\) is the day length of day \\(t\\), expressed in hours and \\(e^\\star(\\cdot)\\) gives the saturation vapour pressure.\n\\(\\text{Tmean}_t\\) is the daily average temperature: \\[\n\\mathrm{Tmean}_t = \\frac{\\mathrm{Tmin}_t + \\mathrm{Tmax}_t}{2}.\n\\tag{5.2}\\]\n\n\n\n\n\n\nHow to compute day length \\(\\text{DL}_t\\)?\n\n\n\n\n\nThe methodology to compute day length is given in Appendix D of Dingman (2015). It writes:\n\\[\n\\text{DL}_t = \\frac{24}{\\pi}\\omega_s,\n\\tag{5.3}\\]\nwhere \\(\\omega_s\\) (in radians) is the sunrise hour angle. At sunrise and sunset, the solar zenith angle \\(\\theta_z\\) equals \\(90^\\circ + h_0\\), where \\(h_0\\) is the apparent altitude of the Sun’s center at sunrise. The sunrise hour angle \\(\\omega_s\\) satisfies: \\[\n\\cos(\\omega_s) = \\dfrac{\\sin(h_0) - \\sin(\\Lambda) \\sin(\\delta)}{\\cos(\\Lambda) \\cos(\\delta)},\n\\tag{5.4}\\] with \\(\\Lambda\\) the latitude (in radians), \\(\\delta\\) the solar declination (in radians) and \\(h_0 \\approx -0.833^\\circ\\).\nThe solar declination in radians writes (Campbell and Norman (1998)): \\[\n\\sin^{-1}(0.39795 \\times \\cos(0.2163108 + 2 \\tan^{-1}(0.9671396 \\times \\tan(0.0086 \\times (\\text{doy}_t - 186))) ))\n\\tag{5.5}\\]\n\n\n\n\n\n\n\n\n\nHow to compute saturation vapour pressure \\(e^\\star(T)\\)?\n\n\n\n\n\nThe saturation vapour pressure \\(e^\\star(\\cdot)\\) (in k pascals) is given, for a temperature \\(T\\) (in °C), by (Dingman (2015), Box 2.2 p.99): \\[\ne^\\star(T) = 0.611 \\exp\\left(\\frac{17.27\\times T}{T + 237.3}\\right)\n\\tag{5.6}\\]\n\n\n\nLet us compute the daily potential evapotranspiration in R. We define two functions:\n\ndecl_angle(), which computes the solar declination in radians for a given day-of-year (the code is from {TrenchR}),\ndaylength_hours(), which computes the day length (in hours) for a given day-of-year, at a given latitude.\n\n\n\nThe decl_angle() function.\n#' @title Solar Declination in Radians (from {TrenchR})\n#' \n#' @description The function calculates solar declination, which is the angular \n#'  distance of the sun north or south of the earth's equator, based on the day \n#'   of year (Campbell and Norman, 1998)\n#' \n#' @param doy Day of year (1-366).\n#' \n#' @returns The declination angle (in radians).\n#'\n#' @references\n#' Campbell GS, Norman JM (1998). Introduction to environmental biophysics, \n#'  2nd ed. edition. Springer, New York. ISBN 0387949372.\ndecl_angle &lt;- function (doy) {\n  \n  doy &lt;- (doy - 1) %% 365 + 1\n  \n  rev_ang &lt;- 0.2163108 + 2 * atan(0.9671396 * tan(0.0086 * (doy -186))) \n  asin(0.39795 * cos(rev_ang)) \n  \n}\n\n\n\n\nThe daylength_hours() function.\n#' Day length (in hours)\n#' \n#' @param lat_deg Latitude (in degrees)\n#' @param doy Day of year (1-366).\n#' \ndaylength_hours &lt;- function(lat_deg, doy) {\n  \n  lambda &lt;- lat_deg * pi / 180\n  delta &lt;- decl_angle(doy)\n  h0 &lt;- -0.833 * pi / 180 # apparent sunrise altitude\n  \n  # General sunrise equation with altitude:\n  # cos(ws) = (sin(h0) - sin(lambda) sin(delta)) / (cos(lambda) cos(delta))\n  num &lt;- sin(h0) - sin(lambda) * sin(delta)\n  den &lt;- cos(lambda) * cos(delta)\n  cos_ws &lt;- num / den\n  cos_ws &lt;- pmin(pmax(cos_ws, -1), 1) # clamp to [-1,1]\n  ws &lt;- acos(cos_ws)\n  \n  (24/pi) * ws\n}\n\n\n\ncountry_weather_daily &lt;- \n  country_weather_daily |&gt; \n  mutate(\n    temp_mean = (temp_min + temp_max) / 2,\n    dl_hours  = daylength_hours(latitude, day_of_year)\n  ) |&gt; \n  arrange(cell_id, date) |&gt; \n  # Daily PET (Hamon)\n  mutate(\n    esat = 0.611 * exp(17.27 * temp_mean / (temp_mean + 237.3)), # kPa\n    PET_daily = 29.8 * dl_hours * (esat / (temp_mean + 273.2)), # mm/day\n    PET_daily = if_else(temp_mean &lt;= 0, 0, PET_daily) # Hamon convention\n  )",
-    "crumbs": [
-      "Data",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
-    ]
-  },
-  {
-    "objectID": "data-weather-metrics.html#monthly-aggregation",
-    "href": "data-weather-metrics.html#monthly-aggregation",
-    "title": "5  Weather Data: Metrics",
-    "section": "5.5 Monthly Aggregation",
-    "text": "5.5 Monthly Aggregation\n\ncountry_weather_monthly &lt;- \n  country_weather_daily |&gt; \n  group_by(\n    cell_id, longitude, latitude, country_code, \n    year, month, month_name\n  ) |&gt; \n  summarise(\n    precip = sum(precip, na.rm = TRUE), # mm/month\n    temp_min = mean(temp_min, na.rm = TRUE),\n    temp_max = mean(temp_max, na.rm = TRUE),\n    temp_mean = mean(temp_mean,   na.rm = TRUE),\n    PET = sum(PET_daily, na.rm = TRUE), # mm/month\n    .groups = \"drop\"\n  )\n\n\n\n\n\nCampbell, Gaylon S., and John M. Norman. 1998. “Introduction.” In An Introduction to Environmental Biophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from Storm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. “Climatic Water Deficit, Tree Species Ranges, and Climate Change in Yosemite National Park.” Journal of Biogeography 37 (5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.” Agricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.",
     "crumbs": [
       "Data",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
@@ -218,17 +207,6 @@
     ]
   },
   {
-    "objectID": "data-weather-metrics.html#spei",
-    "href": "data-weather-metrics.html#spei",
-    "title": "5  Weather Data: Metrics",
-    "section": "5.4 SPEI",
-    "text": "5.4 SPEI",
-    "crumbs": [
-      "Data",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
-    ]
-  },
-  {
     "objectID": "data-weather-metrics.html#soil-moisture-deficit-index-smdi",
     "href": "data-weather-metrics.html#soil-moisture-deficit-index-smdi",
     "title": "5  Weather Data: Metrics",
@@ -240,13 +218,14 @@
     ]
   },
   {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Campbell, Gaylon S., and John M. Norman. 1998.\n“Introduction.” In An Introduction to Environmental\nBiophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from\nStorm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010.\n“Climatic Water Deficit, Tree Species Ranges, and Climate Change\nin Yosemite National Park.” Journal of Biogeography 37\n(5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and\nEvaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration\nDeficit Index (ETDI) for Agricultural Drought Monitoring.”\nAgricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.",
+    "objectID": "data-weather-metrics.html#sec-spei",
+    "href": "data-weather-metrics.html#sec-spei",
+    "title": "5  Weather Data: Metrics",
+    "section": "5.4 SPEI",
+    "text": "5.4 SPEI\nWe will compute the Standardized Precipitation-Evapotranspiration Index (SPEI), a versatile drought index that uses climatic data to assess the onset, duration, and severity of drought conditions compared to normal conditions Vicente-Serrano, Beguería, and López-Moreno (2010). The SPEI index relies on the precipitation levels and potential evapotranspiration (estimated in Section 5.1).\nThe SPEI requires:\n\nMonthly precipitation \\(P_m\\) and monthly potential evapotranspiration \\(\\text{PET}_m\\) as inputs,\nWater balance: \\(D_m = P_m - \\text{PET}_m\\),\nA scale \\(k\\), usually in \\(\\{1,2,3,6,12,24\\}\\), which defines the width (in months) for rolling accumulations. This scale thus controls for the magnitude of the memory,\nA calibration window (we will use 1981–2010).\n\nFirst, we need to compute monthly aggregation of required weather variables, at the grid cell level.\n\nweather_monthly &lt;- \n  country_weather_daily |&gt; \n  mutate(ym = floor_date(date, \"month\")) |&gt; \n  group_by(cell_id, ym, year, month) |&gt; \n  summarise(\n    P = sum(precip, na.rm = TRUE), # in mm/month\n    PET = sum(PET_daily, na.rm = TRUE), # in mm/month\n    .groups = \"drop\"\n  ) |&gt; \n  arrange(cell_id, year, month) |&gt; \n  mutate(balance = P - PET)\n  \nweather_monthly\n\n# A tibble: 97,740 × 7\n   cell_id ym          year month     P   PET balance\n     &lt;int&gt; &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;\n 1       9 1980-01-01  1980     1 213.   77.9   135. \n 2       9 1980-02-01  1980     2 160.   66.3    93.9\n 3       9 1980-03-01  1980     3 152.   56.7    95.8\n 4       9 1980-04-01  1980     4  69.0  41.5    27.6\n 5       9 1980-05-01  1980     5 202.   35.0   168. \n 6       9 1980-06-01  1980     6 165.   25.4   139. \n 7       9 1980-07-01  1980     7 166.   26.5   139. \n 8       9 1980-08-01  1980     8 182.   33.3   149. \n 9       9 1980-09-01  1980     9 183.   41.1   142. \n10       9 1980-10-01  1980    10 129.   55.0    73.5\n# ℹ 97,730 more rows\n\n\nIn construction\n\n# Computes SPEI for a single grid cell\ncompute_spei &lt;- function(df, \n                         scales = c(1, 3, 6, 12),\n                         ref_start = NULL, \n                         ref_end = NULL) {\n  \n  # Build a ts object for water balance with frequency = 12\n  start_year  &lt;- min(df$year, na.rm = TRUE)\n  start_month &lt;- month(min(df$ym, na.rm = TRUE))\n  bal_ts &lt;- ts(df$balance, start = c(start_year, start_month), frequency = 12)\n  \n  # Run SPEI for each scale\n  spei_list &lt;- lapply(scales, function(k) {\n    if (is.null(ref_start) || is.null(ref_end)) {\n      fit &lt;- SPEI::spei(bal_ts, scale = k, verbose = FALSE)\n    } else {\n      fit &lt;- SPEI::spei(\n        bal_ts, scale = k, \n        ref.start = ref_start, ref.end = ref_end,\n        verbose = FALSE\n      )\n    }\n    # Extract the fitted standardized values as a numeric vector\n    spei_values &lt;- as.numeric(fit$fitted)\n    tibble(\n      ym = df$ym, \n      scale = k,\n      !!paste(\"SPEI\", k, sep = \"_\") := spei_values\n    )\n  })\n  bind_cols(spei_list)\n}\n\n\nref_start &lt;- c(1981, 1)\nref_end &lt;- c(2010, 12)\n\n\ndf &lt;- weather_monthly %&gt;%\n  filter(cell_id == 19)",
     "crumbs": [
-      "References"
+      "Data",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
     ]
   },
   {
@@ -254,10 +233,20 @@
     "href": "data-weather-metrics.html#monthly-aggregation-1",
     "title": "5  Weather Data: Metrics",
     "section": "5.5 Monthly Aggregation",
-    "text": "5.5 Monthly Aggregation\n\ncountry_weather_monthly &lt;- \n  country_weather_daily |&gt; \n  group_by(\n    cell_id, longitude, latitude, country_code, \n    year, month, month_name\n  ) |&gt; \n  summarise(\n    precip = sum(precip, na.rm = TRUE), # mm/month\n    temp_min = mean(temp_min, na.rm = TRUE),\n    temp_max = mean(temp_max, na.rm = TRUE),\n    temp_mean = mean(temp_mean,   na.rm = TRUE),\n    PET = sum(PET_daily, na.rm = TRUE), # mm/month\n    .groups = \"drop\"\n  )\n\n\n\n\n\nCampbell, Gaylon S., and John M. Norman. 1998. “Introduction.” In An Introduction to Environmental Biophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from Storm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. “Climatic Water Deficit, Tree Species Ranges, and Climate Change in Yosemite National Park.” Journal of Biogeography 37 (5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.” Agricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.",
+    "text": "5.5 Monthly Aggregation\n\ncountry_weather_monthly &lt;- \n  country_weather_daily |&gt; \n  group_by(\n    cell_id, longitude, latitude, country_code, \n    year, month, month_name\n  ) |&gt; \n  summarise(\n    precip = sum(precip, na.rm = TRUE), # mm/month\n    temp_min = mean(temp_min, na.rm = TRUE),\n    temp_max = mean(temp_max, na.rm = TRUE),\n    temp_mean = mean(temp_mean,   na.rm = TRUE),\n    PET = sum(PET_daily, na.rm = TRUE), # mm/month\n    .groups = \"drop\"\n  )\n\n\n\n\n\nCampbell, Gaylon S., and John M. Norman. 1998. “Introduction.” In An Introduction to Environmental Biophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from Storm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. “Climatic Water Deficit, Tree Species Ranges, and Climate Change in Yosemite National Park.” Journal of Biogeography 37 (5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.” Agricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno. 2010. “A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index.” Journal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
     "crumbs": [
       "Data",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Campbell, Gaylon S., and John M. Norman. 1998.\n“Introduction.” In An Introduction to Environmental\nBiophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from\nStorm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010.\n“Climatic Water Deficit, Tree Species Ranges, and Climate Change\nin Yosemite National Park.” Journal of Biogeography 37\n(5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and\nEvaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration\nDeficit Index (ETDI) for Agricultural Drought Monitoring.”\nAgricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.\n2010. “A Multiscalar Drought Index Sensitive to Global Warming:\nThe Standardized Precipitation Evapotranspiration Index.”\nJournal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
+    "crumbs": [
+      "References"
     ]
   }
 ]

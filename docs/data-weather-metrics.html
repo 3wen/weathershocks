@@ -274,9 +274,9 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#potential-evapotranspiration" id="toc-potential-evapotranspiration" class="nav-link active" data-scroll-target="#potential-evapotranspiration"><span class="header-section-number">5.1</span> Potential Evapotranspiration</a>
+  <li><a href="#sec-pet" id="toc-sec-pet" class="nav-link active" data-scroll-target="#sec-pet"><span class="header-section-number">5.1</span> Potential Evapotranspiration</a>
   <ul class="collapse">
-  <li><a href="#potential-evapotranspiration-1" id="toc-potential-evapotranspiration-1" class="nav-link" data-scroll-target="#potential-evapotranspiration-1"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</a></li>
+  <li><a href="#potential-evapotranspiration" id="toc-potential-evapotranspiration" class="nav-link" data-scroll-target="#potential-evapotranspiration"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</a></li>
   </ul></li>
   <li><a href="#water-deficit-water-balance" id="toc-water-deficit-water-balance" class="nav-link" data-scroll-target="#water-deficit-water-balance"><span class="header-section-number">5.2</span> Water Deficit (Water Balance)</a></li>
   <li><a href="#soil-moisture-deficit-index-smdi" id="toc-soil-moisture-deficit-index-smdi" class="nav-link" data-scroll-target="#soil-moisture-deficit-index-smdi"><span class="header-section-number">5.3</span> Soil Moisture Deficit Index (SMDI)</a>
@@ -284,7 +284,7 @@ window.Quarto = {
   <li><a href="#monthly-aggregation" id="toc-monthly-aggregation" class="nav-link" data-scroll-target="#monthly-aggregation"><span class="header-section-number">5.3.1</span> Monthly Aggregation</a></li>
   <li><a href="#quarterly-aggregation" id="toc-quarterly-aggregation" class="nav-link" data-scroll-target="#quarterly-aggregation"><span class="header-section-number">5.3.2</span> Quarterly Aggregation</a></li>
   </ul></li>
-  <li><a href="#spei" id="toc-spei" class="nav-link" data-scroll-target="#spei"><span class="header-section-number">5.4</span> SPEI</a></li>
+  <li><a href="#sec-spei" id="toc-sec-spei" class="nav-link" data-scroll-target="#sec-spei"><span class="header-section-number">5.4</span> SPEI</a></li>
   <li><a href="#monthly-aggregation-1" id="toc-monthly-aggregation-1" class="nav-link" data-scroll-target="#monthly-aggregation-1"><span class="header-section-number">5.5</span> Monthly Aggregation</a></li>
   </ul>
 </nav>
@@ -405,11 +405,11 @@ The following objects are masked from 'package:base':
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">day_of_year =</span> lubridate<span class="sc">::</span><span class="fu">yday</span>(date)</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="potential-evapotranspiration" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="potential-evapotranspiration"><span class="header-section-number">5.1</span> Potential Evapotranspiration</h2>
+<section id="sec-pet" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-pet"><span class="header-section-number">5.1</span> Potential Evapotranspiration</h2>
 <p>We have daily precipitation <span class="math inline">\(P_t\)</span>, minimum temperatures <span class="math inline">\(\text{Tmin}_{t}\)</span> and maximum temperatures <span class="math inline">\(\text{Tmax}_{t}\)</span> at the grid cell level. We are interested in building a soil moisture index which requires to compute the evapotranspiration in a prior step. We follow the approach presented in <span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span> (pp.&nbsp;299–300, <em>Box 6.8: Thornthwaite-Type Monthly Water-Balance Model</em>) and recalled in Appendix S1 of <span class="citation" data-cites="Lutz_2010">Lutz, Wagtendonk, and Franklin (<a href="references.html#ref-Lutz_2010" role="doc-biblioref">2010</a>)</span>.</p>
-<section id="potential-evapotranspiration-1" class="level3" data-number="5.1.1">
-<h3 data-number="5.1.1" class="anchored" data-anchor-id="potential-evapotranspiration-1"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</h3>
+<section id="potential-evapotranspiration" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="potential-evapotranspiration"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</h3>
 <p>The daily PET (in mm/day) writes (assumed to be from <span class="citation" data-cites="Hamon_1964">Hamon (<a href="references.html#ref-Hamon_1964" role="doc-biblioref">1964</a>)</span>, but the article cannot be found on the Internet ; <span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span> Eq. 6.68 p.&nbsp;294): <span id="eq-pet"><span class="math display">\[
 \text{PET}_t =
 \begin{cases}
@@ -1221,26 +1221,109 @@ Figure&nbsp;5.3: Quarterly SMDI values for a cell in New Zealand. Quarterly valu
 </div>
 </section>
 </section>
-<section id="spei" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="spei"><span class="header-section-number">5.4</span> SPEI</h2>
+<section id="sec-spei" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="sec-spei"><span class="header-section-number">5.4</span> SPEI</h2>
+<p>We will compute the <a href="https://spei.csic.es/">Standardized Precipitation-Evapotranspiration Index (SPEI)</a>, a versatile drought index that uses climatic data to assess the onset, duration, and severity of drought conditions compared to normal conditions <span class="citation" data-cites="Vicente_Serrano_2010">Vicente-Serrano, Beguería, and López-Moreno (<a href="references.html#ref-Vicente_Serrano_2010" role="doc-biblioref">2010</a>)</span>. The SPEI index relies on the precipitation levels and potential evapotranspiration (estimated in <a href="#sec-pet" class="quarto-xref"><span>Section 5.1</span></a>).</p>
+<p>The SPEI requires:</p>
+<ul>
+<li>Monthly precipitation <span class="math inline">\(P_m\)</span> and monthly potential evapotranspiration <span class="math inline">\(\text{PET}_m\)</span> as inputs,</li>
+<li>Water balance: <span class="math inline">\(D_m = P_m - \text{PET}_m\)</span>,</li>
+<li>A scale <span class="math inline">\(k\)</span>, usually in <span class="math inline">\(\{1,2,3,6,12,24\}\)</span>, which defines the width (in months) for rolling accumulations. This scale thus controls for the magnitude of the memory,</li>
+<li>A calibration window (we will use 1981–2010).</li>
+</ul>
+<p>First, we need to compute monthly aggregation of required weather variables, at the grid cell level.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>weather_monthly <span class="ot">&lt;-</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ym =</span> <span class="fu">floor_date</span>(date, <span class="st">"month"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, ym, year, month) <span class="sc">|&gt;</span> </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">P =</span> <span class="fu">sum</span>(precip, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># in mm/month</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET =</span> <span class="fu">sum</span>(PET_daily, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># in mm/month</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cell_id, year, month) <span class="sc">|&gt;</span> </span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">balance =</span> P <span class="sc">-</span> PET)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>weather_monthly</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 97,740 × 7
+   cell_id ym          year month     P   PET balance
+     &lt;int&gt; &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+ 1       9 1980-01-01  1980     1 213.   77.9   135. 
+ 2       9 1980-02-01  1980     2 160.   66.3    93.9
+ 3       9 1980-03-01  1980     3 152.   56.7    95.8
+ 4       9 1980-04-01  1980     4  69.0  41.5    27.6
+ 5       9 1980-05-01  1980     5 202.   35.0   168. 
+ 6       9 1980-06-01  1980     6 165.   25.4   139. 
+ 7       9 1980-07-01  1980     7 166.   26.5   139. 
+ 8       9 1980-08-01  1980     8 182.   33.3   149. 
+ 9       9 1980-09-01  1980     9 183.   41.1   142. 
+10       9 1980-10-01  1980    10 129.   55.0    73.5
+# ℹ 97,730 more rows</code></pre>
+</div>
+</div>
+<p><strong>In construction</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Computes SPEI for a single grid cell</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>compute_spei <span class="ot">&lt;-</span> <span class="cf">function</span>(df, </span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">scales =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ref_start =</span> <span class="cn">NULL</span>, </span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ref_end =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Build a ts object for water balance with frequency = 12</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  start_year  <span class="ot">&lt;-</span> <span class="fu">min</span>(df<span class="sc">$</span>year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  start_month <span class="ot">&lt;-</span> <span class="fu">month</span>(<span class="fu">min</span>(df<span class="sc">$</span>ym, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  bal_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(df<span class="sc">$</span>balance, <span class="at">start =</span> <span class="fu">c</span>(start_year, start_month), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run SPEI for each scale</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  spei_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scales, <span class="cf">function</span>(k) {</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(ref_start) <span class="sc">||</span> <span class="fu">is.null</span>(ref_end)) {</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>      fit <span class="ot">&lt;-</span> SPEI<span class="sc">::</span><span class="fu">spei</span>(bal_ts, <span class="at">scale =</span> k, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>      fit <span class="ot">&lt;-</span> SPEI<span class="sc">::</span><span class="fu">spei</span>(</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>        bal_ts, <span class="at">scale =</span> k, </span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref.start =</span> ref_start, <span class="at">ref.end =</span> ref_end,</span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract the fitted standardized values as a numeric vector</span></span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>    spei_values <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(fit<span class="sc">$</span>fitted)</span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(</span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">ym =</span> df<span class="sc">$</span>ym, </span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">scale =</span> k,</span>
+<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!!</span><span class="fu">paste</span>(<span class="st">"SPEI"</span>, k, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">:</span><span class="er">=</span> spei_values</span>
+<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(spei_list)</span>
+<span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>ref_start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>ref_end <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">12</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> weather_monthly <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cell_id <span class="sc">==</span> <span class="dv">19</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="monthly-aggregation-1" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="monthly-aggregation-1"><span class="header-section-number">5.5</span> Monthly Aggregation</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>country_weather_monthly <span class="ot">&lt;-</span> </span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    cell_id, longitude, latitude, country_code, </span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    year, month, month_name</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">precip =</span> <span class="fu">sum</span>(precip, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_min =</span> <span class="fu">mean</span>(temp_min, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_max =</span> <span class="fu">mean</span>(temp_max, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_mean =</span> <span class="fu">mean</span>(temp_mean,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET =</span> <span class="fu">sum</span>(PET_daily, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
-<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>country_weather_monthly <span class="ot">&lt;-</span> </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    cell_id, longitude, latitude, country_code, </span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    year, month, month_name</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">precip =</span> <span class="fu">sum</span>(precip, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_min =</span> <span class="fu">mean</span>(temp_min, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_max =</span> <span class="fu">mean</span>(temp_max, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_mean =</span> <span class="fu">mean</span>(temp_mean,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET =</span> <span class="fu">sum</span>(PET_daily, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -1259,6 +1342,9 @@ Lutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. <span>“Cli
 </div>
 <div id="ref-Narasimhan_2005" class="csl-entry" role="listitem">
 Narasimhan, B., and R. Srinivasan. 2005. <span>“Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.”</span> <em>Agricultural and Forest Meteorology</em> 133 (1–4): 69–88. <a href="https://doi.org/10.1016/j.agrformet.2005.07.012">https://doi.org/10.1016/j.agrformet.2005.07.012</a>.
+</div>
+<div id="ref-Vicente_Serrano_2010" class="csl-entry" role="listitem">
+Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno. 2010. <span>“A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index.”</span> <em>Journal of Climate</em> 23 (7): 1696–1718. <a href="https://doi.org/10.1175/2009jcli2909.1">https://doi.org/10.1175/2009jcli2909.1</a>.
 </div>
 </div>
 </section>
