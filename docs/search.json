@@ -229,27 +229,6 @@
     ]
   },
   {
-    "objectID": "data-weather-metrics.html#monthly-aggregation-1",
-    "href": "data-weather-metrics.html#monthly-aggregation-1",
-    "title": "5  Weather Data: Metrics",
-    "section": "5.5 Monthly Aggregation",
-    "text": "5.5 Monthly Aggregation\n\ncountry_weather_monthly &lt;- \n  country_weather_daily |&gt; \n  group_by(\n    cell_id, longitude, latitude, country_code, \n    year, month, month_name\n  ) |&gt; \n  summarise(\n    precip = sum(precip, na.rm = TRUE), # mm/month\n    temp_min = mean(temp_min, na.rm = TRUE),\n    temp_max = mean(temp_max, na.rm = TRUE),\n    temp_mean = mean(temp_mean,   na.rm = TRUE),\n    PET = sum(PET_daily, na.rm = TRUE), # mm/month\n    .groups = \"drop\"\n  )\n\n\n\n\n\nCampbell, Gaylon S., and John M. Norman. 1998. “Introduction.” In An Introduction to Environmental Biophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from Storm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. “Climatic Water Deficit, Tree Species Ranges, and Climate Change in Yosemite National Park.” Journal of Biogeography 37 (5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.” Agricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno. 2010. “A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index.” Journal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
-    "crumbs": [
-      "Data",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
-    ]
-  },
-  {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Campbell, Gaylon S., and John M. Norman. 1998.\n“Introduction.” In An Introduction to Environmental\nBiophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from\nStorm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010.\n“Climatic Water Deficit, Tree Species Ranges, and Climate Change\nin Yosemite National Park.” Journal of Biogeography 37\n(5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and\nEvaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration\nDeficit Index (ETDI) for Agricultural Drought Monitoring.”\nAgricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.\n2010. “A Multiscalar Drought Index Sensitive to Global Warming:\nThe Standardized Precipitation Evapotranspiration Index.”\nJournal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
-    "crumbs": [
-      "References"
-    ]
-  },
-  {
     "objectID": "data-weather-metrics.html#temporal-aggregation",
     "href": "data-weather-metrics.html#temporal-aggregation",
     "title": "5  Weather Data: Metrics",
@@ -269,6 +248,49 @@
     "crumbs": [
       "Data",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Weather Data: Metrics</span>"
+    ]
+  },
+  {
+    "objectID": "data-merge.html",
+    "href": "data-merge.html",
+    "title": "6  Merge",
+    "section": "",
+    "text": "TBD",
+    "crumbs": [
+      "Data",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Merge</span>"
+    ]
+  },
+  {
+    "objectID": "var-estimation.html",
+    "href": "var-estimation.html",
+    "title": "7  VAR",
+    "section": "",
+    "text": "TBD",
+    "crumbs": [
+      "VAR",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>VAR</span>"
+    ]
+  },
+  {
+    "objectID": "dsge-essai.html",
+    "href": "dsge-essai.html",
+    "title": "8  Essai",
+    "section": "",
+    "text": "Ceci est un essai pour écrire du code dynare.\n%----------------------------------------------------------------\n% 0. Housekeeping (close all graphic windows)\n%----------------------------------------------------------------\n\nclose all;\n%----------------------------------------------------------------\n% 1. Defining variables\n%----------------------------------------------------------------\n\nvar c uc uA uN hu i y h v m u vh rer_obs tb vc\n    y_N k_N i_N h_N w_N r q_N p_N d\n    y_A k_A i_A h_A w_A r q_A p_A land x y_N_obs\n    gdp NFA \n    c_R c_N de\n    c_star m_star uc_star pc_A pc_N rer r_star n\n    phi varrho ca_y dyA dy dc dH welf\n    y_obs i_obs h_obs smdi_obs y_a_obs wy_obs c_obs\n    e_z e_h e_g e_i e_n e_s e_e;\nvarexo eta_z eta_h eta_g eta_i eta_n eta_s eta_c eta_e;\n\n\nparameters  beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu \n            gamma Tss\n            omega tau kappa_A Lss delta_L psi theta1 theta2 theta3 theta4 alpha_N mu_N alpha_A mu_A chi_b rho_c sigmaC_star b_star\n            sig_z sig_h sig_g sig_i sig_n sig_s sig_c sig_e\n            % shocks\n            rho_z rho_h rho_g rho_i rho_n rho_s rho_e ;",
+    "crumbs": [
+      "DSGE",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Campbell, Gaylon S., and John M. Norman. 1998.\n“Introduction.” In An Introduction to Environmental\nBiophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nGallic, Ewen, and Gauthier Vermandel. 2020. “Weather\nShocks.” European Economic Review 124 (May): 103409. https://doi.org/10.1016/j.euroecorev.2020.103409.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from\nStorm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010.\n“Climatic Water Deficit, Tree Species Ranges, and Climate Change\nin Yosemite National Park.” Journal of Biogeography 37\n(5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and\nEvaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration\nDeficit Index (ETDI) for Agricultural Drought Monitoring.”\nAgricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.\n2010. “A Multiscalar Drought Index Sensitive to Global Warming:\nThe Standardized Precipitation Evapotranspiration Index.”\nJournal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
+    "crumbs": [
+      "References"
     ]
   }
 ]

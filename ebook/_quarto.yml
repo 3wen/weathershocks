@@ -23,6 +23,13 @@ book:
       - data-weather-download.qmd
       - data-weather-missing.qmd
       - data-weather-metrics.qmd
+      - data-merge.qmd
+    - part: VAR
+      chapters:
+      - var-estimation.qmd
+    - part: DSGE
+      chapters:
+      - dsge-essai.qmd
     - references.qmd
 
 bibliography: biblio.bib

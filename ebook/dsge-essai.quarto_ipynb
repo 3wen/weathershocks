@@ -1,0 +1,57 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Essai {#sec-essai}\n",
+        "\n",
+        "Ceci est un essai pour écrire du code dynare.\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "```{markdown, eval=FALSE}\n",
+        "%----------------------------------------------------------------\n",
+        "% 0. Housekeeping (close all graphic windows)\n",
+        "%----------------------------------------------------------------\n",
+        "\n",
+        "close all;\n",
+        "\n",
+        "%----------------------------------------------------------------\n",
+        "% 1. Defining variables\n",
+        "%----------------------------------------------------------------\n",
+        "\n",
+        "var c uc uA uN hu i y h v m u vh rer_obs tb vc ...\n",
+        "\ty_N k_N i_N h_N w_N r q_N p_N d ...\n",
+        "\ty_A k_A i_A h_A w_A r q_A p_A land x y_N_obs ...\n",
+        "\tgdp NFA ...\n",
+        "\tc_R c_N de ...\n",
+        "\tc_star m_star uc_star pc_A pc_N rer r_star n ...\n",
+        "\tphi varrho ca_y dyA dy dc dH welf ...\n",
+        "\ty_obs i_obs h_obs smdi_obs y_a_obs wy_obs c_obs ...\n",
+        "\te_z e_h e_g e_i e_n e_s e_e;\n",
+        "varexo eta_z eta_h eta_g eta_i eta_n eta_s eta_c eta_e;\n",
+        "\n",
+        "parameters beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu ...\n",
+        "\tgamma Tss ...\n",
+        "\tomega tau kappa_A Lss delta_L psi theta1 theta2 theta3 theta4 alpha_N mu_N alpha_A mu_A chi_b rho_c sigmaC_star b_star ...\n",
+        "\tsig_z sig_h sig_g sig_i sig_n sig_s sig_c sig_e ...\n",
+        "\t% shocks\n",
+        "\trho_z rho_h rho_g rho_i rho_n rho_s rho_e;\n",
+        "```"
+      ],
+      "id": "60a4180d"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
