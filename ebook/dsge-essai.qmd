@@ -1,5 +1,9 @@
 # Essai {#sec-essai}
 
+In @sec-code, ...
+
+## Une Section {#sec-code}
+
 Ceci est un essai pour écrire du code dynare.
 
 ```matlab
@@ -31,3 +35,33 @@ parameters	beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu
 			% shocks
 			rho_z rho_h rho_g rho_i rho_n rho_s rho_e ;
 ```
+
+## Une Autre Section
+
+Pour numéroter des _équation_, on doit nécessairement commencer son label par `#eq-` et il ne faut pas ajouter de `_`, il faut mettre des `-`, comme pour @eq-mon-equations.
+$$
+X \in \mathcal{X}
+$${#eq-mon-equations}
+
+## Une Section avec un Tableau et une Figure
+
+Il en va de même pour des tableaux (@tbl-mon-tableau), le label doit commencer par `#tbl-`.
+
+| Col 1 | Col 2 | Col 3 |
+| :---: | :---: | :---: |
+| val 1 | $x_1$ | $y_1$ |
+| val 2 | $x_2$ | $y_2$ |
+
+Table: Un titre. {#tbl-mon-tableau}
+
+
+Pour les figures (@fig-priors), le label doit commencer par `fig-`.
+
+```{r}
+#| fig-cap: Prior distributions.
+#| label: fig-priors
+#| out.width: 600
+#| fig-align: "center"
+knitr::include_graphics("figs/priors.png")
+```
+

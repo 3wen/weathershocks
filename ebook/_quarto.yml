@@ -31,6 +31,11 @@ book:
       chapters:
       - dsge-essai.qmd
     - references.qmd
+  navbar:
+    right:
+      - icon: github
+        href: https://github.com/3wen/weathershocks
+        aria-label: GitHub
 
 bibliography: biblio.bib
 

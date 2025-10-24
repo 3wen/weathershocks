@@ -277,7 +277,7 @@
     "href": "dsge-essai.html",
     "title": "8  Essai",
     "section": "",
-    "text": "Ceci est un essai pour écrire du code dynare.\n%----------------------------------------------------------------\n% 0. Housekeeping (close all graphic windows)\n%----------------------------------------------------------------\n\nclose all;\n%----------------------------------------------------------------\n% 1. Defining variables\n%----------------------------------------------------------------\n\nvar c uc uA uN hu i y h v m u vh rer_obs tb vc\n    y_N k_N i_N h_N w_N r q_N p_N d\n    y_A k_A i_A h_A w_A r q_A p_A land x y_N_obs\n    gdp NFA \n    c_R c_N de\n    c_star m_star uc_star pc_A pc_N rer r_star n\n    phi varrho ca_y dyA dy dc dH welf\n    y_obs i_obs h_obs smdi_obs y_a_obs wy_obs c_obs\n    e_z e_h e_g e_i e_n e_s e_e;\nvarexo eta_z eta_h eta_g eta_i eta_n eta_s eta_c eta_e;\n\n\nparameters  beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu \n            gamma Tss\n            omega tau kappa_A Lss delta_L psi theta1 theta2 theta3 theta4 alpha_N mu_N alpha_A mu_A chi_b rho_c sigmaC_star b_star\n            sig_z sig_h sig_g sig_i sig_n sig_s sig_c sig_e\n            % shocks\n            rho_z rho_h rho_g rho_i rho_n rho_s rho_e ;",
+    "text": "8.1 Une Section\nIn Section 8.1, …\nCeci est un essai pour écrire du code dynare.",
     "crumbs": [
       "DSGE",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
@@ -291,6 +291,50 @@
     "text": "Campbell, Gaylon S., and John M. Norman. 1998.\n“Introduction.” In An Introduction to Environmental\nBiophysics, 1–13. Springer New York. https://doi.org/10.1007/978-1-4612-1626-1_1.\n\n\nDingman, S. Lawrence. 2015. Physical Hydrology. Waveland press.\n\n\nGallic, Ewen, and Gauthier Vermandel. 2020. “Weather\nShocks.” European Economic Review 124 (May): 103409. https://doi.org/10.1016/j.euroecorev.2020.103409.\n\n\nHamon, W. R. 1964. “Computation of Direct Runoff Amounts from\nStorm Rainfall” 63: 52–62.\n\n\nLutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010.\n“Climatic Water Deficit, Tree Species Ranges, and Climate Change\nin Yosemite National Park.” Journal of Biogeography 37\n(5): 936–50. https://doi.org/10.1111/j.1365-2699.2009.02268.x.\n\n\nNarasimhan, B., and R. Srinivasan. 2005. “Development and\nEvaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration\nDeficit Index (ETDI) for Agricultural Drought Monitoring.”\nAgricultural and Forest Meteorology 133 (1–4): 69–88. https://doi.org/10.1016/j.agrformet.2005.07.012.\n\n\nVicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno.\n2010. “A Multiscalar Drought Index Sensitive to Global Warming:\nThe Standardized Precipitation Evapotranspiration Index.”\nJournal of Climate 23 (7): 1696–1718. https://doi.org/10.1175/2009jcli2909.1.",
     "crumbs": [
       "References"
+    ]
+  },
+  {
+    "objectID": "dsge-essai.html#sec-code",
+    "href": "dsge-essai.html#sec-code",
+    "title": "8  Essai",
+    "section": "",
+    "text": "%----------------------------------------------------------------\n% 0. Housekeeping (close all graphic windows)\n%----------------------------------------------------------------\n\nclose all;\n%----------------------------------------------------------------\n% 1. Defining variables\n%----------------------------------------------------------------\n\nvar c uc uA uN hu i y h v m u vh rer_obs tb vc\n    y_N k_N i_N h_N w_N r q_N p_N d\n    y_A k_A i_A h_A w_A r q_A p_A land x y_N_obs\n    gdp NFA \n    c_R c_N de\n    c_star m_star uc_star pc_A pc_N rer r_star n\n    phi varrho ca_y dyA dy dc dH welf\n    y_obs i_obs h_obs smdi_obs y_a_obs wy_obs c_obs\n    e_z e_h e_g e_i e_n e_s e_e;\nvarexo eta_z eta_h eta_g eta_i eta_n eta_s eta_c eta_e;\n\n\nparameters  beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu \n            gamma Tss\n            omega tau kappa_A Lss delta_L psi theta1 theta2 theta3 theta4 alpha_N mu_N alpha_A mu_A chi_b rho_c sigmaC_star b_star\n            sig_z sig_h sig_g sig_i sig_n sig_s sig_c sig_e\n            % shocks\n            rho_z rho_h rho_g rho_i rho_n rho_s rho_e ;",
+    "crumbs": [
+      "DSGE",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
+    ]
+  },
+  {
+    "objectID": "dsge-essai.html#une-autre-section",
+    "href": "dsge-essai.html#une-autre-section",
+    "title": "8  Essai",
+    "section": "8.2 Une Autre Section",
+    "text": "8.2 Une Autre Section\nPour numéroter des équation, on doit nécessairement commencer son label par #eq- et il ne faut pas ajouter de _, il faut mettre des -, comme pour Equation 8.1. \\[\nX \\in \\mathcal{X}\n\\tag{8.1}\\]",
+    "crumbs": [
+      "DSGE",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
+    ]
+  },
+  {
+    "objectID": "dsge-essai.html#une-section-avec-un-tableau",
+    "href": "dsge-essai.html#une-section-avec-un-tableau",
+    "title": "8  Essai",
+    "section": "8.3 Une Section avec un Tableau",
+    "text": "8.3 Une Section avec un Tableau\nIl en va de même pour des tableaux (Table 8.1).\n\n\n\nTable 8.1: Un titte.\n\n\n\n\n\nCol 1\nCol 2\nCol 3\n\n\n\n\nval 1\n\\(x_1\\)\n\\(y_1\\)\n\n\nval 2\n\\(x_2\\)\n\\(y_2\\)",
+    "crumbs": [
+      "DSGE",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
+    ]
+  },
+  {
+    "objectID": "dsge-essai.html#une-section-avec-un-tableau-et-une-figure",
+    "href": "dsge-essai.html#une-section-avec-un-tableau-et-une-figure",
+    "title": "8  Essai",
+    "section": "8.3 Une Section avec un Tableau et une Figure",
+    "text": "8.3 Une Section avec un Tableau et une Figure\nIl en va de même pour des tableaux (Table 8.1), le label doit commencer par #tbl-.\n\n\n\nTable 8.1: Un titre.\n\n\n\n\n\nCol 1\nCol 2\nCol 3\n\n\n\n\nval 1\n\\(x_1\\)\n\\(y_1\\)\n\n\nval 2\n\\(x_2\\)\n\\(y_2\\)\n\n\n\n\n\n\nPour les figures (Figure 8.1), le label doit commencer par fig-.\n\nknitr::include_graphics(\"figs/priors.png\")\n\n\n\n\nFigure 8.1: Prior distributions.",
+    "crumbs": [
+      "DSGE",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"
     ]
   }
 ]
