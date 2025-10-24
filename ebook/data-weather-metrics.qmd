@@ -7,7 +7,7 @@
 This chapter uses the gridded weather data from [Chapter -@sec-weather-data-missing] to construct various metrics. Please refer to the 27 core ETCCDI Climate Change Indices (<https://etccdi.pacificclimate.org/indices.shtml>) for additional metrics that can be constructed.
 
 
-All these metrics will be computed at the grid cell level. Each row of the final dataset will give the values of weather or climate on a daily basis, at the grid cell level.
+All these metrics will be computed at the grid cell level, on the finest temporal scale. Aggregation at various levels (monthly, quarterly) to match with macroeconomic data will be performed once the indicators are created. Spatial aggregation will not be performed in this chapter.
 
 :::
 
@@ -141,7 +141,7 @@ Let us compute the daily potential evapotranspiration in R. We define two functi
 #' @title Solar Declination in Radians (from {TrenchR})
 #' 
 #' @description The function calculates solar declination, which is the angular 
-#'  distance of the sun north or south of the earth’s equator, based on the day 
+#'  distance of the sun north or south of the earth's equator, based on the day 
 #'   of year (Campbell and Norman, 1998)
 #' 
 #' @param doy Day of year (1-366).
@@ -369,7 +369,7 @@ country_weather_daily <-
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 #| code-fold: true
 #| code-summary: Code if monthly data and not daily
 # This code is not evaluated here since we use daily data
@@ -533,13 +533,38 @@ $${#eq-weekly-sw}
 
 where $\text{SW}_t$ is the soil water balance (in mm), previously computed (see @eq-soil-water-balance).
 
+
+We define a function, `find_wday()`{.R} which assigns a fixed 7-day "week" indice (1 to 52) to calendar dates.
+```{r define-find_wday}
+#' Assign fixed 7-day "week" indices (1–52) to calendar dates
+#'
+#' @description
+#' Divides each year into 52 fixed 7-day blocks, starting on January 1
+#' (block 1 = days 1–7, block 2 = days 8–14, ...
+#' Any remaining day(s) beyond day 364 (e.g., Dec 31 in common years,
+#' or Dec 30–31 in leap years) are assigned to week 52.
+#'
+#' @param x A `Date` vector.
+#' @returns
+#' An integer vector of the same length as `x`, giving week indices in `1:52`.
+#' 
+find_wday <- function(x) {
+  pmin(((yday(x) - 1) %/% 7) + 1, 52)
+}
+```
+
+Example:
+```{r example-find_wday}
+find_wday(c(make_date(2020,12,31), make_date(2021,01,01)))
+```
+
 ```{r define-sw_weekly}
 # First assign each day to one of the 52 weeks
 country_weather_daily <- 
   country_weather_daily |>
   mutate(
     # week = lubridate::week(date) # includes 53...
-    week = pmin(((yday(date) - 1) %/% 7) + 1, 52) # 1-52
+    week = find_wday(date)
   )
 
 # Then compute the average availabe soil water at the cell level
@@ -643,7 +668,209 @@ ggplot(
 ```
 
 
+### Monthly Aggregation
+
+The SMDI values are computed on a weekly basis (52 fixed 7-day blocks per year). To align with standard reporting periods of macroeconomic data, we can aggregate these values to the monthly scale. Because some 7-day weeks span two months, we need to ensure that each month receives only the appropriate share of each week.
+
+We proceed as follows:
+
+1. We build a monthly calendar of overlaps. For every combination of year and month present in the data, we compute how many days of each fixed 7-day week fall within that month. This gives us a set of weights ($w^{(m)}_{w}$) that indicate the fraction of the month covered by each week. The weights for a given month always sum to 1.
+
+2. We compute weighted monthly SMDI values. We join the weights from the previous step with the weekly SMDI observations and compute, for each grid cell, year, and month, a weighted mean of weekly SMDI values: 
+	$$
+	\mathrm{SMDI}_{m} = \frac{\sum_{w} \mathrm{SMDI}_{w} \times w^{(m)}_{w}}{\sum_{w} w^{(m)}_{w}},
+  $$
+  where ($w^{(m)}_{w}$) is the proportion of the month accounted for by week (w).
+
+
+We define a function, `get_month_week_cal()`{.R}, to get a monthly calendar of overlaps. Note that it relies on the `find_wday()`{.R} function previously defined.
+
+```{r define-get_month_week_cal}
+#' Calendar of fixed 7-day "weeks" (1--52) overlapped with a given month
+#'
+#' @description
+#' Builds the 52 fixed 7-day blocks for a given year
+#' (block 1 starts on Jan 1, block k starts on Jan 1 + 7*(k-1) days),
+#' computes each block's overlap (in days) with the specified month,
+#' and returns per-block weights equal to overlap / days-in-month.' 
+#' 
+#' @param year Year (numeric).
+#' @param month Month (numeric).
+#' 
+#' @returns
+#' A tibble with one row per overlapping block and columns:
+#' - `year`: the requested year,
+#' - `month`: the requested month,
+#' - `week`: fixed 7-day block index in 1...52,
+#' - `weight_ndays`: overlap days over days in the month.
+#' 
+get_month_week_cal <- function(year, month) {
+  
+  m_start <- lubridate::make_date(year, month, 1)
+  m_end <- (m_start %m+% months(1)) - lubridate::days(1)
+  # days in the month
+  dates <- seq(lubridate::ymd(m_start), lubridate::ymd(m_end), by = "day")
+  weeks <- sapply(dates, find_wday)
+  ndays_weeks <- tapply(weeks, weeks, length)
+  
+  dplyr::tibble(
+    week = as.integer(names(ndays_weeks)),
+    nb_days = as.integer(ndays_weeks),
+    weight_ndays = nb_days / sum(nb_days)
+  ) |> 
+    dplyr::mutate(
+      year = year,
+      month = month,
+      .before = 1L
+    )
+}
+```
+
+For example:
+```{r example-get_month_week_cal}
+get_month_week_cal(2020, 12)
+```
+The years in the data:
+```{r define-years}
+years <- sort(unique(smdi_weekly$year))
+```
+
+We get the calendar of months for monthly aggregations by applying the `get_month_week_cal()`{.R} function to all the (year, month) covering the sample period:
+```{r define-months_cal}
+months_cal <- tidyr::crossing(year = years, month = 1:12) |>
+  purrr::pmap(\(year, month) get_month_week_cal(year, month)) |> 
+  list_rbind()
+months_cal
+```
+
+We then proceed to the second step, where we compute the monthly aggregated values for SMDI:
+
+```{r define-smdi_monthly}
+smdi_monthly <- 
+  smdi_weekly |> 
+  left_join(
+    months_cal, by = c("year", "week"),
+    relationship = "many-to-many"
+  ) |> 
+  group_by(cell_id, year, month) |>
+  summarise(
+    # If any missing values in SMDI will lead to NAs
+    SMDI_month = weighted.mean(SMDI, w = weight_ndays),
+    .groups = "drop"
+  )
+```
+
+
+Let us have a look at the values for a cell:
+```{r}
+#| fig-cap: Monthly SMDI values for a cell in New Zealand. Weekly values range from -4 to +4 indicating very dry to very wet conditions.
+#| label: fig-example-smdi-monthly-19
+ggplot(
+  data = smdi_monthly |> mutate(date = year + month / 12) |> 
+    filter(cell_id == 19),
+  mapping = aes(x = date, y = SMDI_month)
+  ) +
+  geom_line() +
+  labs(x = NULL, y = "SMDI")
+```
+
+
+
+### Quarterly Aggregation
+
+We may want to aggregate the SMDI values at the quarterly level (Q1--Q4). We follow the same logic as for monthly aggregation, adapting it to quarters:
+
+1. We first build a quarterly calendar of overlaps. For each year and quarter, we determine how many days of each 7-day week fall within the quarter. This yields a set of weights ($w^{(q)}_w$) expressing the fraction of the quarter represented by each week. The weights for a given quarter always sum to 1.
+
+2. We then compute weighted quarterly SMDI values. Using these weights, we aggregate the weekly SMDI values within each quarter by taking a weighted average, where each week's contribution is proportional to the number of days it contributes to that quarter: 
+   $$
+   \mathrm{SMDI}_{q} = \frac{\sum_{w} \mathrm{SMDI}_{w} \times w^{(q)}_{w}}{\sum_{w} w^{(q)}_{w}},
+   $$
+   where ($w^{(q)}_{w}$) denotes the proportion of the quarter accounted for by week (w).
+
+
+The `get_quarter_week_cal()`{.R} function creates the quarterly calendar of overlaps. Again, note that it relies on the `find_wday()`{.R} function previously defined.
+```{r define-get_quarter_week_cal}
+#' Calendar weights for fixed 7-day "weeks" (1–52) within a given quarter
+#'
+#' @description
+#' For a given `year` and `quarter`, this function computes the number of days
+#' from each fixed 7-day block (weeks 1–52, defined from January 1 in 7-day
+#' increments) that fall within that quarter, along with their normalized
+#' weights. Any remaining days beyond day 364 (e.g., Dec 31 in common years,
+#' or Dec 30–31 in leap years) are assigned to week 52.
+#' 
+#' @param year Year (numeric).
+#' @param quarter Quarter (numeric).
+#' 
+#' @returns
+#' A tibble with one row per overlapping block and columns:
+#' - `year`: the requested year,
+#' - `quarter`: the requested quarter,
+#' - `week`: fixed 7-day block index in 1...52,
+#' - `weight_ndays`: overlap days over days in the quarter.
+#' 
+get_quarter_week_cal <- function(year, quarter) {
+  q_start <- lubridate::make_date(year, (quarter - 1) * 3 + 1, 1)
+  q_end <- (q_start %m+% months(3)) - lubridate::days(1)
+  dates <- seq(q_start, q_end, by = "day")
+  weeks <- find_wday(dates)
+  ndays_quarter <- tapply(weeks, weeks, length)
+  
+  dplyr::tibble(
+    week = as.integer(names(ndays_quarter)),
+    nb_days = as.integer(ndays_quarter),
+    weight_ndays = nb_days / sum(nb_days)
+  ) |> 
+    dplyr::mutate(
+      year = year,
+      quarter = quarter,
+      .before = 1L
+    )
+}
+```
+
+The calendar of months for monthly aggregations:
+```{r define-quarters_cal}
+quarters_cal <- tidyr::crossing(year = years, quarter = 1:4) |>
+  purrr::pmap(\(year, quarter) get_quarter_week_cal(year, quarter)) |> 
+  list_rbind()
+quarters_cal
+```
+
+We then proceed to the second step, where we compute the quarterly aggregated values for SMDI:
+```{r define-smdi_quarterly}
+smdi_quarterly <- 
+  smdi_weekly |> 
+  left_join(
+    quarters_cal, by = c("year", "week"),
+    relationship = "many-to-many"
+  ) |> 
+  group_by(cell_id, year, quarter) |>
+  summarise(
+    # If any missing values in SMDI will lead to NAs
+    SMDI_quarter = weighted.mean(SMDI, w = weight_ndays),
+    .groups = "drop"
+  )
+```
+
+
+Let us have a look at the values for a cell:
+```{r}
+#| fig-cap: Quarterly SMDI values for a cell in New Zealand. Quarterly values range from -4 to +4 indicating very dry to very wet conditions.
+#| label: fig-example-smdi-quarterly-19
+ggplot(
+  data = smdi_quarterly |> mutate(date = year + quarter / 4) |> 
+    filter(cell_id == 19),
+  mapping = aes(x = date, y = SMDI_quarter)
+  ) +
+  geom_line() +
+  labs(x = NULL, y = "SMDI")
+```
+
 ## SPEI
+
+
 
 ## Monthly Aggregation
 
