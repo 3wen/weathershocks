@@ -331,7 +331,7 @@
     "href": "dsge-essai.html#une-section-avec-un-tableau-et-une-figure",
     "title": "8  Essai",
     "section": "8.3 Une Section avec un Tableau et une Figure",
-    "text": "8.3 Une Section avec un Tableau et une Figure\nIl en va de même pour des tableaux (Table 8.1), le label doit commencer par #tbl-.\n\n\n\nTable 8.1: Un titre.\n\n\n\n\n\nCol 1\nCol 2\nCol 3\n\n\n\n\nval 1\n\\(x_1\\)\n\\(y_1\\)\n\n\nval 2\n\\(x_2\\)\n\\(y_2\\)\n\n\n\n\n\n\nPour les figures (Figure 8.1), le label doit commencer par fig-.\n\nknitr::include_graphics(\"figs/priors.png\")\n\n\n\n\nFigure 8.1: Prior distributions.",
+    "text": "8.3 Une Section avec un Tableau et une Figure\nIl en va de même pour des tableaux (Table 8.1), le label doit commencer par #tbl-.\n\n\n\nTable 8.1: Un titre.\n\n\n\n\n\nCol 1\nCol 2\nCol 3\n\n\n\n\nval 1\n\\(x_1\\)\n\\(y_1\\)\n\n\nval 2\n\\(x_2\\)\n\\(y_2\\)\n\n\n\n\n\n\nPour les figures (Figure 8.1), le label doit commencer par fig-.\n\n\n\n\n\nFigure 8.1: Prior distributions.",
     "crumbs": [
       "DSGE",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Essai</span>"

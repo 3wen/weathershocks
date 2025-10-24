@@ -62,6 +62,7 @@ Pour les figures (@fig-priors), le label doit commencer par `fig-`.
 #| label: fig-priors
 #| out.width: 600
 #| fig-align: "center"
+#| echo: false
 knitr::include_graphics("figs/priors.png")
 ```
 
