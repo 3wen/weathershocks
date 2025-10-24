@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Weather Data: Metrics – Weather Shocks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./data-weather-missing.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-626149efe8f5d16e1d391ba177679bf0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ TeX: { extensions: ["color.js"] }});
+</script>
+<script type="text/x-mathjax-config">
+	MathJax.Hub.Register.StartupHook("TeX color Ready", function() {
+	     MathJax.Extension["TeX/color"].colors["wongBlack"] = '#000000';
+		 MathJax.Extension["TeX/color"].colors["wongGold"] = '#E69F00';
+		 MathJax.Extension["TeX/color"].colors["wongLightBlue"] = '#56B4E9';
+		 MathJax.Extension["TeX/color"].colors["wongGreen"] = '#009E73';
+		 MathJax.Extension["TeX/color"].colors["wongYellow"] = '#F0E442';
+		 MathJax.Extension["TeX/color"].colors["wongBlue"] = '#0072B2';
+		 MathJax.Extension["TeX/color"].colors["wongOrange"] = '#D55E00';
+		 MathJax.Extension["TeX/color"].colors["wongPurple"] = '#CC79A7';
+		 
+		 
+		 MathJax.Extension["TeX/color"].colors["IBMBlue"] = '#648FFF';
+		 MathJax.Extension["TeX/color"].colors["IBMPurple"] = '#785EF0';
+		 MathJax.Extension["TeX/color"].colors["IBMMagenta"] = '#DC267F';
+		 MathJax.Extension["TeX/color"].colors["IBMOrange"] = '#FE6100';
+		 MathJax.Extension["TeX/color"].colors["IBMYellow"] = '#FFB000';
+	});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data-maps.html">Data</a></li><li class="breadcrumb-item"><a href="./data-weather-metrics.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Weather Data: Metrics</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Weather Shocks</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Index</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Useful Functions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data-maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Maps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data-weather-download.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Weather Data: Download</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data-weather-missing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Weather Data: Missing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data-weather-metrics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Weather Data: Metrics</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#potential-evapotranspiration" id="toc-potential-evapotranspiration" class="nav-link active" data-scroll-target="#potential-evapotranspiration"><span class="header-section-number">5.1</span> Potential Evapotranspiration</a>
+  <ul class="collapse">
+  <li><a href="#potential-evapotranspiration-1" id="toc-potential-evapotranspiration-1" class="nav-link" data-scroll-target="#potential-evapotranspiration-1"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</a></li>
+  </ul></li>
+  <li><a href="#water-deficit-water-balance" id="toc-water-deficit-water-balance" class="nav-link" data-scroll-target="#water-deficit-water-balance"><span class="header-section-number">5.2</span> Water Deficit (Water Balance)</a></li>
+  <li><a href="#soil-moisture-deficit-index-smdi" id="toc-soil-moisture-deficit-index-smdi" class="nav-link" data-scroll-target="#soil-moisture-deficit-index-smdi"><span class="header-section-number">5.3</span> Soil Moisture Deficit Index (SMDI)</a>
+  <ul class="collapse">
+  <li><a href="#monthly-aggregation" id="toc-monthly-aggregation" class="nav-link" data-scroll-target="#monthly-aggregation"><span class="header-section-number">5.3.1</span> Monthly Aggregation</a></li>
+  <li><a href="#quarterly-aggregation" id="toc-quarterly-aggregation" class="nav-link" data-scroll-target="#quarterly-aggregation"><span class="header-section-number">5.3.2</span> Quarterly Aggregation</a></li>
+  </ul></li>
+  <li><a href="#spei" id="toc-spei" class="nav-link" data-scroll-target="#spei"><span class="header-section-number">5.4</span> SPEI</a></li>
+  <li><a href="#monthly-aggregation-1" id="toc-monthly-aggregation-1" class="nav-link" data-scroll-target="#monthly-aggregation-1"><span class="header-section-number">5.5</span> Monthly Aggregation</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data-maps.html">Data</a></li><li class="breadcrumb-item"><a href="./data-weather-metrics.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Weather Data: Metrics</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-weather-data" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Weather Data: Metrics</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Objectives of this page
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter uses the gridded weather data from <a href="data-weather-missing.html" class="quarto-xref">Chapter&nbsp;<span>4</span></a> to construct various metrics. Please refer to the 27 core ETCCDI Climate Change Indices (<a href="https://etccdi.pacificclimate.org/indices.shtml" class="uri">https://etccdi.pacificclimate.org/indices.shtml</a>) for additional metrics that can be constructed.</p>
+<p>All these metrics will be computed at the grid cell level, on the finest temporal scale. Aggregation at various levels (monthly, quarterly) to match with macroeconomic data will be performed once the indicators are created. Spatial aggregation will not be performed in this chapter.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>corrplot 0.95 loaded</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'scales'
+
+The following object is masked from 'package:purrr':
+
+    discard
+
+The following object is masked from 'package:readr':
+
+    col_factor</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us load the graphs theme functions (See <a href="utils.html" class="quarto-xref">Chapter&nbsp;<span>1</span></a>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../scripts/functions/utils.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us also load the maps for the countries of interest (See <a href="data-maps.html" class="quarto-xref">Chapter&nbsp;<span>2</span></a>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"../Data/Maps/GADM-4.1/maps_level_0.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We focus on the following countries defined in <a href="data-maps.html" class="quarto-xref">Chapter&nbsp;<span>2</span></a>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"../output/tb_countries.rda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lastly, we load the weather data (see <a href="data-weather-missing.html" class="quarto-xref">Chapter&nbsp;<span>4</span></a>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"../data/Weather/CPC/NZL_daily_weather_corrected.rda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We rename the max and min temperature columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_max =</span> tmax,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_min =</span> tmin</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us add the year, month, month name and day of year to the rows of the dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(date),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_name =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        date, <span class="at">abbr =</span> <span class="cn">FALSE</span>, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">locale =</span> <span class="st">"en_US"</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">day_of_year =</span> lubridate<span class="sc">::</span><span class="fu">yday</span>(date)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="potential-evapotranspiration" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="potential-evapotranspiration"><span class="header-section-number">5.1</span> Potential Evapotranspiration</h2>
+<p>We have daily precipitation <span class="math inline">\(P_t\)</span>, minimum temperatures <span class="math inline">\(\text{Tmin}_{t}\)</span> and maximum temperatures <span class="math inline">\(\text{Tmax}_{t}\)</span> at the grid cell level. We are interested in building a soil moisture index which requires to compute the evapotranspiration in a prior step. We follow the approach presented in <span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span> (pp.&nbsp;299–300, <em>Box 6.8: Thornthwaite-Type Monthly Water-Balance Model</em>) and recalled in Appendix S1 of <span class="citation" data-cites="Lutz_2010">Lutz, Wagtendonk, and Franklin (<a href="references.html#ref-Lutz_2010" role="doc-biblioref">2010</a>)</span>.</p>
+<section id="potential-evapotranspiration-1" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="potential-evapotranspiration-1"><span class="header-section-number">5.1.1</span> Potential Evapotranspiration</h3>
+<p>The daily PET (in mm/day) writes (assumed to be from <span class="citation" data-cites="Hamon_1964">Hamon (<a href="references.html#ref-Hamon_1964" role="doc-biblioref">1964</a>)</span>, but the article cannot be found on the Internet ; <span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span> Eq. 6.68 p.&nbsp;294): <span id="eq-pet"><span class="math display">\[
+\text{PET}_t =
+\begin{cases}
+0, &amp; \text{if }\mathrm{Tmean}_t \le 0^\circ\mathrm{C},\\
+29.8 \times \text{DL}_t \times \dfrac{e^\star(\mathrm{Tmean}_t)}{\mathrm{Tmean}_t + 273.2}, &amp; \mathrm{otherwise},
+\end{cases}
+\tag{5.1}\]</span></span></p>
+<p>where <span class="math inline">\(\text{DL}_t\)</span> is the day length of day <span class="math inline">\(t\)</span>, expressed in hours and <span class="math inline">\(e^\star(\cdot)\)</span> gives the saturation vapour pressure.</p>
+<p><span class="math inline">\(\text{Tmean}_t\)</span> is the daily average temperature: <span id="eq-temp-mean"><span class="math display">\[
+\mathrm{Tmean}_t = \frac{\mathrm{Tmin}_t + \mathrm{Tmax}_t}{2}.
+\tag{5.2}\]</span></span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How to compute day length <span class="math inline">\(\text{DL}_t\)</span>?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The methodology to compute day length is given in Appendix D of <span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span>. It writes:</p>
+<p><span id="eq-dl"><span class="math display">\[
+\text{DL}_t = \frac{24}{\pi}\omega_s,
+\tag{5.3}\]</span></span></p>
+<p>where <span class="math inline">\(\omega_s\)</span> (in radians) is the sunrise hour angle. At sunrise and sunset, the solar zenith angle <span class="math inline">\(\theta_z\)</span> equals <span class="math inline">\(90^\circ + h_0\)</span>, where <span class="math inline">\(h_0\)</span> is the apparent altitude of the Sun’s center at sunrise. The sunrise hour angle <span class="math inline">\(\omega_s\)</span> satisfies: <span id="eq-cos-omega"><span class="math display">\[
+\cos(\omega_s) = \dfrac{\sin(h_0) - \sin(\Lambda) \sin(\delta)}{\cos(\Lambda) \cos(\delta)},
+\tag{5.4}\]</span></span> with <span class="math inline">\(\Lambda\)</span> the latitude (in radians), <span class="math inline">\(\delta\)</span> the solar declination (in radians) and <span class="math inline">\(h_0 \approx -0.833^\circ\)</span>.</p>
+<p>The solar declination in radians writes (<span class="citation" data-cites="Campbell_1998">Campbell and Norman (<a href="references.html#ref-Campbell_1998" role="doc-biblioref">1998</a>)</span>): <span id="eq-solar-declination"><span class="math display">\[
+\sin^{-1}(0.39795 \times \cos(0.2163108 + 2 \tan^{-1}(0.9671396 \times \tan(0.0086 \times (\text{doy}_t - 186))) ))
+\tag{5.5}\]</span></span></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How to compute saturation vapour pressure <span class="math inline">\(e^\star(T)\)</span>?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The saturation vapour pressure <span class="math inline">\(e^\star(\cdot)\)</span> (in k pascals) is given, for a temperature <span class="math inline">\(T\)</span> (in °C), by (<span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span>, Box 2.2 p.99): <span id="eq-svp"><span class="math display">\[
+e^\star(T) = 0.611 \exp\left(\frac{17.27\times T}{T + 237.3}\right)
+\tag{5.6}\]</span></span></p>
+</div>
+</div>
+</div>
+<p>Let us compute the daily potential evapotranspiration in R. We define two functions:</p>
+<ul>
+<li><code class="sourceCode r"><span class="fu">decl_angle</span>()</code>, which computes the solar declination in radians for a given day-of-year (the code is from {TrenchR}),</li>
+<li><code class="sourceCode r"><span class="fu">daylength_hours</span>()</code>, which computes the day length (in hours) for a given day-of-year, at a given latitude.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>The <code class="sourceCode r"><span class="fu">decl_angle</span>()</code> function.</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' @title Solar Declination in Radians (from {TrenchR})</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @description The function calculates solar declination, which is the angular </span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#'  distance of the sun north or south of the earth's equator, based on the day </span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#'   of year (Campbell and Norman, 1998)</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param doy Day of year (1-366).</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#' @returns The declination angle (in radians).</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#' @references</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#' Campbell GS, Norman JM (1998). Introduction to environmental biophysics, </span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#'  2nd ed. edition. Springer, New York. ISBN 0387949372.</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>decl_angle <span class="ot">&lt;-</span> <span class="cf">function</span> (doy) {</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  doy <span class="ot">&lt;-</span> (doy <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">365</span> <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  rev_ang <span class="ot">&lt;-</span> <span class="fl">0.2163108</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">atan</span>(<span class="fl">0.9671396</span> <span class="sc">*</span> <span class="fu">tan</span>(<span class="fl">0.0086</span> <span class="sc">*</span> (doy <span class="sc">-</span><span class="dv">186</span>))) </span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">asin</span>(<span class="fl">0.39795</span> <span class="sc">*</span> <span class="fu">cos</span>(rev_ang)) </span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>The <code class="sourceCode r"><span class="fu">daylength_hours</span>()</code> function.</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Day length (in hours)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param lat_deg Latitude (in degrees)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param doy Day of year (1-366).</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>daylength_hours <span class="ot">&lt;-</span> <span class="cf">function</span>(lat_deg, doy) {</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  lambda <span class="ot">&lt;-</span> lat_deg <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  delta <span class="ot">&lt;-</span> <span class="fu">decl_angle</span>(doy)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  h0 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.833</span> <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span> <span class="co"># apparent sunrise altitude</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># General sunrise equation with altitude:</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># cos(ws) = (sin(h0) - sin(lambda) sin(delta)) / (cos(lambda) cos(delta))</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  num <span class="ot">&lt;-</span> <span class="fu">sin</span>(h0) <span class="sc">-</span> <span class="fu">sin</span>(lambda) <span class="sc">*</span> <span class="fu">sin</span>(delta)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  den <span class="ot">&lt;-</span> <span class="fu">cos</span>(lambda) <span class="sc">*</span> <span class="fu">cos</span>(delta)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  cos_ws <span class="ot">&lt;-</span> num <span class="sc">/</span> den</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  cos_ws <span class="ot">&lt;-</span> <span class="fu">pmin</span>(<span class="fu">pmax</span>(cos_ws, <span class="sc">-</span><span class="dv">1</span>), <span class="dv">1</span>) <span class="co"># clamp to [-1,1]</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  ws <span class="ot">&lt;-</span> <span class="fu">acos</span>(cos_ws)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  (<span class="dv">24</span><span class="sc">/</span>pi) <span class="sc">*</span> ws</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_mean =</span> (temp_min <span class="sc">+</span> temp_max) <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">dl_hours  =</span> <span class="fu">daylength_hours</span>(latitude, day_of_year)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cell_id, date) <span class="sc">|&gt;</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Daily PET (Hamon)</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">esat =</span> <span class="fl">0.611</span> <span class="sc">*</span> <span class="fu">exp</span>(<span class="fl">17.27</span> <span class="sc">*</span> temp_mean <span class="sc">/</span> (temp_mean <span class="sc">+</span> <span class="fl">237.3</span>)), <span class="co"># kPa</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET_daily =</span> <span class="fl">29.8</span> <span class="sc">*</span> dl_hours <span class="sc">*</span> (esat <span class="sc">/</span> (temp_mean <span class="sc">+</span> <span class="fl">273.2</span>)), <span class="co"># mm/day</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET_daily =</span> <span class="fu">if_else</span>(temp_mean <span class="sc">&lt;=</span> <span class="dv">0</span>, <span class="dv">0</span>, PET_daily) <span class="co"># Hamon convention</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="water-deficit-water-balance" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="water-deficit-water-balance"><span class="header-section-number">5.2</span> Water Deficit (Water Balance)</h2>
+<p>The equation for soil water balance depends on whether water input (<span class="math inline">\(W_t\)</span>) exceeds potential evapostranspiration (<span class="citation" data-cites="Lutz_2010">Lutz, Wagtendonk, and Franklin (<a href="references.html#ref-Lutz_2010" role="doc-biblioref">2010</a>)</span>):</p>
+<p><span id="eq-soil-water-balance"><span class="math display">\[
+\text{SW}_t = \begin{cases}
+\min \left\{S_\text{max}, (W_t - \text{PET}_t) + \text{SW}_{t-1}\right\},&amp; \text{if } W_t \geq \text{PET}_{t},\\
+\text{SW}_{t-1} - \Delta_{\text{soil},t}, &amp; \text{otherwise},
+\end{cases}
+\tag{5.7}\]</span></span></p>
+<p>where <span class="math inline">\(\Delta_{\text{soil},t}\)</span> is the fraction removed from storage: <span id="eq-delta-soil"><span class="math display">\[
+\Delta_{\text{soil},t} = \text{SW}_{t-1} \times\left( 1 - \exp\left(-\dfrac{\text{PET}_t - W_t}{S_\text{max}}\right)\right),
+\tag{5.8}\]</span></span></p>
+<p><span class="math inline">\(S_{\text{max}}\)</span> is the soil water-holding capacity in the top 200 cm of the soil profile. Ideally, this should be given from recorded values. We do not have this here, so we will use a value of 150mm:</p>
+<blockquote class="blockquote">
+<p>The current NIWA water balance model uses a fixed soil moisture capacity of 150 mm of water, based on a typical loam soil. <a href="https://niwa.co.nz/sites/default/files/NZDI_more_info.pdf" class="uri">https://niwa.co.nz/sites/default/files/NZDI_more_info.pdf</a> (<em>New Zealand Drought Index and Drought Monitor Framework</em>).</p>
+</blockquote>
+<p>The actual evapotranspiration, <span class="math inline">\(\text{AET}_t\)</span> writes: <span class="math display">\[
+\text{AET}_t = \begin{cases}
+\text{PET}_t, &amp; \text{if } W_t \geq \text{PET}_{t},\\
+W_t + \Delta_{\text{soil},t}, &amp; \text{otherwise}.
+\end{cases}
+\]</span></p>
+<p>The deficit writes: <span class="math display">\[
+D_t = \text{PET}_t - \text{AET}_t.
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How to compute water input <span class="math inline">\(W_t\)</span> with daily data?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Daily snowmelt is often estimated using a degree-day approach, which assumes that melt is proportional to the number of degrees by which air temperature exceeds a threshold (typically 0°C). This formulation applies only to the existing snowpack, ensuring that snow deposited on a given day cannot melt immediately.</p>
+<p>Following the standard degree-day formulation (<span class="citation" data-cites="dingman2015physical">Dingman (<a href="references.html#ref-dingman2015physical" role="doc-biblioref">2015</a>)</span>, Eq. 5.71), the daily snowmelt is written as a linear function of air temperature: <span id="eq-snowmelt-dd"><span class="math display">\[
+\text{Melt}_t = \min\left\{\text{DDF} \times \max(\mathrm{Tmean}_t - T_0,\, 0),\, \text{Pack}_{t-1}\right\}
+\tag{5.9}\]</span></span></p>
+<p>where <span class="math inline">\(\text{DDF}\)</span> is the degree-day factor (mm day<span class="math inline">\(^{-1}\)</span>°C<span class="math inline">\(^{-1}\)</span>), typically in the range 2–5 mm day<span class="math inline">\(^{-1}\)</span>°C<span class="math inline">\(^{-1}\)</span> depending on snow properties and surface conditions. The parameter <span class="math inline">\(T_0\)</span> is the threshold temperature for melting (which is always set as 0°C). <span class="math inline">\(\mathrm{Tmean}_t\)</span> is the daily mean air temperature (see <a href="#eq-temp-mean" class="quarto-xref">Equation&nbsp;<span>5.13</span></a>). <span class="math inline">\(\text{Pack}_{t-1}\)</span> is the snow water equivalent remaining from the previous day.</p>
+<p>The snowpack evolves according to the mass balance: <span class="math display">\[
+\text{Pack}_t = \text{Pack}_{t-1} + \text{Snow}_t - \text{Melt}_t.
+\]</span></p>
+<p>The snow pack equation is recursive. We simply set the start value at 0 for the first date of the sequence of values within a cell.</p>
+<p><span class="math inline">\(\text{Snow}_t\)</span> is the amount of snow, which is the amount of precipitation if the average daily temperature is lower or equal to <span class="math inline">\(T_0\)</span>, and 0 otherwise: <span id="eq-snow"><span class="math display">\[
+\text{Snow}_t = \begin{cases}
+P_t, &amp; \text{if } T_{\text{mean}_t} \leq T_0 \\
+0, &amp; \text{otherwise}.
+\end{cases}
+\tag{5.10}\]</span></span></p>
+<p>Conversely, the amount of rain is defined as: <span id="eq-rain"><span class="math display">\[
+\text{Rain}_t = \begin{cases}
+P_t, &amp; \text{if } T_{\text{mean}_t} &gt; T_0 \\
+0, &amp; \text{otherwise}.
+\end{cases}
+\tag{5.11}\]</span></span></p>
+<p>The total water input to the soil becomes: <span class="math display">\[
+W_t = \text{Rain}_t + \text{Melt}_t.
+\]</span></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How to compute water input <span class="math inline">\(W_t\)</span> with monthly data?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Melt Factor and Rain/Snow Partition</strong></p>
+<p>The monthly precipitation can be divided into a rain fraction <span class="math inline">\(\text{Rain}_t\)</span> and a snow fraction <span class="math inline">\(\text{Snow}_t\)</span>. To do so, we define the melt factor <span class="math inline">\(F_t\)</span>: <span id="eq-melt-factor"><span class="math display">\[
+F_t = \begin{cases}
+0, &amp; \text{if }\text{Tmean}_t \leq 0^\circ,\\
+0.167 \times \text{Tmean}_t, &amp; \text{if } 0^\circ &lt;\text{Tmean}_t \leq 6^\circ,\\
+0, &amp; \text{if }\text{Tmean}_t &gt; 6^\circ.
+\end{cases}
+\tag{5.12}\]</span></span></p>
+<p>where <span class="math inline">\(\text{Tmean}_t\)</span> is the daily average temperature: <span id="eq-temp-mean"><span class="math display">\[
+\mathrm{Tmean}_t = \frac{\mathrm{Tmin}_t + \mathrm{Tmax}_t}{2}.
+\tag{5.13}\]</span></span></p>
+<p>The rain and snow fractions can then be computed as follows: <span id="eq-rain-fraction"><span class="math display">\[
+\begin{align}
+\text{Rain}_t &amp; = F_t \times P_t\\
+\text{Snow}_t &amp; = (1 - F_t) \times P_t
+\end{align}
+\tag{5.14}\]</span></span></p>
+<p><strong>Recursive Snowpack and Melt</strong></p>
+<p>The melt factor <span class="math inline">\(F_t\)</span> is also used to define snowmelt <span class="math inline">\(\text{Melt}_t\)</span>: <span id="eq-snow-melt"><span class="math display">\[
+\text{Melt}_t = F_t \times (\text{Snow}_t + \text{Pack}_{t-1}),
+\tag{5.15}\]</span></span></p>
+<p>where snow pack for a given day is given by: <span id="eq-snow-pack"><span class="math display">\[
+\text{Pack}_t = (1 - F_t)^2 \times P_t + (1 - F_t) \times \text{Pack}_{t-1}
+\tag{5.16}\]</span></span></p>
+<p>The snow pack equation is recursive. We simply set the start value at 0 for the first date of the sequence of values within a cell.</p>
+<p>The monthly water input to the soil is obtained as: <span id="eq-water-input"><span class="math display">\[
+W_t = \text{Rain}_t + \text{Melt}_t
+\tag{5.17}\]</span></span></p>
+</div>
+</div>
+</div>
+<p>Let us first compute water deficit <span class="math inline">\(W_t\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">T0 =</span> <span class="dv">0</span>,<span class="co"># freezing temperature</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rain  =</span> <span class="fu">if_else</span>(temp_mean <span class="sc">&gt;</span> T0, precip, <span class="dv">0</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">snow  =</span> <span class="fu">if_else</span>(temp_mean <span class="sc">&lt;=</span> T0, precip, <span class="dv">0</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Degree-day melt from existing pack only</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">DDF =</span> <span class="dv">3</span>, <span class="co"># mm/day/°C</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">pot_melt =</span> <span class="fu">pmax</span>(temp_mean <span class="sc">-</span> T0, <span class="dv">0</span>) <span class="sc">*</span> DDF</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cell_id, date) <span class="sc">|&gt;</span> </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id) <span class="sc">|&gt;</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Daily snowpack recursion and melt</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">pack =</span> {</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>      n <span class="ot">&lt;-</span> <span class="fu">n</span>()</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n); prev <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(n)) {</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>        melt_i <span class="ot">&lt;-</span> <span class="fu">min</span>(pot_melt[i], prev)<span class="co"># melt from previous pack only</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>        out[i] <span class="ot">&lt;-</span> prev <span class="sc">+</span> snow[i] <span class="sc">-</span> melt_i</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        prev <span class="ot">&lt;-</span> out[i]</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>      out</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">melt =</span> <span class="fu">pmin</span>(<span class="fu">lag</span>(pack, <span class="at">default =</span> <span class="dv">0</span>), pot_melt),</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">water_input =</span> rain <span class="sc">+</span> melt</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>DDF, <span class="sc">-</span>T0, <span class="sc">-</span>pot_melt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code if monthly data and not daily</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This code is not evaluated here since we use daily data</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Monthly melt factor and rain/snow split</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">melt_factor =</span> <span class="fu">case_when</span>(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>      temp_mean <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>      temp_mean <span class="sc">&gt;=</span> <span class="dv">6</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>           <span class="sc">~</span> <span class="fl">0.167</span> <span class="sc">*</span> temp_mean</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">rain =</span> melt_factor <span class="sc">*</span> precip,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">snow =</span> (<span class="dv">1</span> <span class="sc">-</span> melt_factor) <span class="sc">*</span> precip</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cell_id, date) <span class="sc">|&gt;</span> </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id) <span class="sc">|&gt;</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Monthly snowpack recursion and melt</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">a =</span> <span class="dv">1</span> <span class="sc">-</span> melt_factor,</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">b =</span> (a<span class="sc">^</span><span class="dv">2</span>) <span class="sc">*</span> precip, <span class="co"># term added each day</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">c =</span> a, <span class="co"># multiplier on previous pack</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">pack =</span> {</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>      init <span class="ot">&lt;-</span> <span class="dv">0</span> <span class="co"># initial PACK for this cell_id</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># pack_t = b_t + c_t * pack_{t-1}</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>      out <span class="ot">&lt;-</span> purrr<span class="sc">:::</span><span class="fu">accumulate2</span>(</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>        b, c,</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">.init =</span> init,</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">.f =</span> <span class="cf">function</span>(bi, ci, prev) bi <span class="sc">+</span> ci <span class="sc">*</span> prev</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">tail</span>(out, <span class="sc">-</span><span class="dv">1</span>)) <span class="co"># drop the initial value</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">pack_lag =</span> <span class="fu">lag</span>(pack, <span class="at">default =</span> <span class="dv">0</span>),</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">melt =</span> melt_factor <span class="sc">*</span> (snow <span class="sc">+</span> pack_lag),</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">water_input =</span> rain <span class="sc">+</span> melt</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>a, <span class="sc">-</span>b, <span class="sc">-</span>c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Then, we can compute soil water balance (<span class="math inline">\(\text{SW}_t\)</span>), actual evapotranspiration (<span class="math inline">\(\text{AET}_t\)</span>) and soil water deficit <span class="math inline">\(D_t\)</span>.</p>
+<p>We define the <code class="sourceCode r"><span class="fu">update_soil_water_deficit</span>()</code> function that computes those values for a subset of observation corresponding to a cell, using the following input variables: <span class="math inline">\(W_t\)</span>, <span class="math inline">\(\text{PET}_t\)</span>, <span class="math inline">\(\text{SW}_{t-1}\)</span> and <span class="math inline">\(S_{\text{max}}\)</span>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>The <code class="sourceCode r"><span class="fu">update_soil_water_deficit</span>()</code> function.</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Compute Soil Water Deficit</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param W Water input to the system (in mm).</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param PET Potential evapotranspiration (in mm).</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param S_prev Soil water balance in previous period (in mm).</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param S_max Soil water-holding capacity in the top 200cm of the soil </span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#'  profile (in mm).</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">#' @returns A list with the following elements:</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co">#'  - `S_new`: soil water balance,</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co">#'  - `AET`: evapotranspiration,</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">#'  - `surplus`: water surplus,</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co">#'  - `deficit`: water deficit</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co">#'  </span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>update_soil_water_deficit <span class="ot">&lt;-</span> <span class="cf">function</span>(W, PET, S_prev, S_max) {</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (W <span class="sc">&gt;=</span> PET) {</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Water-abundant day: recharge first, overflow = surplus</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    S_star <span class="ot">&lt;-</span> (W <span class="sc">-</span> PET) <span class="sc">+</span> S_prev</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># New value for soil water balance</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    S_new <span class="ot">&lt;-</span> <span class="fu">min</span>(S_star, S_max)</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    AET <span class="ot">&lt;-</span> PET <span class="co"># Evapotranspiration</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    surplus <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">0</span>, S_star <span class="sc">-</span> S_max)</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    deficit <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Water-limited day: exponential draw from storage (Dingman/Lutz Eq. 13)</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    D <span class="ot">&lt;-</span> PET <span class="sc">-</span> W <span class="co"># unmet demand by inputs</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    dSOIL <span class="ot">&lt;-</span> S_prev <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span>D <span class="sc">/</span> S_max))  <span class="co"># fraction removed from storage</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># New value for soil water balance</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    S_new <span class="ot">&lt;-</span> S_prev <span class="sc">-</span> dSOIL</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    AET <span class="ot">&lt;-</span> W <span class="sc">+</span> dSOIL <span class="co"># Evapotranspiration</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    surplus <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    deficit <span class="ot">&lt;-</span> PET <span class="sc">-</span> AET</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">S_new =</span> S_new, <span class="co"># Soil water balance</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">AET =</span> AET, <span class="co"># Evapotranspiration</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">surplus =</span> surplus, <span class="co"># Water surplus</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">deficit =</span> deficit <span class="co"># Water deficit</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We use that function on subsets of the dataset where each subset corresponds to a cell.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: this chunk takes about 3 minutes to run.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># It is not evaluated here during compilation.</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"NZL_temprary_water_deficit.rda"</span>)) {</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ideally, we would need to use a value at the cell level.</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  Smax_default <span class="ot">&lt;-</span> <span class="dv">150</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    country_weather_daily <span class="sc">|&gt;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(cell_id, date) <span class="sc">|&gt;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(cell_id) <span class="sc">|&gt;</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Prepare new columns</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">AET =</span> <span class="cn">NA_real_</span>, <span class="co"># Evapostranspiration</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">soil_moisture =</span> <span class="cn">NA_real_</span>, <span class="co"># Water storage</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">soil_surplus =</span> <span class="cn">NA_real_</span>, <span class="co"># Water surplus</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">soil_deficit =</span> <span class="cn">NA_real_</span> <span class="co"># Water deficit</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># For each cell, compute soil water deficit recursively</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_modify</span>(\(tb, key){</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>      n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(tb)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      S  <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> Smax_default</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(n)) {</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        u <span class="ot">&lt;-</span> <span class="fu">update_soil_water_deficit</span>(</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">W =</span> tb<span class="sc">$</span>water_input[i],</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">PET =</span> tb<span class="sc">$</span>PET_daily[i],</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">S_prev =</span> S,</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">S_max =</span> Smax_default</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        tb<span class="sc">$</span>AET[i] <span class="ot">&lt;-</span> u<span class="sc">$</span>AET</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>        tb<span class="sc">$</span>soil_moisture[i] <span class="ot">&lt;-</span> u<span class="sc">$</span>S_new</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>        tb<span class="sc">$</span>soil_surplus[i] <span class="ot">&lt;-</span> u<span class="sc">$</span>surplus</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>        tb<span class="sc">$</span>soil_deficit[i] <span class="ot">&lt;-</span> u<span class="sc">$</span>deficit</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        S <span class="ot">&lt;-</span> u<span class="sc">$</span>S_new</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>      tb</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">save</span>(</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>    country_weather_daily, </span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">file =</span> <span class="st">"NZL_temprary_water_deficit.rda"</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">"NZL_temprary_water_deficit.rda"</span>)</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>country_weather_daily</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,975,097 × 25
+   cell_id longitude latitude country_code date        precip temp_min temp_max
+     &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;date&gt;       &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1       9      166.    -45.8 NZL          1980-01-01 19.5        5.38     18.1
+ 2       9      166.    -45.8 NZL          1980-01-02  6.58      10.7      12.3
+ 3       9      166.    -45.8 NZL          1980-01-03  2.47       9.22     13.6
+ 4       9      166.    -45.8 NZL          1980-01-04  0          6.35     18.1
+ 5       9      166.    -45.8 NZL          1980-01-05  0          6.42     19.2
+ 6       9      166.    -45.8 NZL          1980-01-06  0          8.80     19.1
+ 7       9      166.    -45.8 NZL          1980-01-07  0.0987    12.0      18.2
+ 8       9      166.    -45.8 NZL          1980-01-08  0.105     11.0      14.6
+ 9       9      166.    -45.8 NZL          1980-01-09  0          5.38     16.0
+10       9      166.    -45.8 NZL          1980-01-10  0          7.00     17.8
+# ℹ 2,975,087 more rows
+# ℹ 17 more variables: year &lt;dbl&gt;, month &lt;dbl&gt;, month_name &lt;ord&gt;,
+#   day_of_year &lt;dbl&gt;, temp_mean &lt;dbl&gt;, dl_hours &lt;dbl&gt;, esat &lt;dbl&gt;,
+#   PET_daily &lt;dbl&gt;, rain &lt;dbl&gt;, snow &lt;dbl&gt;, pack &lt;dbl&gt;, melt &lt;dbl&gt;,
+#   water_input &lt;dbl&gt;, AET &lt;dbl&gt;, soil_moisture &lt;dbl&gt;, soil_surplus &lt;dbl&gt;,
+#   soil_deficit &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="soil-moisture-deficit-index-smdi" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="soil-moisture-deficit-index-smdi"><span class="header-section-number">5.3</span> Soil Moisture Deficit Index (SMDI)</h2>
+<p>The Soil Moisture Deficit Index (SMDI, see <span class="citation" data-cites="Narasimhan_2005">Narasimhan and Srinivasan (<a href="references.html#ref-Narasimhan_2005" role="doc-biblioref">2005</a>)</span>), turns daily soil water storage into a weekly drought/wetness index which takes values on <span class="math inline">\([-4,4]\)</span> and which is comparable across locations and seasons. Negative values indicate dry conditions whereas positive values indicate wet conditions.</p>
+<p>Since we have daily observation, we need to compute weekly values for soil moisture. We assign each day to one of 52 fixed 7-day blocks starting on January 1: <span class="math display">\[
+\text{week} = \min\left(\left\lfloor\frac{\text{yday}-1}{7}\right\rfloor + 1,\ 52\right).
+\]</span> Note that we do not use the <code class="sourceCode r"><span class="fu">week</span>()</code> function from {lubridate} to avoid ISO weeks (which can have 53).</p>
+<p>Then, for each grid cell (i), year (y), and week (w), compute the weekly mean available soil water: <span id="eq-weekly-sw"><span class="math display">\[
+\mathrm{SW}_{i,y,w} = \frac{1}{n_{i,y,w}} \sum_{t \in (i,y,w)} \text{SW}_t,
+\tag{5.18}\]</span></span></p>
+<p>where <span class="math inline">\(\text{SW}_t\)</span> is the soil water balance (in mm), previously computed (see <a href="#eq-soil-water-balance" class="quarto-xref">Equation&nbsp;<span>5.7</span></a>).</p>
+<p>We define a function, <code class="sourceCode r"><span class="fu">find_wday</span>()</code> which assigns a fixed 7-day “week” indice (1 to 52) to calendar dates.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Assign fixed 7-day "week" indices (1–52) to calendar dates</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @description</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' Divides each year into 52 fixed 7-day blocks, starting on January 1</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' (block 1 = days 1–7, block 2 = days 8–14, ...</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' Any remaining day(s) beyond day 364 (e.g., Dec 31 in common years,</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">#' or Dec 30–31 in leap years) are assigned to week 52.</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param x A `Date` vector.</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">#' @returns</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co">#' An integer vector of the same length as `x`, giving week indices in `1:52`.</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>find_wday <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pmin</span>(((<span class="fu">yday</span>(x) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%/%</span> <span class="dv">7</span>) <span class="sc">+</span> <span class="dv">1</span>, <span class="dv">52</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find_wday</span>(<span class="fu">c</span>(<span class="fu">make_date</span>(<span class="dv">2020</span>,<span class="dv">12</span>,<span class="dv">31</span>), <span class="fu">make_date</span>(<span class="dv">2021</span>,<span class="dv">01</span>,<span class="dv">01</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 52  1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First assign each day to one of the 52 weeks</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># week = lubridate::week(date) # includes 53...</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">week =</span> <span class="fu">find_wday</span>(date)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Then compute the average availabe soil water at the cell level</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>sw_weekly <span class="ot">&lt;-</span> </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, year, week) <span class="sc">|&gt;</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">SW =</span> <span class="fu">mean</span>(soil_moisture, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The long-term weekly statistics at the cell level then need to be computed:</p>
+<ul>
+<li><span class="math inline">\(\text{MSW}_{i,w}\)</span>: the median of <span class="math inline">\(\text{SW}_{i,y,w}\)</span> over a long period (the entire sample, here),</li>
+<li><span class="math inline">\(\text{SW}_{\text{min},i,w}\)</span>: the min of <span class="math inline">\(\text{SW}_{i,y,w}\)</span> over the same long period.</li>
+<li><span class="math inline">\(\text{SW}_{\text{max},i,w}\)</span>: the max of <span class="math inline">\(\text{SW}_{i,y,w}\)</span> over the same long period.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Long-term weekly statistics</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>sw_lt <span class="ot">&lt;-</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  sw_weekly <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, week) <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">MSW =</span> <span class="fu">median</span>(SW, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">SW_min =</span> <span class="fu">min</span>(SW, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">SW_max =</span> <span class="fu">max</span>(SW, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The weekly soil-water anomaly are then computed, in percent. For each (cell, year, week), a piecewise, range-normalized anomaly is computed as follows: <span id="eq-soil-water-anomaly"><span class="math display">\[
+\text{SD}_{i,y,w} =
+\begin{cases}
+100 \dfrac{\text{SW}_{i,y,w} - \text{MSW}_{i,w}}{\text{MSW}_{i,w}-\text{SW}_{\min,i,w}}, &amp; \text{if } \text{SW}_{i,y,w} \le \text{MSW}_{i,w},\\
+100 \dfrac{\text{SW}_{i,y,w} - \text{MSW}_{i,w}}{\text{SW}_{\max,i,w}-\mathrm{MSW}_{i,w}}, &amp; \text{otherwise}
+\end{cases}
+\tag{5.19}\]</span></span></p>
+<p>Weekly soil water anomalies <span class="math inline">\(\text{SD}_{i,y,w}\)</span> will be negative when they are drier than the median for that week, positive when wetter, and naturally scaled by the local weekly climatological range.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Soil water deficit (%)</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>sw_anom <span class="ot">&lt;-</span> </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  sw_weekly <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(sw_lt, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"cell_id"</span>, <span class="st">"week"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD =</span> <span class="fu">if_else</span>(</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>      SW <span class="sc">&lt;=</span> MSW,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>      <span class="dv">100</span> <span class="sc">*</span> (SW <span class="sc">-</span> MSW) <span class="sc">/</span> <span class="fu">pmax</span>(MSW <span class="sc">-</span> SW_min, <span class="fl">1e-9</span>),</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>      <span class="dv">100</span> <span class="sc">*</span> (SW <span class="sc">-</span> MSW) <span class="sc">/</span> <span class="fu">pmax</span>(SW_max <span class="sc">-</span> MSW, <span class="fl">1e-9</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You may have notice that in the previous code, the denominator is ‘protected’ with a tiny value (<span class="math inline">\(10^{-9}\)</span>) to avoid division by zero in flat climates.</p>
+<p>The last step consists in computing the SMDI in a recursive manner: the SMDI carries persistence via a first-order recursion within each calendar year: <span id="eq-smdi"><span class="math display">\[
+\begin{align*}
+\text{SMDI}_{i,y,1} &amp; = \frac{\text{SD}_{i,y,1}}{50},\\
+\text{SMDI}_{i,y,w} &amp; = 0.5,\text{SMDI}_{i,y,w-1} + \frac{\text{SD}_{i,y,w}}{50}\quad (w\ge 2).
+\end{align*}
+\tag{5.20}\]</span></span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SMDI computed recursively, by cell.</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>smdi_weekly <span class="ot">&lt;-</span> </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  sw_anom <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(cell_id, year, week) <span class="sc">|&gt;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, year) <span class="sc">|&gt;</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_modify</span>(\(tb, key) {</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(tb)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    smdi <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(n)) {</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span> <span class="sc">||</span> <span class="fu">is.na</span>(smdi[i<span class="dv">-1</span>])) {</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Initial value</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        smdi[i] <span class="ot">&lt;-</span> tb<span class="sc">$</span>SD[i] <span class="sc">/</span> <span class="dv">50</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>        smdi[i] <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> smdi[i<span class="dv">-1</span>] <span class="sc">+</span> tb<span class="sc">$</span>SD[i] <span class="sc">/</span> <span class="dv">50</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    tb<span class="sc">$</span>SMDI <span class="ot">&lt;-</span> smdi</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    tb</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  }) <span class="sc">|&gt;</span></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us have a look at the values for a cell:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a> <span class="at">data =</span> smdi_weekly <span class="sc">|&gt;</span> <span class="fu">filter</span>(cell_id <span class="sc">==</span> <span class="dv">19</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">x =</span> year <span class="sc">+</span> week<span class="sc">/</span><span class="dv">52</span>),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a> <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> SMDI)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-example-smdi-19" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-example-smdi-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.1: SMDI for a cell in New Zealand. Weekly values range from -4 to +4 indicating very dry to very wet conditions.
+</figcaption>
+<div aria-describedby="fig-example-smdi-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data-weather-metrics_files/figure-html/fig-example-smdi-19-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<section id="monthly-aggregation" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="monthly-aggregation"><span class="header-section-number">5.3.1</span> Monthly Aggregation</h3>
+<p>The SMDI values are computed on a weekly basis (52 fixed 7-day blocks per year). To align with standard reporting periods of macroeconomic data, we can aggregate these values to the monthly scale. Because some 7-day weeks span two months, we need to ensure that each month receives only the appropriate share of each week.</p>
+<p>We proceed as follows:</p>
+<ol type="1">
+<li><p>We build a monthly calendar of overlaps. For every combination of year and month present in the data, we compute how many days of each fixed 7-day week fall within that month. This gives us a set of weights (<span class="math inline">\(w^{(m)}_{w}\)</span>) that indicate the fraction of the month covered by each week. The weights for a given month always sum to 1.</p></li>
+<li><p>We compute weighted monthly SMDI values. We join the weights from the previous step with the weekly SMDI observations and compute, for each grid cell, year, and month, a weighted mean of weekly SMDI values: <span class="math display">\[
+\mathrm{SMDI}_{m} = \frac{\sum_{w} \mathrm{SMDI}_{w} \times w^{(m)}_{w}}{\sum_{w} w^{(m)}_{w}},
+  \]</span> where (<span class="math inline">\(w^{(m)}_{w}\)</span>) is the proportion of the month accounted for by week (w).</p></li>
+</ol>
+<p>We define a function, <code class="sourceCode r"><span class="fu">get_month_week_cal</span>()</code>, to get a monthly calendar of overlaps. Note that it relies on the <code class="sourceCode r"><span class="fu">find_wday</span>()</code> function previously defined.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Calendar of fixed 7-day "weeks" (1--52) overlapped with a given month</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @description</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' Builds the 52 fixed 7-day blocks for a given year</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' (block 1 starts on Jan 1, block k starts on Jan 1 + 7*(k-1) days),</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' computes each block's overlap (in days) with the specified month,</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co">#' and returns per-block weights equal to overlap / days-in-month.' </span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param year Year (numeric).</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param month Month (numeric).</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co">#' @returns</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="co">#' A tibble with one row per overlapping block and columns:</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `year`: the requested year,</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `month`: the requested month,</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `week`: fixed 7-day block index in 1...52,</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `weight_ndays`: overlap days over days in the month.</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>get_month_week_cal <span class="ot">&lt;-</span> <span class="cf">function</span>(year, month) {</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  m_start <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">make_date</span>(year, month, <span class="dv">1</span>)</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  m_end <span class="ot">&lt;-</span> (m_start <span class="sc">%m+%</span> <span class="fu">months</span>(<span class="dv">1</span>)) <span class="sc">-</span> lubridate<span class="sc">::</span><span class="fu">days</span>(<span class="dv">1</span>)</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># days in the month</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(lubridate<span class="sc">::</span><span class="fu">ymd</span>(m_start), lubridate<span class="sc">::</span><span class="fu">ymd</span>(m_end), <span class="at">by =</span> <span class="st">"day"</span>)</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  weeks <span class="ot">&lt;-</span> <span class="fu">sapply</span>(dates, find_wday)</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>  ndays_weeks <span class="ot">&lt;-</span> <span class="fu">tapply</span>(weeks, weeks, length)</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">week =</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(ndays_weeks)),</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb_days =</span> <span class="fu">as.integer</span>(ndays_weeks),</span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">weight_ndays =</span> nb_days <span class="sc">/</span> <span class="fu">sum</span>(nb_days)</span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">year =</span> year,</span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">month =</span> month,</span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">.before =</span> <span class="dv">1</span>L</span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_month_week_cal</span>(<span class="dv">2020</span>, <span class="dv">12</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+   year month  week nb_days weight_ndays
+  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;   &lt;int&gt;        &lt;dbl&gt;
+1  2020    12    48       1       0.0323
+2  2020    12    49       7       0.226 
+3  2020    12    50       7       0.226 
+4  2020    12    51       7       0.226 
+5  2020    12    52       9       0.290 </code></pre>
+</div>
+</div>
+<p>The years in the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(smdi_weekly<span class="sc">$</span>year))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We get the calendar of months for monthly aggregations by applying the <code class="sourceCode r"><span class="fu">get_month_week_cal</span>()</code> function to all the (year, month) covering the sample period:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>months_cal <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">crossing</span>(<span class="at">year =</span> years, <span class="at">month =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pmap</span>(\(year, month) <span class="fu">get_month_week_cal</span>(year, month)) <span class="sc">|&gt;</span> </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list_rbind</span>()</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>months_cal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,778 × 5
+    year month  week nb_days weight_ndays
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;        &lt;dbl&gt;
+ 1  1980     1     1       7       0.226 
+ 2  1980     1     2       7       0.226 
+ 3  1980     1     3       7       0.226 
+ 4  1980     1     4       7       0.226 
+ 5  1980     1     5       3       0.0968
+ 6  1980     2     5       4       0.138 
+ 7  1980     2     6       7       0.241 
+ 8  1980     2     7       7       0.241 
+ 9  1980     2     8       7       0.241 
+10  1980     2     9       4       0.138 
+# ℹ 2,768 more rows</code></pre>
+</div>
+</div>
+<p>We then proceed to the second step, where we compute the monthly aggregated values for SMDI:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>smdi_monthly <span class="ot">&lt;-</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  smdi_weekly <span class="sc">|&gt;</span> </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    months_cal, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"week"</span>),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">relationship =</span> <span class="st">"many-to-many"</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, year, month) <span class="sc">|&gt;</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If any missing values in SMDI will lead to NAs</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">SMDI_month =</span> <span class="fu">weighted.mean</span>(SMDI, <span class="at">w =</span> weight_ndays),</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us have a look at the values for a cell:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> smdi_monthly <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> month <span class="sc">/</span> <span class="dv">12</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(cell_id <span class="sc">==</span> <span class="dv">19</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI_month)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-example-smdi-monthly-19" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-example-smdi-monthly-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.2: Monthly SMDI values for a cell in New Zealand. Weekly values range from -4 to +4 indicating very dry to very wet conditions.
+</figcaption>
+<div aria-describedby="fig-example-smdi-monthly-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data-weather-metrics_files/figure-html/fig-example-smdi-monthly-19-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="quarterly-aggregation" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="quarterly-aggregation"><span class="header-section-number">5.3.2</span> Quarterly Aggregation</h3>
+<p>We may want to aggregate the SMDI values at the quarterly level (Q1–Q4). We follow the same logic as for monthly aggregation, adapting it to quarters:</p>
+<ol type="1">
+<li><p>We first build a quarterly calendar of overlaps. For each year and quarter, we determine how many days of each 7-day week fall within the quarter. This yields a set of weights (<span class="math inline">\(w^{(q)}_w\)</span>) expressing the fraction of the quarter represented by each week. The weights for a given quarter always sum to 1.</p></li>
+<li><p>We then compute weighted quarterly SMDI values. Using these weights, we aggregate the weekly SMDI values within each quarter by taking a weighted average, where each week’s contribution is proportional to the number of days it contributes to that quarter: <span class="math display">\[
+\mathrm{SMDI}_{q} = \frac{\sum_{w} \mathrm{SMDI}_{w} \times w^{(q)}_{w}}{\sum_{w} w^{(q)}_{w}},
+\]</span> where (<span class="math inline">\(w^{(q)}_{w}\)</span>) denotes the proportion of the quarter accounted for by week (w).</p></li>
+</ol>
+<p>The <code class="sourceCode r"><span class="fu">get_quarter_week_cal</span>()</code> function creates the quarterly calendar of overlaps. Again, note that it relies on the <code class="sourceCode r"><span class="fu">find_wday</span>()</code> function previously defined.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' Calendar weights for fixed 7-day "weeks" (1–52) within a given quarter</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @description</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' For a given `year` and `quarter`, this function computes the number of days</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' from each fixed 7-day block (weeks 1–52, defined from January 1 in 7-day</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' increments) that fall within that quarter, along with their normalized</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">#' weights. Any remaining days beyond day 364 (e.g., Dec 31 in common years,</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co">#' or Dec 30–31 in leap years) are assigned to week 52.</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param year Year (numeric).</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param quarter Quarter (numeric).</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">#' @returns</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">#' A tibble with one row per overlapping block and columns:</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `year`: the requested year,</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `quarter`: the requested quarter,</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `week`: fixed 7-day block index in 1...52,</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">#' - `weight_ndays`: overlap days over days in the quarter.</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">#' </span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>get_quarter_week_cal <span class="ot">&lt;-</span> <span class="cf">function</span>(year, quarter) {</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>  q_start <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">make_date</span>(year, (quarter <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>  q_end <span class="ot">&lt;-</span> (q_start <span class="sc">%m+%</span> <span class="fu">months</span>(<span class="dv">3</span>)) <span class="sc">-</span> lubridate<span class="sc">::</span><span class="fu">days</span>(<span class="dv">1</span>)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>  dates <span class="ot">&lt;-</span> <span class="fu">seq</span>(q_start, q_end, <span class="at">by =</span> <span class="st">"day"</span>)</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>  weeks <span class="ot">&lt;-</span> <span class="fu">find_wday</span>(dates)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>  ndays_quarter <span class="ot">&lt;-</span> <span class="fu">tapply</span>(weeks, weeks, length)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">week =</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(ndays_quarter)),</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">nb_days =</span> <span class="fu">as.integer</span>(ndays_quarter),</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">weight_ndays =</span> nb_days <span class="sc">/</span> <span class="fu">sum</span>(nb_days)</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">year =</span> year,</span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">quarter =</span> quarter,</span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">.before =</span> <span class="dv">1</span>L</span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The calendar of months for monthly aggregations:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>quarters_cal <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">crossing</span>(<span class="at">year =</span> years, <span class="at">quarter =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pmap</span>(\(year, quarter) <span class="fu">get_quarter_week_cal</span>(year, quarter)) <span class="sc">|&gt;</span> </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list_rbind</span>()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>quarters_cal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,418 × 5
+    year quarter  week nb_days weight_ndays
+   &lt;dbl&gt;   &lt;int&gt; &lt;int&gt;   &lt;int&gt;        &lt;dbl&gt;
+ 1  1980       1     1       7       0.0769
+ 2  1980       1     2       7       0.0769
+ 3  1980       1     3       7       0.0769
+ 4  1980       1     4       7       0.0769
+ 5  1980       1     5       7       0.0769
+ 6  1980       1     6       7       0.0769
+ 7  1980       1     7       7       0.0769
+ 8  1980       1     8       7       0.0769
+ 9  1980       1     9       7       0.0769
+10  1980       1    10       7       0.0769
+# ℹ 2,408 more rows</code></pre>
+</div>
+</div>
+<p>We then proceed to the second step, where we compute the quarterly aggregated values for SMDI:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>smdi_quarterly <span class="ot">&lt;-</span> </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  smdi_weekly <span class="sc">|&gt;</span> </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    quarters_cal, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"week"</span>),</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">relationship =</span> <span class="st">"many-to-many"</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cell_id, year, quarter) <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If any missing values in SMDI will lead to NAs</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">SMDI_quarter =</span> <span class="fu">weighted.mean</span>(SMDI, <span class="at">w =</span> weight_ndays),</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us have a look at the values for a cell:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> smdi_quarterly <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> quarter <span class="sc">/</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(cell_id <span class="sc">==</span> <span class="dv">19</span>),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI_quarter)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-example-smdi-quarterly-19" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-example-smdi-quarterly-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.3: Quarterly SMDI values for a cell in New Zealand. Quarterly values range from -4 to +4 indicating very dry to very wet conditions.
+</figcaption>
+<div aria-describedby="fig-example-smdi-quarterly-19-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="data-weather-metrics_files/figure-html/fig-example-smdi-quarterly-19-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="spei" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="spei"><span class="header-section-number">5.4</span> SPEI</h2>
+</section>
+<section id="monthly-aggregation-1" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="monthly-aggregation-1"><span class="header-section-number">5.5</span> Monthly Aggregation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>country_weather_monthly <span class="ot">&lt;-</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    cell_id, longitude, latitude, country_code, </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    year, month, month_name</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">precip =</span> <span class="fu">sum</span>(precip, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_min =</span> <span class="fu">mean</span>(temp_min, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_max =</span> <span class="fu">mean</span>(temp_max, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">temp_mean =</span> <span class="fu">mean</span>(temp_mean,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">PET =</span> <span class="fu">sum</span>(PET_daily, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="co"># mm/month</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Campbell_1998" class="csl-entry" role="listitem">
+Campbell, Gaylon S., and John M. Norman. 1998. <span>“Introduction.”</span> In <em>An Introduction to Environmental Biophysics</em>, 1–13. Springer New York. <a href="https://doi.org/10.1007/978-1-4612-1626-1_1">https://doi.org/10.1007/978-1-4612-1626-1_1</a>.
+</div>
+<div id="ref-dingman2015physical" class="csl-entry" role="listitem">
+Dingman, S. Lawrence. 2015. <em>Physical Hydrology</em>. Waveland press.
+</div>
+<div id="ref-Hamon_1964" class="csl-entry" role="listitem">
+Hamon, W. R. 1964. <span>“Computation of Direct Runoff Amounts from Storm Rainfall”</span> 63: 52–62.
+</div>
+<div id="ref-Lutz_2010" class="csl-entry" role="listitem">
+Lutz, James A., Jan W. van Wagtendonk, and Jerry F. Franklin. 2010. <span>“Climatic Water Deficit, Tree Species Ranges, and Climate Change in Yosemite National Park.”</span> <em>Journal of Biogeography</em> 37 (5): 936–50. <a href="https://doi.org/10.1111/j.1365-2699.2009.02268.x">https://doi.org/10.1111/j.1365-2699.2009.02268.x</a>.
+</div>
+<div id="ref-Narasimhan_2005" class="csl-entry" role="listitem">
+Narasimhan, B., and R. Srinivasan. 2005. <span>“Development and Evaluation of Soil Moisture Deficit Index (SMDI) and Evapotranspiration Deficit Index (ETDI) for Agricultural Drought Monitoring.”</span> <em>Agricultural and Forest Meteorology</em> 133 (1–4): 69–88. <a href="https://doi.org/10.1016/j.agrformet.2005.07.012">https://doi.org/10.1016/j.agrformet.2005.07.012</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./data-weather-missing.html" class="pagination-link" aria-label="Weather Data: Missing Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Weather Data: Missing Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
