@@ -59,3 +59,6 @@ data/Maps/GADM-4.1/New-Zealand/*.zip
 data/Weather/CPC/grid_daily_precip/*
 data/Weather/CPC/grid_daily_tmax/*
 data/Weather/CPC/grid_daily_tmin/*
+
+# Replication codes unzip
+paper/codes_weather_shocks/*
