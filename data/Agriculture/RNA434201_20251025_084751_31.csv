@@ -1,0 +1,63 @@
+"Gross domestic product, by region and industry (Annual-Mar)","","","","","","","","","","","","","","","","","",""
+"","Gross Domestic Product - production measure","","","","","","","","","","","","","","","","",""
+" ","Northland","Auckland","Waikato","Bay of Plenty","Gisborne","Hawke's Bay","Taranaki","Manawatu-Whanganui","Wellington","West Coast","Canterbury","Otago","Southland","Marlborough","Tasman/Nelson","Total North Island","Total South Island","New Zealand"
+" ","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture","Agriculture"
+2000,327,182,998,412,99,357,459,486,143,73,731,329,375,90,105,3462,1703,5165
+2001,459,216,1482,525,118,489,615,639,194,110,984,464,570,117,144,4735,2389,7124
+2002,510,235,1681,597,140,530,723,726,218,127,1079,502,679,134,167,5360,2688,8048
+2003,334,170,1083,463,117,472,423,492,144,79,889,371,469,99,146,3698,2053,5750
+2004,372,175,1185,521,123,498,498,501,158,134,903,365,486,132,200,4031,2220,6251
+2005,356,165,1201,500,114,479,478,560,158,126,933,371,485,106,187,4012,2207,6218
+2006,276,147,1014,447,123,407,394,482,135,107,797,303,428,101,183,3426,1918,5344
+2007,336,165,1207,503,137,438,456,510,146,128,934,351,508,176,186,3899,2282,6182
+2008,512,246,1951,718,134,410,775,683,189,221,1439,489,810,192,202,5618,3351,8969
+2009,368,178,1360,535,138,479,529,563,172,140,1190,414,672,222,173,4322,2811,7134
+2010,414,201,1696,628,137,485,668,683,195,185,1585,511,894,188,183,5108,3547,8654
+2011,538,246,2186,745,162,583,853,889,225,221,1865,663,1107,166,192,6428,4215,10643
+2012,505,232,2036,738,186,644,789,899,233,211,1939,716,1097,203,195,6262,4360,10622
+2013,432,217,1792,681,157,533,666,747,203,173,1698,551,906,186,186,5429,3701,9130
+2014,628,316,2713,848,178,651,992,1022,262,280,2510,782,1368,291,271,7610,5501,13111
+2015,404,213,1386,585,175,653,499,684,176,140,1495,555,741,313,221,4774,3466,8240
+2016,409,215,1228,714,179,674,426,653,167,114,1366,480,569,260,237,4665,3026,7691
+2017,584,309,1939,1046,198,714,739,873,211,216,2090,633,908,359,289,6613,4495,11108
+2018,654,343,2159,1126,227,833,826,1035,243,244,2423,770,1084,342,300,7447,5163,12610
+2019,605,333,2098,1232,220,903,818,1036,252,235,2426,764,1090,353,289,7498,5157,12655
+2020,663,363,2324,1366,233,939,924,1105,276,263,2718,810,1201,362,318,8194,5672,13866
+2021,675,360,2429,1530,221,859,985,1060,266,273,2878,808,1255,393,327,8384,5934,14317
+2022,776,377,2870,1645,248,952,1143,1239,295,315,3219,937,1499,347,314,9544,6632,16176
+2023,646,302,2159,1304,215,847,848,1014,246,240,2670,789,1251,452,269,7581,5671,13252
+2024,"..","..","..","..","..","..","..","..","..","..","..","..","..","..","..","..","..",".."
+"Table information:"
+"Units:"
+"$, Magnitude = Millions"
+""
+"Footnotes:"
+"Tasman and Nelson regions have been combined to maintain data quality standards."
+"Chatham Islands has been combined with Canterbury to maintain data quality standards."
+"Figures may not sum to totals due to rounding."
+"Some ANZSIC 2006 industries have been combined to maintain data quality standards."
+"The Accommodation and Food Services (RNAA.SG01NAC34B01__GH2) series have been discontinued and replaced by Accommodation (RNAA.SG01NAC34B01__GH3) and Food and Beverage Services (RNAA.SG01NAC34B01__GH4), for all years from 2000."
+" "
+"Symbols:"
+".. figure not available"
+"C: Confidential"
+"E: Early Estimate"
+"P: Provisional"
+"R: Revised"
+"S: Suppressed"
+""
+"Status flags are not displayed"
+""
+"Table reference: "
+"RNA001AA"
+""
+"Last updated:"
+"25 March 2025 10:45am"
+""
+"Source: Statistics New Zealand"
+"Contact: Information Centre"
+"Telephone: 0508 525 525"
+"Email:info@stats.govt.nz"
+""
+""
+""

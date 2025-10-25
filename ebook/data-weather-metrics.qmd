@@ -14,7 +14,7 @@ All these metrics will be computed at the grid cell level, on the finest tempora
 
 ```{r load-required-packages}
 library(tidyverse)
-library(corrplot)
+library(sf)
 library(scales)
 library(zoo)
 library(lubridate)
@@ -30,6 +30,7 @@ source("../scripts/functions/utils.R")
 Let us also load the maps for the countries of interest (See [Chapter -@sec-countries-maps])
 ```{r load-maps_level_0}
 load("../Data/Maps/GADM-4.1/maps_level_0.RData")
+load("../data/Maps/GADM-4.1/maps_level_1.RData")
 ```
 
 We focus on the following countries defined in [Chapter -@sec-countries-maps]:
@@ -1263,3 +1264,726 @@ country_weather_quarterly <-
 
 
 ## Spatial Aggregation
+
+We now have monthly and quarterly weather observations computed at the grid cell level. Our next step is to aggregate these data spatially to match the level of available macroeconomic indicators, which are typically reported at the regional or national scale.
+
+
+### Regional Level
+
+For the regional aggregation, we compute a weighted average of the cell-level values, using as weights the proportion of each cell's area lying within the corresponding region.
+
+We need the maps of the country of interest. We use the `st_shift_longitude()` here because New Zealand's boundaries have values straddling 180 degrees.
+```{r define-maps_level_0_NZ}
+maps_level_0_NZ <- st_shift_longitude(maps_level_0$NZL)
+maps_level_1_NZ <- st_shift_longitude(maps_level_1$NZL)
+```
+
+The coordinates of the cells were obtained in [Chapter -@sec-weather-data-missing].
+```{r load-cells}
+load("../data/Weather/CPC/NZL_cells.RData")
+cells_sf <- st_as_sf(cells)
+```
+
+We compute the intersection of each cell with each region:
+```{r define-inter}
+inter <- st_intersection(
+  maps_level_1_NZ |> select(GID_1, region = NAME_1), 
+  cells_sf |> select(cell_id, longitude, latitude)
+)
+```
+
+The proportion of each cell's area lying within a region is used as weight for the regional aggregation. Let us compute the weights.
+```{r define-inter_tbl}
+inter_tbl <- inter |>
+  mutate(
+    area_km2 = as.numeric(units::set_units(st_area(geometry), km^2))
+  ) |>
+  st_drop_geometry() |>
+  arrange(region, cell_id) |> 
+  as_tibble() |> 
+  group_by(region) |> 
+  mutate(w_cell_region = area_km2 / sum(area_km2)) |> 
+  ungroup()
+```
+
+:::{.callout-note}
+
+Note that a cell can lie in multiple regions. The weight may probably differ.
+
+```{r show-multiple-cells-in-region}
+inter_tbl |> count(cell_id) |> arrange(desc(n))
+
+# Example of a cell in multiple regions:
+inter_tbl |> filter(
+  cell_id == inter_tbl |> count(cell_id) |> 
+    arrange(desc(n)) |> pull("cell_id") |> pluck(1)
+)
+```
+
+:::
+
+
+We will compute the weighted mean of the following weather variables (this needs to be updated if more weather metrics are computed):
+```{r define-weather_vars}
+# The names of the SPEI variables
+spei_names <- colnames(country_weather_monthly)[str_detect(colnames(country_weather_monthly), "^SPEI_")]
+
+# All the weather variables previously defined:
+weather_vars <- c(
+  "precip", 
+  "temp_min", "temp_max", "temp_mean",
+  "SMDI_month", 
+  spei_names
+)
+```
+
+We merge the regional weights with the monthly weather data available at the cell level. During this join, cells intersecting multiple regions appear multiple times in the resulting dataset (once per overlapping region) with their contribution differentiated by the corresponding intersection weight.
+```{r define-region_weather_monthly}
+region_weather_monthly <- 
+  country_weather_monthly |> 
+  left_join(
+    inter_tbl |> select(GID_1, region, cell_id, w_cell_region),
+    by = c("cell_id"),
+    relationship ="many-to-many" # a cell can be in multiple regions
+  ) |> 
+  group_by(GID_1, region, country_code, year, month, month_name) |> 
+  summarise(
+    across(
+      all_of(weather_vars),
+      ~ weighted.mean(.x, w = w_cell_region)
+    ),
+    .groups = "drop"
+  )
+```
+
+
+#### Maps
+
+We visualize the aggregated weather by plotting choropleth maps for year 2013. For each month (12 panels), we produce:
+
+1. Maps at the regional level using area-weighted regional means,
+2. Maps at the cell level using cell means.
+
+To ensure comparability across months, we construct one map layer per month and then bind them into a single `sf` object for faceting.
+```{r define-data_map}
+# For region layers
+data_map <- vector(mode = "list", length = 12)
+for (i in 1:12) {
+  data_map[[i]] <- 
+    maps_level_1_NZ |> 
+    inner_join(
+      region_weather_monthly |> filter(year == 2013, month == !!i),
+      by = c("GID_1", "NAME_1" = "region")
+    )
+}
+data_map <- list_rbind(data_map) |> st_as_sf()
+
+# For cell layers
+data_map_cells <- vector(mode = "list", length = 12)
+for (i in 1:12) {
+  data_map_cells[[i]] <- 
+    cells_sf |> 
+    inner_join(
+      country_weather_monthly |> filter(year == 2013, month == !!i),
+      by = c("cell_id", "longitude", "latitude")
+    )
+}
+data_map_cells <- list_rbind(data_map_cells) |> st_as_sf()
+```
+
+To ensure visual comparability across maps, we use a common color scale for all temperature variables. The code below computes the global minimum and maximum values across both minimum and maximum temperatures and defines a shared color palette that will be applied to every temperature map.
+
+```{r define-cols}
+vmin <- min(data_map$temp_min, data_map$temp_max, na.rm = TRUE)
+vmax <- max(data_map$temp_min, data_map$temp_max, na.rm = TRUE)
+cols <- viridis::magma(6) |> rev()
+cols <- cols[-length(cols)]
+```
+
+For the Soil Moisture Deficit Index, we define a diverging palette, with warm colors indicating dry conditions and cool colors indicating wet conditions. Neutral shades around white correspond to near-normal moisture.
+```{r define-cols_smdi}
+cols_smdi <- c(
+  "#67001f", "#b2182b", "#d6604d", "#f4a582", # dry shades
+  "#f7f7f7",
+  "#92c5de", "#4393c3", "#2166ac", "#053061" # wet shades
+)
+```
+
+
+For the maps displaying cell-level data, we ensure spatial alignment with the regional maps by applying the same bounding box.
+```{r define-bb}
+bb <- sf::st_bbox(data_map)
+```
+
+
+
+:::{.panel-tabset}
+
+##### Precipitation
+
+::::{.panel-tabset}
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-precip-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = precip)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradient2(
+    "Precip. (mm)", low = "red", high = "#005A8B", midpoint = 0, mid = "white"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-precip-cells
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = precip)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradient2(
+    "Precip. (mm)", low = "red", high = "#005A8B", midpoint = 0, mid = "white"
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::::
+
+##### Temp Mean
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmean-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = temp_mean)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Mean (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmean-cells
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = temp_mean)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Mean (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+
+
+::::
+
+##### Temp Min
+
+::::{.panel-tabset}
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmin-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = temp_min)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Min (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmin-cells
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = temp_min)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Min (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+
+::::
+
+##### Temp Max
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmax-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = temp_max)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Max (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-tmax-cells
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = temp_max)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "Temperature Max (°C)",
+    colours = cols,
+    limits = c(vmin, vmax),
+    oob = scales::squish
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+
+::::
+
+
+##### SMDI
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-smdi-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = SMDI_month)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "SPEI-3",
+    colours = cols_smdi,
+    limits = c(-4, 4),
+    oob = scales::squish
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-smdi-cells
+
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = SMDI_month)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "SPEI-3",
+    colours = cols_smdi,
+    limits = c(-4, 4),
+    oob = scales::squish
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+::::
+
+##### SPEI 3
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-spei3-regions
+ggplot() +
+  geom_sf(
+    data = data_map,
+    mapping = aes(fill = SPEI_3)
+  ) +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "SMDI",
+    colours = cols_smdi,
+    limits = c(-4, 4),
+    oob = scales::squish
+  ) +
+  theme(legend.position = "bottom")
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Monthly averages in 2013
+#| label: fig-map-spei-cells
+
+ggplot() +
+  geom_sf(
+    data = data_map_cells,
+    mapping = aes(fill = SPEI_3)
+  ) +
+  geom_sf(data = maps_level_1_NZ, fill = "NA") +
+  facet_wrap(~ month_name, ncol = 6) +
+  theme_map_paper() +
+  scale_fill_gradientn(
+    name = "SMDI",
+    colours = cols_smdi,
+    limits = c(-4, 4),
+    oob = scales::squish
+  ) +
+  coord_sf(
+    xlim = c(bb["xmin"], bb["xmax"]),
+    ylim = c(bb["ymin"], bb["ymax"]),
+    expand = FALSE
+  ) +
+  theme(legend.position = "bottom")
+
+```
+
+::::
+
+:::
+
+
+### National Level
+
+In our context, we assume that weather shocks primarily affect the agricultural sector, before propagating to the broader economy. Consequently, when aggregating weather variables at the national level, we apply weights that capture the relative agricultural intensity of each region. By doing so, areas where agriculture plays a larger economic role contribute more to the national weather indices.
+
+:::{.callout-important}
+
+If one wishes to perform the aggregation in a different context, these weights should be adapted accordingly. Setting all weights to 1 would correspond to a simple unweighted average, implicitly assuming that each grid cell contributes equally to national exposure. Such an assumption may overlook important spatial heterogeneity in sectoral relevance.
+
+:::
+
+### Regional Agricultural Intensity
+
+To aggregate grid-cell weather measures to the national level in a way that reflects sectoral exposure, we build regional agricultural weights from regional accounts.
+
+Statistics New Zealand's regional GDP by industry (series RNA001AA) is downloaded from Infoshare (CSV export; the Excel export uses locale-dependent thousand separators that break on our French setup). Our extract covers 2000–2023 by region. We target a working sample of 1987–2024, so we must extrapolate outside the extract window: 1987–1999 (backward) and 2024 (forward).
+
+
+#### Extrapolation strategy
+
+Let $Y^{(a)}_{r,t}$ denote agricultural GDP for region $r$ and year $t$.
+
+We compute the inverse growth rate:
+$$
+\Delta_{r,t}^{-1} = \frac{Y^{(a)}_{r,t}}{Y^{(a)}_{r,t+1}},
+$${#eq-delta-inv}
+defined wherever both years $t$ and $t+1$ are observed. 
+
+
+Over a **reference window** of width equal to the number of observed years minus 1 (because the computation of $\Delta_{r,t}^{-1}$ make us lose an observation), hence corresponding to the observed period, we estimate a linear trend in $\Delta_{r,t}^{-1}$:
+$$
+\Delta_{r,t}^{-1} = \alpha_r + \beta_r \cdot t + \varepsilon_{r,t},
+$${#eq-linear-trend}
+and retain $\hat\beta_r$.
+
+For **backward fills** (years preceding the extract), we form a **geometrically weighted average** of the windowed inverse growth rates and blend it 50/50 with the trend-implied growth:
+$$
+\widehat{\gamma}_{r,t}^{\text{back}}
+  = \tfrac{1}{2}\Big(\sum_{j=1}^{W} w_j  \Delta_{r,t+j}^{-1}\Big)
+  + \tfrac{1}{2}\big(1 + \hat\beta_r\big),
+$${#eq-geom-weighted-average}
+where $w_j \propto \text{reason}^{j-1}$ with $\text{reason}=1/1.35$ and $\sum_j w_j=1$.
+
+We then impute
+$$
+Y^{(a)}_{r,t} = \widehat{\gamma}_{r,t}^{\text{back}} \times \Delta_{r,t+1}^{-1}.
+$${#eq-pred-prod-backward}
+
+For **forward fills** (years after the extract), we apply the trend growth:
+$$
+  \Delta_{r,t}^{-1} = \Delta_{r,t-1}^{-1} \times \big(1+\hat\beta_r\big).
+$${#eq-forward-fills}
+
+This approach borrows strength from the local history (via the weighted window) while guarding against short-run noise (via the trend).
+
+#### Weight construction
+
+
+Let $Y^{(a)}_{t}$ be the **national** agricultural GDP. For each region $r$ and year $t$, we define the agricultural intensity weight as follows::
+$$
+w_{r,t} = \frac{Y^{(a)}_{r,t}}{Y^{(a)}_{t}}.
+$${#eq-agri-regional-weights}
+By construction, $\sum_{r} w_{r,t} = 1$ for each year $t$ (up to rounding). These weights can then be used to aggregate weather variables from regions to the national level..
+
+:::{.callout-important}
+
+Other methods to estimate the regional agricultural intensity can be used. We just present this one.
+
+:::
+
+#### Implementation in R
+
+Let us compute these weights in R now. We first load the dataset:
+```{r define-agri}
+# Source: https://infoshare.stats.govt.nz
+# Ref: RNA001AA
+agri <- read_csv(
+  "../data/Agriculture/RNA434201_20251025_084751_31.csv", 
+  skip = 4, 
+  col_names = colnames(
+    read_csv("../data/Agriculture/RNA434201_20251025_084751_31.csv", 
+             skip = 2, n_max = 1, col_types = cols())),
+  n_max = 24
+) |> 
+  rename(year = `...1`)
+  # filter(year <= 2012) # same as in the paper
+agri
+```
+
+Each column in the table gives the agricultural GDP of a region. For convenience, we pivot the table so that the GDP values are in a single column (that we name `gdp_a`); another column, `region`, will indicate the region the values refer to. Once we have pivoted the table, we compute the inverted growth rate for each region.
+```{r agri-compute-inv_growth_rate}
+agri <- agri |> 
+  pivot_longer(cols = -year, names_to = "region", values_to = "gdp_a") |> 
+  arrange(region, year) |> 
+  group_by(region) |> 
+  mutate(
+    inv_growth_rate = gdp_a / lead(gdp_a)
+  ) |> 
+  ungroup()
+```
+
+We set the periods with data and thos for which we want to extrapolate values.
+```{r define-years_to_complete_back}
+years_to_complete_back <- 1999:1987
+# years_to_complete_forw <- 2013:2025 # Same as in the paper
+years_to_complete_forw <- 2024:2025
+```
+
+The width of the window on which the trend will be learned:
+```{r define-width-window-agri-trend}
+width <- length(
+  seq(max(years_to_complete_back) + 1, min(years_to_complete_forw) - 2)
+)
+width
+```
+
+The years of the reference period for the linear model:
+```{r define-years_reference}
+years_reference <- seq(years_to_complete_back[1] + 1, length.out = width)
+years_reference
+```
+
+
+And we extend the dataset with the desired missing years:
+```{r agri-complete-data}
+agri <- crossing(
+  year = seq(min(years_to_complete_back), max(years_to_complete_forw)), 
+  region = unique(agri$region)) |> 
+  full_join(
+    agri, by = c("year", "region")
+  )
+agri
+```
+
+
+For each region $r$, we regress the inverse growth rate $\Delta_{r,t}^{-1}$ on a linear trend (see @eq-linear-trend) and return the coefficient associated with the trend, $\hat\beta_r$:
+```{r define-coefs}
+# Regression of agricultural production on the ref. period on a linear trend
+# Extraction of the coefficient
+coefs <- agri |> 
+  filter(year %in% years_reference) |> 
+  group_by(region) |> 
+  mutate(t = row_number()) |> 
+  group_modify(~ {
+    model <- lm(inv_growth_rate ~ t, data = .x)
+    tibble(coef_t = coef(model)[["t"]])
+  })
+```
+
+As explained in @eq-geom-weighted-average, we set some weights $w_j$ to compute a geometrically weighted average of the inverse growth rate.
+```{r define-pond}
+# Geometric sequence for weigthing scheme
+reason <- 1 / 1.35
+pond <- reason^(0:(width - 1))
+pond <- pond / sum(pond)
+```
+
+Then, we loop on each region $r$ to impute the missing values for agricultural GDP $Y^{(a)}_{r,t}$.
+```{r}
+for (region in unique(agri$region)) {
+  # Focus on curent region
+  coef_region <- coefs |> filter(region == !!region) |> pull(coef_t)
+  
+  ## Predict backward ----
+  for (i in 1:length(years_to_complete_back)) {
+    year <- years_to_complete_back[i]
+    ind_row <- which(agri$year == year & agri$region == region)
+    ind_row_next <- which(agri$year == year+1 & agri$region == region)
+    window <- seq(year + 1, year + width)
+    agri_region_w <- agri |> filter(region == !!region, year %in% !!window)
+    
+    # Agricultural GDP in the next year
+    gdp_a_next <- agri$gdp_a[ind_row_next]
+    
+    # Complete missing values
+    agri$gdp_a[ind_row] <- 
+      ((.5*(pond %*% agri_region_w$inv_growth_rate)) + (.5*(1+coef_region))) *
+      gdp_a_next
+    
+    agri$inv_growth_rate[ind_row] <- 
+      agri$gdp_a[ind_row] / agri$gdp_a[ind_row_next]
+  }
+  
+  ## Predict forward ----
+  for (i in 1:length(years_to_complete_forw)) {
+    year <- years_to_complete_forw[i]
+    ind_row <- which(agri$year == year & agri$region == region)
+    ind_row_prev <- which(agri$year == year-1 & agri$region == region)
+    # Previous agricultural GDP
+    gdp_a_previous <- agri$gdp_a[ind_row_prev]
+    # Prediction assuming the linear trend
+    agri$gdp_a[ind_row] <- gdp_a_previous * (1+coef_region)
+  }
+}
+```
+
+We can compute the regional weights $w_{r,t}$ (@eq-agri-regional-weights).
+```{r define-tb_agri_shares}
+# Expressing as a share of total national value
+tb_agri_shares <- agri |> 
+  left_join(
+    agri |> filter(region == "New Zealand") |> 
+      select(year, gdp_tot = gdp_a),
+    by = "year"
+  ) |> 
+  mutate(
+    agri_share_region = gdp_a / gdp_tot
+  )
+```
+
+### Matching Regional Agricultural Intensity and Weather Data
+
