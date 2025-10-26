@@ -354,9 +354,9 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#regional-agricultural-intensity" id="toc-regional-agricultural-intensity" class="nav-link" data-scroll-target="#regional-agricultural-intensity"><span class="header-section-number">5.6.2.1</span> Regional Agricultural Intensity</a></li>
   <li><a href="#matching-regional-agricultural-intensity-and-weather-data" id="toc-matching-regional-agricultural-intensity-and-weather-data" class="nav-link" data-scroll-target="#matching-regional-agricultural-intensity-and-weather-data"><span class="header-section-number">5.6.2.2</span> Matching Regional Agricultural Intensity and Weather Data</a></li>
-  <li><a href="#saving-the-datasets" id="toc-saving-the-datasets" class="nav-link" data-scroll-target="#saving-the-datasets"><span class="header-section-number">5.6.2.3</span> Saving the Datasets</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#saving-the-datasets" id="toc-saving-the-datasets" class="nav-link" data-scroll-target="#saving-the-datasets"><span class="header-section-number">5.7</span> Saving the Datasets</a></li>
   </ul>
 </nav>
     </div>
@@ -3563,8 +3563,10 @@ Figure&nbsp;5.36: Soil Moisture Deficit Index in New Zealand, quarterly basis.
 </div>
 </section>
 </section>
-<section id="saving-the-datasets" class="level4" data-number="5.6.2.3">
-<h4 data-number="5.6.2.3" class="anchored" data-anchor-id="saving-the-datasets"><span class="header-section-number">5.6.2.3</span> Saving the Datasets</h4>
+</section>
+</section>
+<section id="saving-the-datasets" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="saving-the-datasets"><span class="header-section-number">5.7</span> Saving the Datasets</h2>
 <p>To finish, let us export the two datasets. If those datasets are to be used in R later on, they can be saved as RData files to save space and importing time.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(</span>
@@ -3586,6 +3588,176 @@ Figure&nbsp;5.36: Soil Moisture Deficit Index in New Zealand, quarterly basis.
 <span id="cb151-6"><a href="#cb151-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> national_weather_quarterly, </span>
 <span id="cb151-7"><a href="#cb151-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_quarterly.csv"</span></span>
 <span id="cb151-8"><a href="#cb151-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tbl-dict-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dict-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.2: Dictionary of variables for monthly precipitation (<code>national_weather_monthly</code>)
+</figcaption>
+<div aria-describedby="tbl-dict-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 17%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Variable</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>year</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Year</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>month</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Month</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>month_name</code></td>
+<td style="text-align: left;">ordered factor</td>
+<td style="text-align: left;">Name of the month</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>precip</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly precipitation (mm)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>temp_min</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly min temperature (°C)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>temp_max</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly max temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>temp_mean</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly mean temperature (°C)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SMDI</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Soil Moisture Deficit Inded (from -4, very dry to +4n very wet)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>SPEI_1</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">1-Month Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SPEI_3</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">3-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>SPEI_6</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">6-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SPEI_12</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">12-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="tbl-dict-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dict-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.3: Dictionary of variables for quarterly precipitation (<code>national_weather_quarterly</code>)
+</figcaption>
+<div aria-describedby="tbl-dict-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 17%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Variable</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>year</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Year</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>quarter</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Quarter</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>month_name</code></td>
+<td style="text-align: left;">ordered factor</td>
+<td style="text-align: left;">Name of the month</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>precip</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly precipitation (mm)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>temp_min</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly min temperature (°C)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>temp_max</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly max temperature (°C)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>temp_mean</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Average of monthly mean temperature (°C)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SMDI</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Soil Moisture Deficit Inded (from -4, very dry to +4n very wet)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>SPEI_1</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">1-Month Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SPEI_3</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">3-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>SPEI_6</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">6-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>SPEI_12</code></td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">12-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
 </div>
 
 
@@ -3609,8 +3781,6 @@ Narasimhan, B., and R. Srinivasan. 2005. <span>“Development and Evaluation of 
 Vicente-Serrano, Sergio M., Santiago Beguería, and Juan I. López-Moreno. 2010. <span>“A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index.”</span> <em>Journal of Climate</em> 23 (7): 1696–1718. <a href="https://doi.org/10.1175/2009jcli2909.1">https://doi.org/10.1175/2009jcli2909.1</a>.
 </div>
 </div>
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->

@@ -2644,7 +2644,7 @@ ggplot(
   theme_paper()
 ```
 
-#### Saving the Datasets
+## Saving the Datasets
 
 To finish, let us export the two datasets. If those datasets are to be used in R later on, they can be saved as RData files to save space and importing time.
 
@@ -2671,4 +2671,58 @@ readr::write_csv(
   file = "../data/Weather/national_weather_quarterly.csv"
 )
 ```
+
+| Variable | Type | Description |
+| :------: | :--- | :---------- |
+| `year` | numeric | Year |
+| `month` | numeric | Month |
+| `month_name` | ordered factor | Name of the month |
+| `precip` | numeric | Average of monthly precipitation (mm) |
+| `temp_min` | numeric | Average of monthly min temperature (°C) |
+| `temp_max` | numeric | Average of monthly max temperature (°C) |
+| `temp_mean` | numeric | Average of monthly mean temperature (°C) |
+| `SMDI` | numeric | Soil Moisture Deficit Inded (from -4, very dry to +4n very wet) |
+| `SPEI_1` | numeric | 1-Month Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_3` | numeric | 3-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_6` | numeric | 6-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_12` | numeric | 12-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+
+Table: Dictionary of variables for monthly precipitation (`national_weather_monthly`) {#tbl-dict-monthly}
+
+
+
+| Variable | Type | Description |
+| :------: | :--- | :---------- |
+| `year` | numeric | Year |
+| `quarter` | numeric | Quarter |
+| `month_name` | ordered factor | Name of the month |
+| `precip` | numeric | Average of monthly precipitation (mm) |
+| `temp_min` | numeric | Average of monthly min temperature (°C) |
+| `temp_max` | numeric | Average of monthly max temperature (°C) |
+| `temp_mean` | numeric | Average of monthly mean temperature (°C) |
+| `SMDI` | numeric | Soil Moisture Deficit Inded (from -4, very dry to +4n very wet) |
+| `SPEI_1` | numeric | 1-Month Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_3` | numeric | 3-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_6` | numeric | 6-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+| `SPEI_12` | numeric | 12-Months Standardised Precipitation-Evapotranspiration Index with (negative values for dry, positive for wet) |
+
+Table: Dictionary of variables for quarterly precipitation (`national_weather_quarterly`) {#tbl-dict-monthly}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
