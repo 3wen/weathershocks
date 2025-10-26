@@ -2356,3 +2356,319 @@ tb_agri_shares <- agri |>
 
 #### Matching Regional Agricultural Intensity and Weather Data
 
+
+##### Quick Fix on Region Names
+
+Region names often differ across sources. Here, we need to align agricultural intensity (from a national source) with weather data whose regions follow GADM names.
+
+First, we list weather regions that do not appear in the agricultural data:
+```{r look-region-names}
+unique(region_weather_monthly$region)[! unique(region_weather_monthly$region) %in% unique(tb_agri_shares$region)] |> 
+  cat(sep = "\n")
+```
+
+Agricultural table region names:
+```{r look-region-names-agri}
+sort(unique(tb_agri_shares$region))
+```
+
+We notice two types of issues here:
+
+1. Spelling differences (easy to correct): Manawatu-W*h*anganui vs. Manawatu-Wanganui
+2. Different spatial aggregation: _Tasman_ and _Nelson_ are merged into a single region in the agricultural data (see @fig-map-issue-tasman).
+
+For the first issue, the fix is very easy, we just need to adjust the spelling.
+```{r rename-region-Manawatu-Whanganui}
+tb_agri_shares <- tb_agri_shares |> 
+  mutate(
+    region = if_else(
+      region == "Manawatu-Whanganui",
+      "Manawatu-Wanganui",
+      region
+    )
+  )
+```
+
+For the second issue, let us first visualize the Tasman/Nelson regions.
+
+```{r}
+#| fig-cap: Regions merged in the agricultural data.
+#| label: fig-map-issue-tasman
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = maps_level_1_NZ |> 
+    mutate(
+      issue = case_when(
+        NAME_1 == "Tasman" ~ "Tasman",
+        NAME_1 == "Nelson" ~ "Nelson",
+        TRUE ~ "Other"
+      ),
+      issue = factor(issue, levels = c("Tasman", "Nelson", "Other"))
+    ),
+  mapping = aes(fill = issue)
+) + 
+  geom_sf(colour = "white") +
+  scale_fill_manual(
+    "Regions",
+    values = c("Tasman" = "#0072B2", "Nelson" = "#D55E00", "Other" = "gray")
+  )
+```
+
+
+Tasman is much larger than Nelson, so we split the combined agricultural share proportionally to their land areas (not 50/50). We compute areas from the map.
+
+```{r define-nz_areas}
+# Areas of each region
+nz_areas <- maps_level_1_NZ |>
+  filter(NAME_1 %in% c("Tasman", "Nelson")) |>
+  mutate(area_m2 = st_area(geometry)) |>
+  st_drop_geometry() |>
+  mutate(area_m2 = as.numeric(area_m2)) |>
+  select(region = NAME_1, area_m2)
+nz_areas
+```
+
+The corresponding weight:
+```{r define-tas_nel_weights}
+tas_nel_weights <- nz_areas |>
+  mutate(w = area_m2 / sum(area_m2)) |>
+  select(region, w)
+tas_nel_weights
+```
+
+Now we duplicate each `"Tasman/Nelson"`{.R} row into two rows (`"Tasman"`{.R} and `Nelson`{.R}) and allocate `gdp_a` and `agri_share_region` using the weights:
+```{r redefine-tb_agri_shares-tasman-nelson}
+group_label <- "Tasman/Nelson"
+
+tb_agri_shares <-
+  # keep all rows that are not the Tasman + Nelson aggregate
+  tb_agri_shares |> filter(region != !!group_label) |> 
+  bind_rows(
+    # duplicate the grouped rows for Tasman and Nelson and split the share
+    tb_agri_shares |>
+      filter(region == !!group_label) |>
+      # create two copies per row, one for each region
+      crossing(region_2 = c("Tasman", "Nelson")) |>
+      select(-region) |> 
+      rename(region = region_2) |> 
+      # add area weights
+      left_join(tas_nel_weights, by = "region") |>
+      # apportion only the agri_share_region (as asked)
+      mutate(
+        gdp_a = gdp_a * w,
+        agri_share_region = agri_share_region * w) |>
+      select(-w)
+  ) |>
+  arrange(region, year)
+```
+
+As a sanity check, we look whether weather regions are still missing from the agricultural table:
+
+```{r sanity-check-weather-region-names}
+unique(region_weather_monthly$region)[! unique(region_weather_monthly$region) %in% unique(tb_agri_shares$region)] |> 
+  cat(sep = "\n")
+```
+
+An we look which agricultural regions are not present in weather data (these are country- and island-level aggregates, which is fine):
+```{r sanity-check-agri-region-names-not-in-map}
+unique(tb_agri_shares$region)[! unique(tb_agri_shares$region) %in% unique(region_weather_monthly$region)] |> 
+  cat(sep = "\n")
+```
+
+##### Merge
+
+To obtain national-level indicators, we aggregate regional weather observations using agricultural intensity as weights. We merge the regional weather data with the corresponding agricultural weights (from `agri_share_region`) for each year and compute the weighted mean of each weather variable.
+
+For monthly data, we group by year and month:
+```{r define-national_weather_monthly}
+national_weather_monthly <- 
+  region_weather_monthly |> 
+  # We restricted the agricultural data to 1987--2024
+  filter(year >= 1987) |> 
+  left_join(
+    tb_agri_shares |> select(year, region, agri_share_region),
+    by = c("region", "year")
+  ) |> 
+  group_by(year, month, month_name) |> 
+  summarise(
+    across(
+      all_of(weather_vars),
+      ~ weighted.mean(.x, w = agri_share_region)
+    ),
+    .groups = "drop"
+  )
+```
+
+
+For quarterly data, the same logic applies, except we aggregate by year and quarter:
+```{r define-national_weather_quarterly}
+national_weather_quarterly <- 
+  region_weather_quarterly |> 
+  # We restricted the agricultural data to 1987--2024
+  filter(year >= 1987) |> 
+  left_join(
+    tb_agri_shares |> select(year, region, agri_share_region),
+    by = c("region", "year")
+  ) |> 
+  group_by(year, quarter) |> 
+  summarise(
+    across(
+      all_of(weather_vars),
+      ~ weighted.mean(.x, w = agri_share_region)
+    ),
+    .groups = "drop"
+  )
+```
+
+
+We can have a look at the obtained values using different type of plots.
+```{r}
+#| fig-cap: Precipitation in New Zealand on a monthly basis.
+#| label: fig-precip-nz-monthly
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_monthly |> 
+    mutate(date = make_date(year, month)),
+  mapping = aes(x = date, y = precip)) +
+  geom_line() +
+  labs(x = NULL, y = "Precipitation (mm)") +
+  theme_paper()
+```
+
+With the quarterly national aggregation:
+```{r}
+#| fig-cap: Precipitation in New Zealand on a quarterly basis.
+#| label: fig-precip-nz-quarterly
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_quarterly |> 
+    mutate(date = year + quarter/4),
+  mapping = aes(x = date, y = precip)) +
+  geom_line() +
+  labs(x = NULL, y = "Precipitation (mm)") +
+  theme_paper()
+```
+
+If one wants to highlight a specific year, e.g., 2013:
+```{r}
+#| fig-cap: Precipitation in New Zealand on a monthly basis (1987--2024).
+#| label: fig-precip-nz-monthly-highlight-2013
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_monthly |> 
+    mutate(
+      month_abb = factor(month.abb[month], levels = month.abb),
+      highlight_year = case_when(
+        year == 2013 ~ "2013",
+        TRUE ~ "Other"
+      )
+    ),
+  mapping = aes(x = month_abb, y = precip)) +
+  geom_line(
+    mapping = aes(group = year, colour = highlight_year)
+  ) +
+  scale_colour_manual(
+    NULL, values = c("2013" = "#D55E00", "Other" = "gray")
+  ) +
+  labs(x = NULL, y = "Precipitation (mm)") +
+  theme_paper()
+```
+
+We can use barplots also and show the 1-SD range across years with error bars.
+```{r}
+#| fig-cap: Barplot of precipitation in New Zealand on a monthly basis (1987--2024).
+#| label: fig-precip-nz-monthly-barplot
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_monthly |> 
+    mutate(
+      month_abb = factor(month.abb[month], levels = month.abb)
+    ) |> 
+    group_by(month_abb) |> 
+    summarise(
+      precip_mean = mean(precip),
+      precip_sd = sd(precip)
+    )
+) +
+  geom_bar(
+    mapping = aes(x = month_abb, y = precip_mean),
+    stat="identity",
+    fill="#5482AB", alpha=0.7
+  ) +
+  geom_errorbar(
+    mapping = aes(
+      x = month_abb,
+      ymin = precip_mean - precip_sd,
+      ymax = precip_mean + precip_sd
+    ),
+    width = 0.4, colour = "#005A8B", alpha = 0.9, linewidth = 1.3
+  ) +
+  labs(x = NULL, y = "Precipitation (mm)") +
+  theme_paper()
+```
+
+Obviously, we are not restricted to plots showing temperatures. Let us visualize the evolution of the SMDI between 1987 and 2024, on a monthly basis. Note that the spatial aggregation has flattened the series (recall the monthly values before spatial aggregation range between -4 (very dry) to +4 (very wet)).
+```{r}
+#| fig-cap: Soil Moisture Deficit Index in New Zealand, monthly basis.
+#| label: fig-SMDI-nz-monthly
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_monthly |> 
+    mutate(date = make_date(year, month)),
+  mapping = aes(x = date, y = SMDI)) +
+  geom_line() +
+  scale_x_date(date_breaks = "3 years", date_labels = "%Y") +
+  labs(x = NULL, y = "SMDI") +
+  theme_paper()
+```
+
+And with the quarterly data:
+```{r}
+#| fig-cap: Soil Moisture Deficit Index in New Zealand, quarterly basis.
+#| label: fig-SMDI-nz-quarterly
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+ggplot(
+  data = national_weather_quarterly |> 
+    mutate(date = year + quarter/4),
+  mapping = aes(x = date, y = SMDI)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 12) +
+  labs(x = NULL, y = "SMDI") +
+  theme_paper()
+```
+
+#### Saving the Datasets
+
+To finish, let us export the two datasets. If those datasets are to be used in R later on, they can be saved as RData files to save space and importing time.
+
+```{r save-rda-files}
+save(
+  national_weather_monthly, 
+  file = "../data/Weather/national_weather_monthly.rda"
+)
+save(
+  national_weather_quarterly, 
+  file = "../data/Weather/national_weather_quarterly.rda"
+)
+```
+
+
+If one wants to share the dataset for use in another software, a CSV file is also possible:
+```{r save-csv-files}
+readr::write_csv(
+  x = national_weather_monthly, 
+  file = "../data/Weather/national_weather_monthly.csv"
+)
+readr::write_csv(
+  x = national_weather_quarterly, 
+  file = "../data/Weather/national_weather_quarterly.csv"
+)
+```
+
