@@ -756,7 +756,7 @@ smdi_monthly <-
   group_by(cell_id, year, month) |>
   summarise(
     # If any missing values in SMDI will lead to NAs
-    SMDI_month = weighted.mean(SMDI, w = weight_ndays),
+    SMDI = weighted.mean(SMDI, w = weight_ndays),
     .groups = "drop"
   )
 ```
@@ -769,7 +769,7 @@ Let us have a look at the values for a cell:
 ggplot(
   data = smdi_monthly |> mutate(date = year + month / 12) |> 
     filter(cell_id == 19),
-  mapping = aes(x = date, y = SMDI_month)
+  mapping = aes(x = date, y = SMDI)
   ) +
   geom_line() +
   labs(x = NULL, y = "SMDI")
@@ -850,7 +850,7 @@ smdi_quarterly <-
   group_by(cell_id, year, quarter) |>
   summarise(
     # If any missing values in SMDI will lead to NAs
-    SMDI_quarter = weighted.mean(SMDI, w = weight_ndays),
+    SMDI = weighted.mean(SMDI, w = weight_ndays),
     .groups = "drop"
   )
 ```
@@ -863,7 +863,7 @@ Let us have a look at the values for a cell:
 ggplot(
   data = smdi_quarterly |> mutate(date = year + quarter / 4) |> 
     filter(cell_id == 19),
-  mapping = aes(x = date, y = SMDI_quarter)
+  mapping = aes(x = date, y = SMDI)
   ) +
   geom_line() +
   labs(x = NULL, y = "SMDI")
@@ -1131,8 +1131,7 @@ spei_quarterly_mean <-
   ) |>
   group_by(cell_id, year, quarter) |>
   summarise(
-    across(starts_with("SPEI_"), 
-      ~ mean(.x, na.rm = TRUE), .names = "{.col}_qmean"
+    across(starts_with("SPEI_"), ~ mean(.x, na.rm = TRUE)
     ),
     .groups = "drop"
   )
@@ -1155,8 +1154,7 @@ ggplot(
       cols = starts_with("SPEI_"), values_to = "SPEI", names_to = "scale"
     ) |> 
     mutate(
-      scale = str_remove(scale, "SPEI_") |>
-        str_remove("_qmean"),
+      scale = str_remove(scale, "SPEI_"),
       scale = factor(
         scale, levels = c(1, 3, 6, 12),
         labels = paste0("k=", c(1, 3, 6, 12))
@@ -1332,10 +1330,12 @@ spei_names <- colnames(country_weather_monthly)[str_detect(colnames(country_weat
 weather_vars <- c(
   "precip", 
   "temp_min", "temp_max", "temp_mean",
-  "SMDI_month", 
+  "SMDI", 
   spei_names
 )
 ```
+
+#### Monthly Data
 
 We merge the regional weights with the monthly weather data available at the cell level. During this join, cells intersecting multiple regions appear multiple times in the resulting dataset (once per overlapping region) with their contribution differentiated by the corresponding intersection weight.
 ```{r define-region_weather_monthly}
@@ -1356,15 +1356,37 @@ region_weather_monthly <-
   )
 ```
 
+#### Quarterly Data
 
-#### Maps
+We perform the same operation with the quarterly data.
+
+```{r define-region_weather_quarterly}
+region_weather_quarterly <- 
+  country_weather_quarterly |> 
+  left_join(
+    inter_tbl |> select(GID_1, region, cell_id, w_cell_region),
+    by = c("cell_id"),
+    relationship ="many-to-many" # a cell can be in multiple regions
+  ) |> 
+  group_by(GID_1, region, country_code, year, quarter) |> 
+  summarise(
+    across(
+      all_of(weather_vars),
+      ~ weighted.mean(.x, w = w_cell_region)
+    ),
+    .groups = "drop"
+  )
+```
+
+
+#### Maps for Monthly Data
 
 We visualize the aggregated weather by plotting choropleth maps for year 2013. For each month (12 panels), we produce:
 
 1. Maps at the regional level using area-weighted regional means,
 2. Maps at the cell level using cell means.
 
-To ensure comparability across months, we construct one map layer per month and then bind them into a single `sf` object for faceting.
+To be able to compare the values across months, we construct one map layer per month and then bind them into a single `sf` object for faceting.
 ```{r define-data_map}
 # For region layers
 data_map <- vector(mode = "list", length = 12)
@@ -1667,12 +1689,12 @@ ggplot() +
 ggplot() +
   geom_sf(
     data = data_map,
-    mapping = aes(fill = SMDI_month)
+    mapping = aes(fill = SMDI)
   ) +
   facet_wrap(~ month_name, ncol = 6) +
   theme_map_paper() +
   scale_fill_gradientn(
-    name = "SPEI-3",
+    name = "SMDI",
     colours = cols_smdi,
     limits = c(-4, 4),
     oob = scales::squish
@@ -1691,13 +1713,13 @@ ggplot() +
 ggplot() +
   geom_sf(
     data = data_map_cells,
-    mapping = aes(fill = SMDI_month)
+    mapping = aes(fill = SMDI)
   ) +
   geom_sf(data = maps_level_1_NZ, fill = "NA") +
   facet_wrap(~ month_name, ncol = 6) +
   theme_map_paper() +
   scale_fill_gradientn(
-    name = "SPEI-3",
+    name = "SMDI",
     colours = cols_smdi,
     limits = c(-4, 4),
     oob = scales::squish
@@ -1732,7 +1754,7 @@ ggplot() +
   facet_wrap(~ month_name, ncol = 6) +
   theme_map_paper() +
   scale_fill_gradientn(
-    name = "SMDI",
+    name = "SPEI-3",
     colours = cols_smdi,
     limits = c(-4, 4),
     oob = scales::squish
@@ -1757,7 +1779,7 @@ ggplot() +
   facet_wrap(~ month_name, ncol = 6) +
   theme_map_paper() +
   scale_fill_gradientn(
-    name = "SMDI",
+    name = "SPEI-3",
     colours = cols_smdi,
     limits = c(-4, 4),
     oob = scales::squish
@@ -1775,6 +1797,353 @@ ggplot() +
 
 :::
 
+#### Maps for Quarterly Data
+
+We can also do the same with the quarterly aggregated values.
+
+```{r define-v}
+# For region layers
+data_map_q <- vector(mode = "list", length = 4)
+for (i in 1:4) {
+  data_map_q[[i]] <- 
+    maps_level_1_NZ |> 
+    inner_join(
+      region_weather_quarterly |> filter(year == 2013, quarter == !!i),
+      by = c("GID_1", "NAME_1" = "region")
+    )
+}
+data_map_q <- list_rbind(data_map_q) |> st_as_sf()
+
+# For cell layers
+data_map_q_cells <- vector(mode = "list", length = 4)
+for (i in 1:4) {
+  data_map_q_cells[[i]] <- 
+    cells_sf |> 
+    inner_join(
+      country_weather_quarterly |> filter(year == 2013, quarter == !!i),
+      by = c("cell_id", "longitude", "latitude")
+    )
+}
+data_map_q_cells <- list_rbind(data_map_q_cells) |> st_as_sf()
+
+```
+
+
+This time, we define a small function to create the plots, `plot_maps_q()`{.R}. There is no real point to do so, we just want to provide a second alternative.
+```{r define-plot_maps_q}
+#| code-fold: true
+#| code-summary: The `plot_maps_q()`{.R} function.
+#' Maps for each month for a variable showing temperatures
+plot_maps_q <- function(var_temp_name, 
+                        legend_title,
+                        geo = c("cell", "region"),
+                        legend_type = c("precip", "temp", "drought")) {
+  geo <- match.arg(geo)
+  legend_type <- match.arg(legend_type)
+  df_plot <- if (geo == "cell") data_map_q_cells else data_map_q
+  
+  p <- ggplot() +
+    geom_sf(
+      data = df_plot,
+      mapping = aes(fill = !!sym(var_temp_name))
+    ) +
+    facet_wrap(~ quarter, ncol = 4) +
+    theme_map_paper() +
+    theme(legend.position = "bottom", legend.key.height	= unit(1, "line"))
+  
+  p <- switch(
+    legend_type,
+    "temp" = p + scale_fill_gradientn(
+      name   = legend_title,
+      colours = cols,
+      limits  = c(vmin, vmax),
+      oob     = scales::squish
+    ),
+    "precip" = p + scale_fill_gradient2(
+      name = legend_title,
+      low = "red", high = "#005A8B", midpoint = 0, mid = "white"
+    ),
+    "drought" = p + scale_fill_gradientn(
+      name   = legend_title,
+      colours = cols_smdi,
+      limits  = c(-4, 4),
+      oob     = scales::squish
+    )
+  )
+  
+  if (geo == "cell") {
+    p <- p +
+      geom_sf(data = maps_level_1_NZ, fill = "NA") +
+      coord_sf(
+        xlim = c(bb["xmin"], bb["xmax"]),
+        ylim = c(bb["ymin"], bb["ymax"]),
+        expand = FALSE
+      )
+  }
+  
+  p
+}
+```
+
+Having this function would allow to quickly loop over the different variables and plot maps. We do not do it in this notebook.
+
+```{r define-configs_maps, eval=FALSE}
+# This chunk is not evaluated
+
+configs_maps <- tribble(
+  ~variable, ~title, ~type,
+  "precip", "Precip. (mm)", "precip",
+  "temp_mean", "Temperature Mean (°C)", "temp",
+  "temp_min", "Temperature Min (°C)", "temp",
+  "temp_max", "Temperature Max (°C)", "temp",
+  "SMDI_month", "SMDI", "drought",
+  "SPEI_3", "SPEI-3", "drought",
+) |> 
+  expand_grid(geo = c("region", "cell"))
+
+
+for (i in 1:nrow(configs_maps)) {
+  plot_maps_q(
+    var_temp_name = configs_maps$variable[i], 
+    legend_title = configs_maps$title[i], 
+    geo = configs_maps$geo[i], 
+    legend_type = configs_maps$type[i]
+  )
+}
+```
+
+
+
+:::{.panel-tabset}
+
+##### Precipitation
+
+::::{.panel-tabset}
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-precip-regions_q
+plot_maps_q(
+    var_temp_name = "precip",
+    legend_title = "Precip. (mm)",
+    geo = "region", 
+    legend_type = "precip"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-precip-cells_q
+plot_maps_q(
+    var_temp_name = "precip",
+    legend_title = "Precip. (mm)",
+    geo = "cell", 
+    legend_type = "precip"
+)
+```
+
+::::
+
+##### Temp Mean
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmean-regions_q
+plot_maps_q(
+    var_temp_name = "temp_mean",
+    legend_title = "Temp Mean (°C)",
+    geo = "region", 
+    legend_type = "temp"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmean-cells_q
+plot_maps_q(
+    var_temp_name = "temp_mean",
+    legend_title = "Temp Mean (°C)",
+    geo = "cell", 
+    legend_type = "temp"
+)
+```
+
+
+
+::::
+
+##### Temp Min
+
+::::{.panel-tabset}
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmin-regions_q
+plot_maps_q(
+    var_temp_name = "temp_min",
+    legend_title = "Temp Min (°C)",
+    geo = "region", 
+    legend_type = "temp"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmin-cells_q
+plot_maps_q(
+    var_temp_name = "temp_min",
+    legend_title = "Temp Min (°C)",
+    geo = "cell", 
+    legend_type = "temp"
+)
+```
+
+
+::::
+
+##### Temp Max
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmax-regions_q
+plot_maps_q(
+    var_temp_name = "temp_max",
+    legend_title = "Temp Max (°C)",
+    geo = "region", 
+    legend_type = "temp"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-tmax-cells_q
+plot_maps_q(
+    var_temp_name = "temp_max",
+    legend_title = "Temp Max (°C)",
+    geo = "cell", 
+    legend_type = "temp"
+)
+```
+
+
+::::
+
+
+##### SMDI
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-smdi-regions_q
+plot_maps_q(
+    var_temp_name = "SMDI",
+    legend_title = "SMDI",
+    geo = "region", 
+    legend_type = "drought"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-smdi-cells_q
+plot_maps_q(
+    var_temp_name = "SMDI",
+    legend_title = "SMDI",
+    geo = "cell", 
+    legend_type = "drought"
+)
+```
+
+::::
+
+##### SPEI 3
+
+::::{.panel-tabset}
+
+
+###### Regions
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-spei3-regions_q
+plot_maps_q(
+    var_temp_name = "SPEI_3",
+    legend_title = "SPEI-3",
+    geo = "region", 
+    legend_type = "drought"
+)
+```
+
+###### Cells
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure
+#| fig-cap: Quarterly averages in 2013
+#| label: fig-map-spei-cells_q
+plot_maps_q(
+    var_temp_name = "SPEI_3",
+    legend_title = "SPEI-3",
+    geo = "cell", 
+    legend_type = "drought"
+)
+```
+
+::::
+
+:::
+
+
 
 ### National Level
 
@@ -1786,14 +2155,14 @@ If one wishes to perform the aggregation in a different context, these weights s
 
 :::
 
-### Regional Agricultural Intensity
+#### Regional Agricultural Intensity
 
 To aggregate grid-cell weather measures to the national level in a way that reflects sectoral exposure, we build regional agricultural weights from regional accounts.
 
 Statistics New Zealand's regional GDP by industry (series RNA001AA) is downloaded from Infoshare (CSV export; the Excel export uses locale-dependent thousand separators that break on our French setup). Our extract covers 2000–2023 by region. We target a working sample of 1987–2024, so we must extrapolate outside the extract window: 1987–1999 (backward) and 2024 (forward).
 
 
-#### Extrapolation strategy
+##### Extrapolation strategy
 
 Let $Y^{(a)}_{r,t}$ denote agricultural GDP for region $r$ and year $t$.
 
@@ -1830,7 +2199,7 @@ $${#eq-forward-fills}
 
 This approach borrows strength from the local history (via the weighted window) while guarding against short-run noise (via the trend).
 
-#### Weight construction
+##### Weight construction
 
 
 Let $Y^{(a)}_{t}$ be the **national** agricultural GDP. For each region $r$ and year $t$, we define the agricultural intensity weight as follows::
@@ -1845,7 +2214,7 @@ Other methods to estimate the regional agricultural intensity can be used. We ju
 
 :::
 
-#### Implementation in R
+##### Implementation in R
 
 Let us compute these weights in R now. We first load the dataset:
 ```{r define-agri}
@@ -1985,5 +2354,5 @@ tb_agri_shares <- agri |>
   )
 ```
 
-### Matching Regional Agricultural Intensity and Weather Data
+#### Matching Regional Agricultural Intensity and Weather Data
 
