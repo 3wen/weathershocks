@@ -41,6 +41,7 @@ bibliography: biblio.bib
 
 format:
   html:
+    toc-depth: 4
     fig-cap-location: top
     theme: cosmo
     html-math-method: mathjax
