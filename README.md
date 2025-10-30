@@ -14,7 +14,7 @@ Macro Modelling Initiative, organized by Benjamin Alford and Helena Herber
 
 - [📕 Author's version of _Weather Shocks_](paper/Gallic_Vermandel-Weather_Shocks_2020.pdf)
 - [📝 Technical Appendix](paper/Technical-Appendix.pdf)
-- [📦 Replication codes](paper/codes_weather_shocks.zip) (Zip archive)
+- [📦 Replication codes](https://github.com/3wen/weathershocks/raw/main/paper/codes_weather_shocks.zip) (Zip archive)
 
 Software requirements:
 
