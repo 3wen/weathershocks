@@ -14,7 +14,7 @@ Macro Modelling Initiative, organized by Benjamin Alford and Helena Herber
 
 - [📕 Author's version of _Weather Shocks_](paper/Gallic_Vermandel-Weather_Shocks_2020.pdf)
 - [📝 Technical Appendix](paper/Technical-Appendix.pdf)
-- [📦 Replication codes](https://github.com/3wen/weathershocks/raw/main/paper/codes_weather_shocks.zip) (Zip archive)
+- [📦 Replication codes](https://github.com/3wen/weathershocks/raw/main/paper/codes_weather_shocks_2025.zip) (Zip archive, updated version, October 2025)
 
 Software requirements:
 
@@ -28,8 +28,9 @@ methodology used in the paper and to show how to reproduce each component of the
 analysis step by step.
 
 - Slides: coming soon,
-- Code: download the [replication codes](paper/codes_weather_shocks.zip) to
+- Code: download the [replication codes](paper/codes_weather_shocks_2025.zip) to
   follow along.
+
 
 Topics covered (broadly):
 
