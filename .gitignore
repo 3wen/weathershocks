@@ -62,3 +62,6 @@ data/Weather/CPC/grid_daily_tmin/*
 paper/codes_weather_shocks/*
 paper/codes_weather_shocks_2025/*
 paper/tmp/*
+
+# Draft
+paper/oldies/*
