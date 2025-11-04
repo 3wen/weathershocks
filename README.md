@@ -6,7 +6,7 @@ _European Economic Review_, 124, 103409.
 
 It also contains **complementary materials** developed for a hands-on session of the
 [Network of Central Banks and Supervisors for Greening the Financial System (NGFS)](https://www.ngfs.net/en)
-Macro Modelling Initiative, organized by Benjamin Alford and Helena Herber 
+Macro Modelling Initiative, organized by Benjamin Alford and Helena Herber
 (Banque de France).
 
 
@@ -23,12 +23,12 @@ Software requirements:
 
 # Session 1: Reproducing the paper "Weather Shocks"
 
-The objective of the first session is to walk participants through the main 
-methodology used in the paper and to show how to reproduce each component of the 
+The objective of the first session is to walk participants through the main
+methodology used in the paper and to show how to reproduce each component of the
 analysis step by step.
 
-- Slides: coming soon,
-- Code: download the [replication codes](paper/codes_weather_shocks_2025.zip) to
+- [Slides](https://raw.githubusercontent.com/3wen/weathershocks/main/slides/NGFS_Weather-Shocks_Session-1.pdf),
+- [Replication codes](paper/codes_weather_shocks_2025.zip) to
   follow along.
 
 
@@ -36,7 +36,7 @@ Topics covered (broadly):
 
 - Construction of weather shock variables from weather station data
 - Econometric estimation with a structural VAR
-- Integration of weather shocks into a dynamic stochastic general equilibrium 
+- Integration of weather shocks into a dynamic stochastic general equilibrium
   (DSGE) framework
 
 # Session 2: Extending the framework
