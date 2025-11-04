@@ -1,4 +1,8 @@
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% WEATHER SHOCKS: ESTIMATED MODEL WITHOUT PHYSICAL DAMAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %----------------------------------------------------------------
 % 0. Housekeeping (close all graphic windows)
 %----------------------------------------------------------------
@@ -8,24 +12,143 @@ close all;
 % 1. Defining variables
 %----------------------------------------------------------------
 
-var c uc uA uN hu i y h v m u vh rer_obs tb vc
-	y_N k_N i_N h_N w_N r q_N p_N d
-	y_A k_A i_A h_A w_A r q_A p_A land x y_N_obs
-	gdp NFA 
-	c_R c_N de
-	c_star m_star uc_star pc_A pc_N rer r_star n
-	phi varrho ca_y dyA dy dc dH welf
-	y_obs i_obs h_obs smdi_obs y_a_obs wy_obs c_obs
-	e_z e_h e_g e_i e_n e_s e_e;
-varexo eta_z eta_h eta_g eta_i eta_n eta_s eta_c eta_e;
+var	y        $y_t$        (long_name = 'output'),
+        c        $c_t$        (long_name = 'consumption'),
+        uc       $uc_t$       (long_name = 'marginal utility of consumption'),
+        uA       $u^A_t$      (long_name = 'Marginal utility of agri labor'),
+        uN       $u^N_t$      (long_name = 'Marginal utility in nonagri labor'),
+        hu       $hu_t$       (long_name = 'Labor preference bundle'),
+        i        $i_t$        (long_name = 'investment'),
+        h        $h_t$        (long_name = 'hours worked demand'),
+        v        $v_t$        (long_name = 'value function/Welfare'),
+        m        $m_t$        (long_name = 'Stochastic Discount Factor'),
+        u        $u_t$        (long_name = 'Utility'),
+        vh       $v^h_t$      (long_name = 'Welfare term - welfare cost'),
+        rer_obs  $rer^{obs}_t$ (long_name = 'real exchange rate (observed)'),
+        tb       $tb_t$       (long_name = 'trade balance'),
+        vc       $vc_t$       (long_name = 'Investment land'),
+
+        y_N      $y^N_t$      (long_name = 'output in non-agriculture'),
+        k_N      $k^N_t$      (long_name = 'capital in non-agriculture'),
+        i_N      $i^N_t$      (long_name = 'investment in non-agriculture'),
+        h_N      $h^N_t$      (long_name = 'labor in non-agriculture'),
+        w_N      $w^N_t$      (long_name = 'wage in non-agriculture'),
+        r        $r_t$        (long_name = 'interest rate'),
+        q_N      $q^N_t$      (long_name = 'relative price of non-agricultural inv. good'),
+        p_N      $p^N_t$      (long_name = 'relative price in non-agriculture'),
+        d        $d_t$        (long_name = 'dividends'),
+        y_A      $y^A_t$      (long_name = 'output in agriculture'),
+        k_A      $k^A_t$      (long_name = 'capital in agriculture'),
+        i_A      $i^A_t$      (long_name = 'investment in agriculture'),
+        h_A      $h^A_t$      (long_name = 'labor in agriculture'),
+        w_A      $w^A_t$      (long_name = 'wage in agriculture'),
+        q_A      $q^A_t$      (long_name = 'relative price of agricultural inv. good'),
+        p_A      $p^A_t$      (long_name = 'relative price in agriculture'),
+        land     $\ell_t$     (long_name = 'land use'),
+        x        $x_t$        (long_name = 'Land investmen'),
+        y_N_obs  $y^{N,obs}_t$ (long_name = 'observed non-agricultural output'),
+        gdp      $GDP_t$      (long_name = 'aggregate output'),
+        NFA      $NFA_t$      (long_name = 'net foreign assets'),
+        c_R      $c^R_t$      (long_name = 'rural consumption'),
+        c_N      $c^N_t$      (long_name = 'non-agricultural consumption'),
+        de       $de_t$       (long_name = 'exchange rate change'),
+        c_star   $c^*_t$      (long_name = 'foreign consumption'),
+        m_star   $m^*_t$      (long_name = 'foreign SDF'),
+        uc_star  $uc^*_t$     (long_name = 'foreign marginal utility'),
+        pc_A     $p^{c,A}_t$  (long_name = 'consumption price of agricultural goods'),
+        pc_N     $p^{c,N}_t$  (long_name = 'consumption price of non-agricultural goods'),
+        rer      $rer_t$      (long_name = 'real exchange rate'),
+        r_star   $r^*_t$      (long_name = 'foreign interest rate'),
+        n        $n_t$        (long_name = 'Sectoral share'),
+        phi      $\phi_t$     (long_name = 'Land cost function'),
+        varrho   $\varrho_t$  (long_name = 'Land shadow value'),
+        ca_y     $(CA/Y)_t$   (long_name = 'current account to output ratio'),
+        dyA      $\Delta y^A_t$ (long_name = 'growth in agricultural output'),
+        dy       $\Delta y_t$ (long_name = 'output growth'),
+        dc       $\Delta c_t$ (long_name = 'consumption growth'),
+        dH       $\Delta H_t$ (long_name = 'change in hours worked'),
+        welf     $W_t$        (long_name = 'welfare index'),
+
+        y_obs    $y^{obs}_t$  (long_name = 'observed output'),
+        i_obs    $i^{obs}_t$  (long_name = 'observed investment'),
+        h_obs    $h^{obs}_t$  (long_name = 'observed hours'),
+        smdi_obs $smdi^{obs}_t$ (long_name = 'synthetic meteorological drought index'),
+        y_a_obs  $y^{A,obs}_t$ (long_name = 'observed agricultural output'),
+        wy_obs   $wy^{obs}_t$ (long_name = 'weather-adjusted output'),
+        c_obs    $c^{obs}_t$  (long_name = 'observed consumption'),
+
+        e_z      $e^z_t$      (long_name = 'TFP shock'),
+        e_h      $e^h_t$      (long_name = 'labor shock'),
+        e_g      $e^g_t$      (long_name = 'government spending shock'),
+        e_i      $e^i_t$      (long_name = 'investment-specific shock'),
+        e_n      $e^n_t$      (long_name = 'sectoral shock'),
+        e_s      $e^s_t$      (long_name = 'supply/weather shock'),
+        e_e      $e^e_t$      (long_name = 'exchange rate or external shock');
 
 
-parameters	beta delta_K alpha sigmaC sigmaH chi gy b chi_I iota varphi mu 
-			gamma Tss
-			omega tau kappa_A Lss delta_L psi theta1 theta2 theta3 theta4 alpha_N mu_N alpha_A mu_A chi_b rho_c sigmaC_star b_star
-			sig_z sig_h sig_g sig_i sig_n sig_s sig_c sig_e
-			% shocks
-			rho_z rho_h rho_g rho_i rho_n rho_s rho_e ;
+varexo	eta_z   $ \eta^z_t $   (long_name = 'innovation to TFP shock'),
+        eta_h   $ \eta^h_t $   (long_name = 'innovation to labor shock'),
+        eta_g   $ \eta^g_t $   (long_name = 'innovation to government spending shock'),
+        eta_i   $ \eta^i_t $   (long_name = 'innovation to investment-specific shock'),
+        eta_n   $ \eta^n_t $   (long_name = 'innovation to sectoral shock'),
+        eta_s   $ \eta^s_t $   (long_name = 'innovation to supply or weather shock'),
+        eta_c   $ \eta^c_t $   (long_name = 'innovation to preference or consumption shock'),
+        eta_e   $ \eta^e_t $   (long_name = 'innovation to exchange rate or external shock');
+
+parameters	
+        beta        $ \beta $          (long_name = 'discount factor'),
+        delta_K     $ \delta_K $       (long_name = 'capital depreciation rate'),
+        alpha       $ \alpha $         (long_name = 'share of capital in output'),
+        sigmaC      $ \sigma_C $       (long_name = 'inverse elasticity of intertemporal substitution'),
+        sigmaH      $ \sigma_H $       (long_name = 'inverse Frisch elasticity of labor supply'),
+        chi         $ \chi $           (long_name = 'labor disutility parameter'),
+        gy          $ g_y $            (long_name = 'government spending to output ratio'),
+        b           $ b $              (long_name = 'Habits degreez'),
+        chi_I       $ \chi_I $         (long_name = 'investment adjustment cost'),
+        iota        $ \iota $          (long_name = 'Labor supply substitution'),
+        varphi      $ \varphi $        (long_name = 'share of agricultural goods in consumption'),
+        mu          $ \mu $            (long_name = 'Goods substitution in CES'),
+        gamma       $ \gamma $         (long_name = 'Share of nonricardian households'),
+        Hss         $ \bar{H} $        (long_name = 'Steady state Hours'),
+        Tss         $ T^{ss} $         (long_name = 'Transfer nonricardian households'),
+
+        omega       $ \omega $         (long_name = 'Land intensity in technology'),
+        tau         $ \tau $           (long_name = 'Scale in land cost'),
+        kappa_A     $ \kappa_A $       (long_name = 'Scale TFP in agriculture'),
+        Lss         $ L^{ss} $         (long_name = 'steady-state land supply'),
+        delta_L     $ \delta_L $       (long_name = 'land depreciation or adjustment cost'),
+        psi         $ \psi $           (long_name = 'Land cost parameter'),
+
+        theta1      $ \theta_1 $       (long_name = 'Weather shock elasticity lag 0'),
+        theta2      $ \theta_2 $       (long_name = 'Weather shock elasticity lag 1'),
+        theta3      $ \theta_3 $       (long_name = 'Weather shock elasticity lag 2'),
+        theta4      $ \theta_4 $       (long_name = 'Weather shock elasticity lag 3'),
+
+        alpha_N     $ \alpha_N $       (long_name = 'openness of non-agricultural market'),
+        mu_N        $ \mu_N $          (long_name = 'Substitution CES dom vs foreign nonagri goods'),
+        alpha_A     $ \alpha_A $       (long_name = 'openness of agricultural market'),
+        mu_A        $ \mu_A $          (long_name = 'Substitution CES dom vs foreign agri goods'),
+        chi_b       $ \chi_b $         (long_name = 'portfolio adjustment cost'),
+        rho_c       $ \rho_c $         (long_name = 'persistence of foreign consumption shock'),
+        sigmaC_star $ \sigma_C^* $     (long_name = 'foreign consumption elasticity'),
+        b_star      $ b^* $            (long_name = 'foreign habits degree'),
+
+        sig_z       $ \sigma_z $       (long_name = 'std. dev. of TFP shock'),
+        sig_h       $ \sigma_h $       (long_name = 'std. dev. of labor shock'),
+        sig_g       $ \sigma_g $       (long_name = 'std. dev. of government spending shock'),
+        sig_i       $ \sigma_i $       (long_name = 'std. dev. of investment-specific shock'),
+        sig_n       $ \sigma_n $       (long_name = 'std. dev. of sectoral shock'),
+        sig_s       $ \sigma_s $       (long_name = 'std. dev. of weather or supply shock'),
+        sig_c       $ \sigma_c $       (long_name = 'std. dev. of foreign shock'),
+        sig_e       $ \sigma_e $       (long_name = 'std. dev. of exchange rate or external shock'),
+
+        rho_z       $ \rho_z $         (long_name = 'persistence of TFP shock'),
+        rho_h       $ \rho_h $         (long_name = 'persistence of labor shock'),
+        rho_g       $ \rho_g $         (long_name = 'persistence of government spending shock'),
+        rho_i       $ \rho_i $         (long_name = 'persistence of investment-specific shock'),
+        rho_n       $ \rho_n $         (long_name = 'persistence of sectoral shock'),
+        rho_s       $ \rho_s $         (long_name = 'persistence of weather or supply shock'),
+        rho_e       $ \rho_e $         (long_name = 'persistence of exchange rate or external shock');
 
 %----------------------------------------------------------------
 % 2. Calibration
