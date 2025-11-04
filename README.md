@@ -18,8 +18,8 @@ Macro Modelling Initiative, organized by Benjamin Alford and Helena Herber
 
 Software requirements:
 
-- R (≥ 4.0.0) with a few packages (tidyverse, lubridate, dplyrExtras)
-- Dynare (≥ 4.6) interfaced with MATLAB
+- R (≥ 4.0.0) with a few packages (tidyverse, lubridate, sf).
+- Dynare (≥ 6.) interfaced with MATLAB.
 
 # Session 1: Reproducing the paper "Weather Shocks"
 

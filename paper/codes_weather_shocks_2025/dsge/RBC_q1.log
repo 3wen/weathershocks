@@ -1,0 +1,215 @@
+Starting Dynare (version 6.1).
+Calling Dynare with arguments: none
+Starting preprocessing of the model file ... 
+WARNING: the location C:\Users\gauth\AppData\Roaming\dynare.ini for the configuration file is obsolete; please see the reference manual for the new location. 
+Substitution of endo lags >= 2: added 15 auxiliary variables and equations. 
+Found 84 equation(s). 
+Evaluating expressions... 
+Computing static model derivatives (order 1). 
+Normalizing the static model... 
+Finding the optimal block decomposition of the static model... 
+21 block(s) found: 
+  20 recursive block(s) and 1 simultaneous block(s). 
+  the largest simultaneous block has 32 equation(s) 
+                                 and 32 feedback variable(s). 
+Computing dynamic model derivatives (order 1). 
+Normalizing the dynamic model... 
+Finding the optimal block decomposition of the dynamic model... 
+17 block(s) found: 
+  16 recursive block(s) and 1 simultaneous block(s). 
+  the largest simultaneous block has 36 equation(s) 
+                                 and 32 feedback variable(s). 
+Preprocessing completed. 
+Preprocessing time: 0h00m01s.
+
+
+Residuals of the static equations:
+Equation number  1: FOC home asset                                                                    :       0.000000
+Equation number  2: FOC foreign asset                                                                 :       0.000000
+Equation number  3: labor disutility index                                                            :       0.000000
+Equation number  4: FOC h_N                                                                           :       0.000000
+Equation number  5: FOC h_A                                                                           :       0.000000
+Equation number  6: welfare                                                                           :       0.000000
+Equation number  7: utility                                                                           :       0.000000
+Equation number  8: Welfare loss auxiliary variable to convert welfare into unconditional consumption :       0.000000
+Equation number  9: stochastic discount factor                                                        :       0.000000
+Equation number 10: Marginal utility of consumption                                                   :       0.000000
+Equation number 11: Marginal disutility of labor h_N                                                  :       0.000000
+Equation number 12: Marginal disutility of labor h_A                                                  :       0.000000
+Equation number 13: No arbitrage Bonds-Capital                                                        :       0.000000
+Equation number 14: 14                                                                                :       0.000000
+Equation number 15: Capital law of motion                                                             :       0.000000
+Equation number 16: i_A                                                                               :       0.000000
+Equation number 17: investment equation                                                               :       0.000000
+Equation number 18: q_A                                                                               :       0.000000
+Equation number 19: Production y_N                                                                    :       0.000000
+Equation number 20: Production y_A                                                                    :       0.000000
+Equation number 21: labor cost minimization N                                                         :       0.000000
+Equation number 22: labor cost minimization A                                                         :       0.000000
+Equation number 23: FOC land                                                                          :       0.000000
+Equation number 24: FOC x                                                                             :       0.000000
+Equation number 25: land cost                                                                         :       0.000000
+Equation number 26: vc                                                                                :       0.000000
+Equation number 27: Land                                                                              :       0.000000
+Equation number 28: Damage function                                                                   :       0.000000
+Equation number 29: total prod                                                                        :       0.000000
+Equation number 30: i                                                                                 :       0.000000
+Equation number 31: h                                                                                 :       0.000000
+Equation number 32: Reallocation shock                                                                :       0.000000
+Equation number 33: Ressources Constraint                                                             :       0.000000
+Equation number 34: 34                                                                                :       0.000000
+Equation number 35: Ricardian definitions                                                             :       0.000000
+Equation number 36: 36                                                                                :       0.000000
+Equation number 37: Gross Domestic Product                                                            :       0.000000
+Equation number 38: Price indexes                                                                     :       0.000000
+Equation number 39: 39                                                                                :       0.000000
+Equation number 40: net foreign assets                                                                :       0.000000
+Equation number 41: trade balance                                                                     :       0.000000
+Equation number 42: relative price                                                                    :       0.000000
+Equation number 43: net foreign assets                                                                :       0.000000
+Equation number 44: uc_star                                                                           :       0.000000
+Equation number 45: 45                                                                                :       0.000000
+Equation number 46: 46                                                                                :       0.000000
+Equation number 47: Observables                                                                       :       0.000000
+Equation number 48: i_obs                                                                             :       0.000000
+Equation number 49: h_obs                                                                             :       0.000000
+Equation number 50: c_obs                                                                             :       0.000000
+Equation number 51: smdi_obs                                                                          :       0.000000
+Equation number 52: y_a_obs                                                                           :       0.000000
+Equation number 53: wy_obs                                                                            :       0.000000
+Equation number 54: rer_obs                                                                           :       0.000000
+Equation number 55: y_N_obs                                                                           :       0.000000
+Equation number 56: current account                                                                   :       0.000000
+Equation number 57: Shock decomposition                                                               :       0.000000
+Equation number 58: dy                                                                                :       0.000000
+Equation number 59: dc                                                                                :       0.000000
+Equation number 60: dH                                                                                :       0.000000
+Equation number 61: welfare                                                                           :       0.000000
+Equation number 62: Expected rer                                                                      :       0.000000
+Equation number 63: shocks                                                                            :       0.000000
+Equation number 64: 64                                                                                :       0.000000
+Equation number 65: 65                                                                                :       0.000000
+Equation number 66: 66                                                                                :       0.000000
+Equation number 67: 67                                                                                :       0.000000
+Equation number 68: 68                                                                                :       0.000000
+Equation number 69: 69                                                                                :       0.000000
+
+
+
+EIGENVALUES:
+         Modulus             Real        Imaginary
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+               0                0                0
+       7.659e-18       -7.659e-18                0
+       8.161e-15        8.161e-15                0
+       1.921e-14       -1.921e-14                0
+       2.896e-14       -2.896e-14                0
+       8.635e-14       -8.635e-14                0
+            0.38             0.38                0
+            0.38             0.38                0
+          0.5138           0.5138                0
+          0.7649           0.7649                0
+             0.8              0.8                0
+          0.8305           0.8305                0
+          0.9199           0.9165          0.07915
+          0.9199           0.9165         -0.07915
+            0.95             0.95                0
+            0.95             0.95                0
+            0.95             0.95                0
+            0.95             0.95                0
+          0.9653           0.9653                0
+          0.9949           0.9949                0
+           1.012            1.012                0
+           1.012            1.012                0
+           1.012            1.012                0
+           1.017            1.017                0
+           1.037            1.037                0
+           1.048            1.048                0
+             1.1            1.096          0.09481
+             1.1            1.096         -0.09481
+           1.425            1.425                0
+        7.03e+15        -7.03e+15                0
+       1.633e+16       -1.633e+16                0
+        1.72e+16        -1.72e+16                0
+        2.21e+16        -2.21e+16                0
+       6.978e+16        6.978e+16                0
+       2.712e+17       -2.712e+17                0
+       2.074e+18       -2.074e+18                0
+       1.314e+19        1.314e+19                0
+             Inf              Inf                0
+             Inf              Inf                0
+
+There are 19 eigenvalue(s) larger than 1 in modulus for 19 forward-looking variable(s)
+The rank condition is verified.
+
+
+You did not declare endogenous variables after the estimation/calib_smoother command.
+
+[Warning: Some of the parameters have no value (chi, Tss, tau, kappa_A) when using initial_estimation_checks. If these
+parameters are not initialized in a steadystate file or a steady_state_model-block, Dynare may not be able to solve the
+model. Note that simul, perfect_foresight_setup, and perfect_foresight_solver do not automatically call the steady state
+file.] 
+Initial value of the log posterior (or likelihood): -1414.932
+
+RESULTS FROM POSTERIOR ESTIMATION
+parameters
+        prior mean     mode    s.d.  prior pstdev
+
+rho_z       0.5000   0.3392  0.0818   beta 0.2000 
+rho_h       0.5000   0.8880  0.0374   beta 0.2000 
+rho_g       0.5000   0.8547  0.0368   beta 0.2000 
+rho_i       0.5000   0.3804  0.0967   beta 0.2000 
+rho_n       0.5000   0.8615  0.0399   beta 0.2000 
+rho_s       0.5000   0.3771  0.0868   beta 0.2000 
+rho_e       0.5000   0.1979  0.0882   beta 0.2000 
+rho_c       0.5000   0.9513  0.0206   beta 0.2000 
+sig_z       1.0000   2.0410  0.1763  weibl 2.0000 
+sig_h       1.0000   5.8414  0.7970  weibl 2.0000 
+sig_g       1.0000   3.8654  0.2885  weibl 2.0000 
+sig_i       1.0000   6.0330  0.7785  weibl 2.0000 
+sig_n       1.0000   8.7909  1.2023  weibl 2.0000 
+sig_s       1.0000   0.7998  0.0592  weibl 2.0000 
+sig_e       1.0000   5.0692  0.4822  weibl 2.0000 
+sig_c       1.0000   0.6716  0.0509  weibl 2.0000 
+theta1      0.0000  14.5312  7.6979   unif 500.0000 
+sigmaC      1.0000   1.2200  0.2306   norm 0.3500 
+sigmaH      2.0000   4.1865  0.5822   norm 0.7500 
+psi         1.0000   2.2723  0.5773   norm 1.0000 
+omega       0.2000   0.1289  0.0584   beta 0.0800 
+delta_L     0.2500   0.0466  0.0145   beta 0.1000 
+b           0.7000   0.5945  0.0761   beta 0.1000 
+iota        1.0000   2.8177  0.5224   norm 0.7500 
+chi_I       4.0000   2.0405  0.5604   norm 1.5000 
+mu          2.0000   5.5533  1.0429   gamm 1.0000 
+mu_A        2.0000   1.1037  0.1867   gamm 1.0000 
+mu_N        2.0000   0.7811  0.0781   gamm 1.0000 
+
+
+Log data density [Laplace approximation] is -1443.840991.
+
+Estimation::mcmc: Total number of MH draws per chain: 100000.
+Estimation::mcmc: Total number of generated MH files: 1.
+Estimation::mcmc: I'll use mh-files 1 to 1.
+Estimation::mcmc: In MH-file number 1 I'll start at line 10001.
+Estimation::mcmc: Finally I keep 90000 draws per chain.
+
+Total computing time : 0h00m06s
+Note: 1 warning(s) encountered in the preprocessor
+Note: warning(s) encountered in MATLAB/Octave code
