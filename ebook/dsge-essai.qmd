@@ -1,5 +1,7 @@
 # Essai {#sec-essai}
 
+ATTENTION, ce n'est pas le bon fichier, celui-ci est un fichier d'exemple.
+
 In @sec-code, ...
 
 ## Une Section {#sec-code}
