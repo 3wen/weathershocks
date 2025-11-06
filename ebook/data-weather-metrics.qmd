@@ -335,7 +335,7 @@ $${#eq-water-input}
 :::
 
 
-Let us first compute water deficit $W_t$.
+Let us first compute water input $W_t$.
 
 ```{r compute-water-deficit}
 country_weather_daily <- 
@@ -2145,7 +2145,7 @@ plot_maps_q(
 
 
 
-### National Level
+### National Level {#sec-nat-level}
 
 In our context, we assume that weather shocks primarily affect the agricultural sector, before propagating to the broader economy. Consequently, when aggregating weather variables at the national level, we apply weights that capture the relative agricultural intensity of each region. By doing so, areas where agriculture plays a larger economic role contribute more to the national weather indices.
 
@@ -2344,15 +2344,18 @@ We can compute the regional weights $w_{r,t}$ (@eq-agri-regional-weights).
 ```{r define-tb_agri_shares}
 # Expressing as a share of total national value
 tb_agri_shares <- agri |> 
-  left_join(
-    agri |> filter(region == "New Zealand") |> 
-      select(year, gdp_tot = gdp_a),
-    by = "year"
-  ) |> 
-  mutate(
-    agri_share_region = gdp_a / gdp_tot
-  )
+  filter(!region == "Nez Zealand") |> 
+  group_by(year) |> 
+  mutate(agri_share_region = gdp_a / sum(gdp_a))
+tb_agri_shares |> select(year, region, gdp_a, agri_share_region)
 ```
+
+
+Let us save this table of weights:
+```{r save-tb_agri_shares}
+save(tb_agri_shares, file = "../data/Agriculture/tb_agri_shares.rda")
+```
+
 
 #### Matching Regional Agricultural Intensity and Weather Data
 
