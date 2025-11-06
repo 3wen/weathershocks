@@ -1,0 +1,21 @@
+Starting Dynare (version 6.1).
+Calling Dynare with arguments: none
+Starting preprocessing of the model file ... 
+WARNING: the location C:\Users\gauth\AppData\Roaming\dynare.ini for the configuration file is obsolete; please see the reference manual for the new location. 
+Found 0 equation(s). 
+Evaluating expressions... 
+Preprocessing completed. 
+Preprocessing time: 0h00m00s.
+TABLE 2: Marginal Density: Laplace
+
+
+
+
+Model Comparison (based on Laplace approximation)
+Model                                 RBC_q0         RBC_q1
+Priors                              0.500000       0.500000
+Log Marginal Density            -1449.597974   -1443.840991
+Bayes Ratio                         1.000000     316.392610
+Posterior Model Probability         0.003151       0.996849
+Total computing time : 0h00m00s
+Note: 1 warning(s) encountered in the preprocessor

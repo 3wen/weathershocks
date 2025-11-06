@@ -60,7 +60,6 @@ data/Weather/CPC/grid_daily_tmin/*
 
 # Replication codes unzip
 paper/codes_weather_shocks/*
-paper/codes_weather_shocks_2025/*
 paper/tmp/*
 
 # Draft
