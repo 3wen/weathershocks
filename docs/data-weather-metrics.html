@@ -84,17 +84,19 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./data-merge.html" rel="next">
+<link href="./data-macro.html" rel="next">
 <link href="./data-weather-missing.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea4e51666191dd6ded9f775c5bce66c9.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-e845f871f76c909dd0a2a1d88316b656.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-626149efe8f5d16e1d391ba177679bf0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-87ec474df7c9426c554836db57f7b3fe.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-c8ec05b12fea21112c9e9d964ceda114.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,7 +125,20 @@ div.csl-indent {
   }
 }</script>
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({ TeX: { extensions: ["color.js"] }});
+  MathJax.Hub.Config({
+    TeX: {
+      extensions: ["color.js", "bbox.js"],
+      Macros: {
+        highlightpurple: ["\\bbox[5px,border:0px,background:#F3E6EF]{\\color{wongPurple}{\\mathbf{#1}}}", 1],
+        highlightgreen:  ["\\bbox[5px,border:0px,background:#E9F5EF]{\\color{wongGreen}{\\mathbf{#1}}}", 1],
+        highlightblue:   ["\\bbox[5px,border:0px,background:#E6F1F9]{\\color{wongBlue}{\\mathbf{#1}}}", 1],
+        highlightorange: ["\\bbox[5px,border:0px,background:#FBEFE5]{\\color{wongOrange}{\\mathbf{#1}}}", 1],
+        highlightgold:   ["\\bbox[5px,border:0px,background:#FFF5E0]{\\color{wongGold}{\\mathbf{#1}}}", 1],
+        highlightlightblue:["\\bbox[5px,border:0px,background:#EEF8FD]{\\color{wongLightBlue}{\\mathbf{#1}}}", 1],
+        highlightgris:   ["\\bbox[5px,border:0px,background:#F1F2F3]{\\color{gris}{\\mathbf{#1}}}", 1]
+      }
+    }
+  });
 </script>
 <script type="text/x-mathjax-config">
 	MathJax.Hub.Register.StartupHook("TeX color Ready", function() {
@@ -144,6 +159,7 @@ div.csl-indent {
 		 MathJax.Extension["TeX/color"].colors["IBMYellow"] = '#FFB000';
 	});
 </script>
+
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -202,6 +218,7 @@ window.Quarto = {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -269,8 +286,14 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data-merge.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merge</span></span></a>
+  <a href="./data-macro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merge With Macroeconomic Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data-climate-projections.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Climate Projection</span></span></a>
   </div>
 </li>
       </ul>
@@ -287,7 +310,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./var-estimation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">VAR</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">VAR</span></span></a>
   </div>
 </li>
       </ul>
@@ -303,8 +326,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./dsge-essai.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Essai</span></span></a>
+  <a href="./dsge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">DSGE</span></span></a>
   </div>
 </li>
       </ul>
@@ -350,7 +373,7 @@ window.Quarto = {
   <li><a href="#maps-for-monthly-data" id="toc-maps-for-monthly-data" class="nav-link" data-scroll-target="#maps-for-monthly-data"><span class="header-section-number">5.6.1.3</span> Maps for Monthly Data</a></li>
   <li><a href="#maps-for-quarterly-data" id="toc-maps-for-quarterly-data" class="nav-link" data-scroll-target="#maps-for-quarterly-data"><span class="header-section-number">5.6.1.4</span> Maps for Quarterly Data</a></li>
   </ul></li>
-  <li><a href="#national-level" id="toc-national-level" class="nav-link" data-scroll-target="#national-level"><span class="header-section-number">5.6.2</span> National Level</a>
+  <li><a href="#sec-nat-level" id="toc-sec-nat-level" class="nav-link" data-scroll-target="#sec-nat-level"><span class="header-section-number">5.6.2</span> National Level</a>
   <ul class="collapse">
   <li><a href="#regional-agricultural-intensity" id="toc-regional-agricultural-intensity" class="nav-link" data-scroll-target="#regional-agricultural-intensity"><span class="header-section-number">5.6.2.1</span> Regional Agricultural Intensity</a></li>
   <li><a href="#matching-regional-agricultural-intensity-and-weather-data" id="toc-matching-regional-agricultural-intensity-and-weather-data" class="nav-link" data-scroll-target="#matching-regional-agricultural-intensity-and-weather-data"><span class="header-section-number">5.6.2.2</span> Matching Regional Agricultural Intensity and Weather Data</a></li>
@@ -401,8 +424,8 @@ Objectives of this page
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ forcats   1.0.0     ✔ stringr   1.5.2
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
 ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
 ✔ purrr     1.1.0     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
@@ -717,7 +740,7 @@ W_t = \text{Rain}_t + \text{Melt}_t
 </div>
 </div>
 </div>
-<p>Let us first compute water deficit <span class="math inline">\(W_t\)</span>.</p>
+<p>Let us first compute water input <span class="math inline">\(W_t\)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>country_weather_daily <span class="ot">&lt;-</span> </span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  country_weather_daily <span class="sc">|&gt;</span> </span>
@@ -2947,8 +2970,8 @@ Figure&nbsp;5.29: Quarterly averages in 2013
 </div>
 </section>
 </section>
-<section id="national-level" class="level3" data-number="5.6.2">
-<h3 data-number="5.6.2" class="anchored" data-anchor-id="national-level"><span class="header-section-number">5.6.2</span> National Level</h3>
+<section id="sec-nat-level" class="level3" data-number="5.6.2">
+<h3 data-number="5.6.2" class="anchored" data-anchor-id="sec-nat-level"><span class="header-section-number">5.6.2</span> National Level</h3>
 <p>In our context, we assume that weather shocks primarily affect the agricultural sector, before propagating to the broader economy. Consequently, when aggregating weather variables at the national level, we apply weights that capture the relative agricultural intensity of each region. By doing so, areas where agriculture plays a larger economic role contribute more to the national weather indices.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -3180,14 +3203,31 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 <div class="cell">
 <div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Expressing as a share of total national value</span></span>
 <span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="ot">&lt;-</span> agri <span class="sc">|&gt;</span> </span>
-<span id="cb127-3"><a href="#cb127-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb127-4"><a href="#cb127-4" aria-hidden="true" tabindex="-1"></a>    agri <span class="sc">|&gt;</span> <span class="fu">filter</span>(region <span class="sc">==</span> <span class="st">"New Zealand"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb127-5"><a href="#cb127-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(year, <span class="at">gdp_tot =</span> gdp_a),</span>
-<span id="cb127-6"><a href="#cb127-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"year"</span></span>
-<span id="cb127-7"><a href="#cb127-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb127-8"><a href="#cb127-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb127-9"><a href="#cb127-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">agri_share_region =</span> gdp_a <span class="sc">/</span> gdp_tot</span>
-<span id="cb127-10"><a href="#cb127-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb127-3"><a href="#cb127-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>region <span class="sc">==</span> <span class="st">"Nez Zealand"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb127-4"><a href="#cb127-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">|&gt;</span> </span>
+<span id="cb127-5"><a href="#cb127-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">agri_share_region =</span> gdp_a <span class="sc">/</span> <span class="fu">sum</span>(gdp_a))</span>
+<span id="cb127-6"><a href="#cb127-6" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">select</span>(year, region, gdp_a, agri_share_region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 702 × 4
+# Groups:   year [39]
+    year region              gdp_a agri_share_region
+   &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt;             &lt;dbl&gt;
+ 1  1987 Auckland            180.            0.0133 
+ 2  1987 Bay of Plenty       350.            0.0259 
+ 3  1987 Canterbury          605.            0.0448 
+ 4  1987 Gisborne             84.6           0.00626
+ 5  1987 Hawke's Bay         291.            0.0215 
+ 6  1987 Manawatu-Whanganui  446.            0.0330 
+ 7  1987 Marlborough          73.5           0.00544
+ 8  1987 New Zealand        4470.            0.331  
+ 9  1987 Northland           303.            0.0224 
+10  1987 Otago               289.            0.0214 
+# ℹ 692 more rows</code></pre>
+</div>
+</div>
+<p>Let us save this table of weights:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(tb_agri_shares, <span class="at">file =</span> <span class="st">"../data/Agriculture/tb_agri_shares.rda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -3198,8 +3238,8 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 <p>Region names often differ across sources. Here, we need to align agricultural intensity (from a national source) with weather data whose regions follow GADM names.</p>
 <p>First, we list weather regions that do not appear in the agricultural data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
-<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Tasman
 Manawatu-Wanganui
@@ -3208,7 +3248,7 @@ Nelson</code></pre>
 </div>
 <p>Agricultural table region names:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "Auckland"           "Bay of Plenty"      "Canterbury"        
  [4] "Gisborne"           "Hawke's Bay"        "Manawatu-Whanganui"
@@ -3225,36 +3265,36 @@ Nelson</code></pre>
 </ol>
 <p>For the first issue, the fix is very easy, we just need to adjust the spelling.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="ot">&lt;-</span> tb_agri_shares <span class="sc">|&gt;</span> </span>
-<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb132-3"><a href="#cb132-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">if_else</span>(</span>
-<span id="cb132-4"><a href="#cb132-4" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">==</span> <span class="st">"Manawatu-Whanganui"</span>,</span>
-<span id="cb132-5"><a href="#cb132-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Manawatu-Wanganui"</span>,</span>
-<span id="cb132-6"><a href="#cb132-6" aria-hidden="true" tabindex="-1"></a>      region</span>
-<span id="cb132-7"><a href="#cb132-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb132-8"><a href="#cb132-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="ot">&lt;-</span> tb_agri_shares <span class="sc">|&gt;</span> </span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">if_else</span>(</span>
+<span id="cb134-4"><a href="#cb134-4" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">==</span> <span class="st">"Manawatu-Whanganui"</span>,</span>
+<span id="cb134-5"><a href="#cb134-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Manawatu-Wanganui"</span>,</span>
+<span id="cb134-6"><a href="#cb134-6" aria-hidden="true" tabindex="-1"></a>      region</span>
+<span id="cb134-7"><a href="#cb134-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb134-8"><a href="#cb134-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For the second issue, let us first visualize the Tasman/Nelson regions.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb133-2"><a href="#cb133-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> maps_level_1_NZ <span class="sc">|&gt;</span> </span>
-<span id="cb133-3"><a href="#cb133-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb133-4"><a href="#cb133-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">issue =</span> <span class="fu">case_when</span>(</span>
-<span id="cb133-5"><a href="#cb133-5" aria-hidden="true" tabindex="-1"></a>        NAME_1 <span class="sc">==</span> <span class="st">"Tasman"</span> <span class="sc">~</span> <span class="st">"Tasman"</span>,</span>
-<span id="cb133-6"><a href="#cb133-6" aria-hidden="true" tabindex="-1"></a>        NAME_1 <span class="sc">==</span> <span class="st">"Nelson"</span> <span class="sc">~</span> <span class="st">"Nelson"</span>,</span>
-<span id="cb133-7"><a href="#cb133-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
-<span id="cb133-8"><a href="#cb133-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb133-9"><a href="#cb133-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">issue =</span> <span class="fu">factor</span>(issue, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>, <span class="st">"Other"</span>))</span>
-<span id="cb133-10"><a href="#cb133-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb133-11"><a href="#cb133-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> issue)</span>
-<span id="cb133-12"><a href="#cb133-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> </span>
-<span id="cb133-13"><a href="#cb133-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb133-14"><a href="#cb133-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
-<span id="cb133-15"><a href="#cb133-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Regions"</span>,</span>
-<span id="cb133-16"><a href="#cb133-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>, <span class="st">"Nelson"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"Other"</span> <span class="ot">=</span> <span class="st">"gray"</span>)</span>
-<span id="cb133-17"><a href="#cb133-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb135-2"><a href="#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> maps_level_1_NZ <span class="sc">|&gt;</span> </span>
+<span id="cb135-3"><a href="#cb135-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb135-4"><a href="#cb135-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">issue =</span> <span class="fu">case_when</span>(</span>
+<span id="cb135-5"><a href="#cb135-5" aria-hidden="true" tabindex="-1"></a>        NAME_1 <span class="sc">==</span> <span class="st">"Tasman"</span> <span class="sc">~</span> <span class="st">"Tasman"</span>,</span>
+<span id="cb135-6"><a href="#cb135-6" aria-hidden="true" tabindex="-1"></a>        NAME_1 <span class="sc">==</span> <span class="st">"Nelson"</span> <span class="sc">~</span> <span class="st">"Nelson"</span>,</span>
+<span id="cb135-7"><a href="#cb135-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
+<span id="cb135-8"><a href="#cb135-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb135-9"><a href="#cb135-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">issue =</span> <span class="fu">factor</span>(issue, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>, <span class="st">"Other"</span>))</span>
+<span id="cb135-10"><a href="#cb135-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb135-11"><a href="#cb135-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> issue)</span>
+<span id="cb135-12"><a href="#cb135-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> </span>
+<span id="cb135-13"><a href="#cb135-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb135-14"><a href="#cb135-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb135-15"><a href="#cb135-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Regions"</span>,</span>
+<span id="cb135-16"><a href="#cb135-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>, <span class="st">"Nelson"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"Other"</span> <span class="ot">=</span> <span class="st">"gray"</span>)</span>
+<span id="cb135-17"><a href="#cb135-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-map-issue-tasman" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3271,14 +3311,14 @@ Figure&nbsp;5.30: Regions merged in the agricultural data.
 </div>
 <p>Tasman is much larger than Nelson, so we split the combined agricultural share proportionally to their land areas (not 50/50). We compute areas from the map.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Areas of each region</span></span>
-<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>nz_areas <span class="ot">&lt;-</span> maps_level_1_NZ <span class="sc">|&gt;</span></span>
-<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(NAME_1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb134-4"><a href="#cb134-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area_m2 =</span> <span class="fu">st_area</span>(geometry)) <span class="sc">|&gt;</span></span>
-<span id="cb134-5"><a href="#cb134-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
-<span id="cb134-6"><a href="#cb134-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area_m2 =</span> <span class="fu">as.numeric</span>(area_m2)) <span class="sc">|&gt;</span></span>
-<span id="cb134-7"><a href="#cb134-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">region =</span> NAME_1, area_m2)</span>
-<span id="cb134-8"><a href="#cb134-8" aria-hidden="true" tabindex="-1"></a>nz_areas</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Areas of each region</span></span>
+<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>nz_areas <span class="ot">&lt;-</span> maps_level_1_NZ <span class="sc">|&gt;</span></span>
+<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(NAME_1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area_m2 =</span> <span class="fu">st_area</span>(geometry)) <span class="sc">|&gt;</span></span>
+<span id="cb136-5"><a href="#cb136-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb136-6"><a href="#cb136-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">area_m2 =</span> <span class="fu">as.numeric</span>(area_m2)) <span class="sc">|&gt;</span></span>
+<span id="cb136-7"><a href="#cb136-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">region =</span> NAME_1, area_m2)</span>
+<span id="cb136-8"><a href="#cb136-8" aria-hidden="true" tabindex="-1"></a>nz_areas</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  region    area_m2
 1 Nelson  419763011
@@ -3287,10 +3327,10 @@ Figure&nbsp;5.30: Regions merged in the agricultural data.
 </div>
 <p>The corresponding weight:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>tas_nel_weights <span class="ot">&lt;-</span> nz_areas <span class="sc">|&gt;</span></span>
-<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">w =</span> area_m2 <span class="sc">/</span> <span class="fu">sum</span>(area_m2)) <span class="sc">|&gt;</span></span>
-<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(region, w)</span>
-<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>tas_nel_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>tas_nel_weights <span class="ot">&lt;-</span> nz_areas <span class="sc">|&gt;</span></span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">w =</span> area_m2 <span class="sc">/</span> <span class="fu">sum</span>(area_m2)) <span class="sc">|&gt;</span></span>
+<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(region, w)</span>
+<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a>tas_nel_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  region          w
 1 Nelson 0.04176116
@@ -3299,38 +3339,38 @@ Figure&nbsp;5.30: Regions merged in the agricultural data.
 </div>
 <p>Now we duplicate each <code class="sourceCode r"><span class="st">"Tasman/Nelson"</span></code> row into two rows (<code class="sourceCode r"><span class="st">"Tasman"</span></code> and <code class="sourceCode r">Nelson</code>) and allocate <code>gdp_a</code> and <code>agri_share_region</code> using the weights:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>group_label <span class="ot">&lt;-</span> <span class="st">"Tasman/Nelson"</span></span>
-<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="ot">&lt;-</span></span>
-<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># keep all rows that are not the Tasman + Nelson aggregate</span></span>
-<span id="cb138-5"><a href="#cb138-5" aria-hidden="true" tabindex="-1"></a>  tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">filter</span>(region <span class="sc">!=</span> <span class="sc">!!</span>group_label) <span class="sc">|&gt;</span> </span>
-<span id="cb138-6"><a href="#cb138-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
-<span id="cb138-7"><a href="#cb138-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># duplicate the grouped rows for Tasman and Nelson and split the share</span></span>
-<span id="cb138-8"><a href="#cb138-8" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span></span>
-<span id="cb138-9"><a href="#cb138-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(region <span class="sc">==</span> <span class="sc">!!</span>group_label) <span class="sc">|&gt;</span></span>
-<span id="cb138-10"><a href="#cb138-10" aria-hidden="true" tabindex="-1"></a>      <span class="co"># create two copies per row, one for each region</span></span>
-<span id="cb138-11"><a href="#cb138-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">crossing</span>(<span class="at">region_2 =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb138-12"><a href="#cb138-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>region) <span class="sc">|&gt;</span> </span>
-<span id="cb138-13"><a href="#cb138-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">region =</span> region_2) <span class="sc">|&gt;</span> </span>
-<span id="cb138-14"><a href="#cb138-14" aria-hidden="true" tabindex="-1"></a>      <span class="co"># add area weights</span></span>
-<span id="cb138-15"><a href="#cb138-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">left_join</span>(tas_nel_weights, <span class="at">by =</span> <span class="st">"region"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb138-16"><a href="#cb138-16" aria-hidden="true" tabindex="-1"></a>      <span class="co"># apportion only the agri_share_region (as asked)</span></span>
-<span id="cb138-17"><a href="#cb138-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
-<span id="cb138-18"><a href="#cb138-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">gdp_a =</span> gdp_a <span class="sc">*</span> w,</span>
-<span id="cb138-19"><a href="#cb138-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">agri_share_region =</span> agri_share_region <span class="sc">*</span> w) <span class="sc">|&gt;</span></span>
-<span id="cb138-20"><a href="#cb138-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>w)</span>
-<span id="cb138-21"><a href="#cb138-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb138-22"><a href="#cb138-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(region, year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>group_label <span class="ot">&lt;-</span> <span class="st">"Tasman/Nelson"</span></span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a>tb_agri_shares <span class="ot">&lt;-</span></span>
+<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># keep all rows that are not the Tasman + Nelson aggregate</span></span>
+<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>  tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">filter</span>(region <span class="sc">!=</span> <span class="sc">!!</span>group_label) <span class="sc">|&gt;</span> </span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># duplicate the grouped rows for Tasman and Nelson and split the share</span></span>
+<span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span></span>
+<span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(region <span class="sc">==</span> <span class="sc">!!</span>group_label) <span class="sc">|&gt;</span></span>
+<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a>      <span class="co"># create two copies per row, one for each region</span></span>
+<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">crossing</span>(<span class="at">region_2 =</span> <span class="fu">c</span>(<span class="st">"Tasman"</span>, <span class="st">"Nelson"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb140-12"><a href="#cb140-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>region) <span class="sc">|&gt;</span> </span>
+<span id="cb140-13"><a href="#cb140-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">region =</span> region_2) <span class="sc">|&gt;</span> </span>
+<span id="cb140-14"><a href="#cb140-14" aria-hidden="true" tabindex="-1"></a>      <span class="co"># add area weights</span></span>
+<span id="cb140-15"><a href="#cb140-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">left_join</span>(tas_nel_weights, <span class="at">by =</span> <span class="st">"region"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb140-16"><a href="#cb140-16" aria-hidden="true" tabindex="-1"></a>      <span class="co"># apportion only the agri_share_region (as asked)</span></span>
+<span id="cb140-17"><a href="#cb140-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb140-18"><a href="#cb140-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">gdp_a =</span> gdp_a <span class="sc">*</span> w,</span>
+<span id="cb140-19"><a href="#cb140-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">agri_share_region =</span> agri_share_region <span class="sc">*</span> w) <span class="sc">|&gt;</span></span>
+<span id="cb140-20"><a href="#cb140-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>w)</span>
+<span id="cb140-21"><a href="#cb140-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb140-22"><a href="#cb140-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(region, year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>As a sanity check, we look whether weather regions are still missing from the agricultural table:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
-<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>An we look which agricultural regions are not present in weather data (these are country- and island-level aggregates, which is fine):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
-<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region)[<span class="sc">!</span> <span class="fu">unique</span>(tb_agri_shares<span class="sc">$</span>region) <span class="sc">%in%</span> <span class="fu">unique</span>(region_weather_monthly<span class="sc">$</span>region)] <span class="sc">|&gt;</span> </span>
+<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>New Zealand
 Total North Island
@@ -3343,53 +3383,53 @@ Total South Island</code></pre>
 <p>To obtain national-level indicators, we aggregate regional weather observations using agricultural intensity as weights. We merge the regional weather data with the corresponding agricultural weights (from <code>agri_share_region</code>) for each year and compute the weighted mean of each weather variable.</p>
 <p>For monthly data, we group by year and month:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>national_weather_monthly <span class="ot">&lt;-</span> </span>
-<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>  region_weather_monthly <span class="sc">|&gt;</span> </span>
-<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We restricted the agricultural data to 1987--2024</span></span>
-<span id="cb142-4"><a href="#cb142-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">1987</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb142-5"><a href="#cb142-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb142-6"><a href="#cb142-6" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">select</span>(year, region, agri_share_region),</span>
-<span id="cb142-7"><a href="#cb142-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"region"</span>, <span class="st">"year"</span>)</span>
-<span id="cb142-8"><a href="#cb142-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb142-9"><a href="#cb142-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, month, month_name) <span class="sc">|&gt;</span> </span>
-<span id="cb142-10"><a href="#cb142-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb142-11"><a href="#cb142-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
-<span id="cb142-12"><a href="#cb142-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">all_of</span>(weather_vars),</span>
-<span id="cb142-13"><a href="#cb142-13" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">weighted.mean</span>(.x, <span class="at">w =</span> agri_share_region)</span>
-<span id="cb142-14"><a href="#cb142-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb142-15"><a href="#cb142-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb142-16"><a href="#cb142-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a>national_weather_monthly <span class="ot">&lt;-</span> </span>
+<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a>  region_weather_monthly <span class="sc">|&gt;</span> </span>
+<span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We restricted the agricultural data to 1987--2024</span></span>
+<span id="cb144-4"><a href="#cb144-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">1987</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb144-5"><a href="#cb144-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb144-6"><a href="#cb144-6" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">select</span>(year, region, agri_share_region),</span>
+<span id="cb144-7"><a href="#cb144-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"region"</span>, <span class="st">"year"</span>)</span>
+<span id="cb144-8"><a href="#cb144-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb144-9"><a href="#cb144-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, month, month_name) <span class="sc">|&gt;</span> </span>
+<span id="cb144-10"><a href="#cb144-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb144-11"><a href="#cb144-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb144-12"><a href="#cb144-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">all_of</span>(weather_vars),</span>
+<span id="cb144-13"><a href="#cb144-13" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">weighted.mean</span>(.x, <span class="at">w =</span> agri_share_region)</span>
+<span id="cb144-14"><a href="#cb144-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb144-15"><a href="#cb144-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb144-16"><a href="#cb144-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For quarterly data, the same logic applies, except we aggregate by year and quarter:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a>national_weather_quarterly <span class="ot">&lt;-</span> </span>
-<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>  region_weather_quarterly <span class="sc">|&gt;</span> </span>
-<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We restricted the agricultural data to 1987--2024</span></span>
-<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">1987</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb143-5"><a href="#cb143-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb143-6"><a href="#cb143-6" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">select</span>(year, region, agri_share_region),</span>
-<span id="cb143-7"><a href="#cb143-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"region"</span>, <span class="st">"year"</span>)</span>
-<span id="cb143-8"><a href="#cb143-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb143-9"><a href="#cb143-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, quarter) <span class="sc">|&gt;</span> </span>
-<span id="cb143-10"><a href="#cb143-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb143-11"><a href="#cb143-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
-<span id="cb143-12"><a href="#cb143-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">all_of</span>(weather_vars),</span>
-<span id="cb143-13"><a href="#cb143-13" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">weighted.mean</span>(.x, <span class="at">w =</span> agri_share_region)</span>
-<span id="cb143-14"><a href="#cb143-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb143-15"><a href="#cb143-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb143-16"><a href="#cb143-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a>national_weather_quarterly <span class="ot">&lt;-</span> </span>
+<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a>  region_weather_quarterly <span class="sc">|&gt;</span> </span>
+<span id="cb145-3"><a href="#cb145-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We restricted the agricultural data to 1987--2024</span></span>
+<span id="cb145-4"><a href="#cb145-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">1987</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb145-5"><a href="#cb145-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb145-6"><a href="#cb145-6" aria-hidden="true" tabindex="-1"></a>    tb_agri_shares <span class="sc">|&gt;</span> <span class="fu">select</span>(year, region, agri_share_region),</span>
+<span id="cb145-7"><a href="#cb145-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"region"</span>, <span class="st">"year"</span>)</span>
+<span id="cb145-8"><a href="#cb145-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb145-9"><a href="#cb145-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, quarter) <span class="sc">|&gt;</span> </span>
+<span id="cb145-10"><a href="#cb145-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb145-11"><a href="#cb145-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb145-12"><a href="#cb145-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">all_of</span>(weather_vars),</span>
+<span id="cb145-13"><a href="#cb145-13" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">weighted.mean</span>(.x, <span class="at">w =</span> agri_share_region)</span>
+<span id="cb145-14"><a href="#cb145-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb145-15"><a href="#cb145-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb145-16"><a href="#cb145-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can have a look at the obtained values using different type of plots.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
-<span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month)),</span>
-<span id="cb144-4"><a href="#cb144-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
-<span id="cb144-5"><a href="#cb144-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb144-6"><a href="#cb144-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
-<span id="cb144-7"><a href="#cb144-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb146-2"><a href="#cb146-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
+<span id="cb146-3"><a href="#cb146-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month)),</span>
+<span id="cb146-4"><a href="#cb146-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
+<span id="cb146-5"><a href="#cb146-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb146-6"><a href="#cb146-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
+<span id="cb146-7"><a href="#cb146-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-precip-nz-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3408,13 +3448,13 @@ Figure&nbsp;5.31: Precipitation in New Zealand on a monthly basis.
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_quarterly <span class="sc">|&gt;</span> </span>
-<span id="cb145-3"><a href="#cb145-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> quarter<span class="sc">/</span><span class="dv">4</span>),</span>
-<span id="cb145-4"><a href="#cb145-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
-<span id="cb145-5"><a href="#cb145-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb145-6"><a href="#cb145-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
-<span id="cb145-7"><a href="#cb145-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb147-2"><a href="#cb147-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_quarterly <span class="sc">|&gt;</span> </span>
+<span id="cb147-3"><a href="#cb147-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> quarter<span class="sc">/</span><span class="dv">4</span>),</span>
+<span id="cb147-4"><a href="#cb147-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
+<span id="cb147-5"><a href="#cb147-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb147-6"><a href="#cb147-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
+<span id="cb147-7"><a href="#cb147-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-precip-nz-quarterly" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3433,24 +3473,24 @@ Figure&nbsp;5.32: Precipitation in New Zealand on a quarterly basis.
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb146-2"><a href="#cb146-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
-<span id="cb146-3"><a href="#cb146-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb146-4"><a href="#cb146-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_abb =</span> <span class="fu">factor</span>(month.abb[month], <span class="at">levels =</span> month.abb),</span>
-<span id="cb146-5"><a href="#cb146-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">highlight_year =</span> <span class="fu">case_when</span>(</span>
-<span id="cb146-6"><a href="#cb146-6" aria-hidden="true" tabindex="-1"></a>        year <span class="sc">==</span> <span class="dv">2013</span> <span class="sc">~</span> <span class="st">"2013"</span>,</span>
-<span id="cb146-7"><a href="#cb146-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
-<span id="cb146-8"><a href="#cb146-8" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb146-9"><a href="#cb146-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb146-10"><a href="#cb146-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> month_abb, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
-<span id="cb146-11"><a href="#cb146-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb146-12"><a href="#cb146-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">group =</span> year, <span class="at">colour =</span> highlight_year)</span>
-<span id="cb146-13"><a href="#cb146-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb146-14"><a href="#cb146-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(</span>
-<span id="cb146-15"><a href="#cb146-15" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NULL</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"2013"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"Other"</span> <span class="ot">=</span> <span class="st">"gray"</span>)</span>
-<span id="cb146-16"><a href="#cb146-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb146-17"><a href="#cb146-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
-<span id="cb146-18"><a href="#cb146-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
+<span id="cb148-3"><a href="#cb148-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb148-4"><a href="#cb148-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_abb =</span> <span class="fu">factor</span>(month.abb[month], <span class="at">levels =</span> month.abb),</span>
+<span id="cb148-5"><a href="#cb148-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">highlight_year =</span> <span class="fu">case_when</span>(</span>
+<span id="cb148-6"><a href="#cb148-6" aria-hidden="true" tabindex="-1"></a>        year <span class="sc">==</span> <span class="dv">2013</span> <span class="sc">~</span> <span class="st">"2013"</span>,</span>
+<span id="cb148-7"><a href="#cb148-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
+<span id="cb148-8"><a href="#cb148-8" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb148-9"><a href="#cb148-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb148-10"><a href="#cb148-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> month_abb, <span class="at">y =</span> precip)) <span class="sc">+</span></span>
+<span id="cb148-11"><a href="#cb148-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb148-12"><a href="#cb148-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">group =</span> year, <span class="at">colour =</span> highlight_year)</span>
+<span id="cb148-13"><a href="#cb148-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb148-14"><a href="#cb148-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(</span>
+<span id="cb148-15"><a href="#cb148-15" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NULL</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"2013"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>, <span class="st">"Other"</span> <span class="ot">=</span> <span class="st">"gray"</span>)</span>
+<span id="cb148-16"><a href="#cb148-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb148-17"><a href="#cb148-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
+<span id="cb148-18"><a href="#cb148-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-precip-nz-monthly-highlight-2013" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3469,32 +3509,32 @@ Figure&nbsp;5.33: Precipitation in New Zealand on a monthly basis (1987–2024).
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb147-2"><a href="#cb147-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
-<span id="cb147-3"><a href="#cb147-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb147-4"><a href="#cb147-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_abb =</span> <span class="fu">factor</span>(month.abb[month], <span class="at">levels =</span> month.abb)</span>
-<span id="cb147-5"><a href="#cb147-5" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
-<span id="cb147-6"><a href="#cb147-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(month_abb) <span class="sc">|&gt;</span> </span>
-<span id="cb147-7"><a href="#cb147-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
-<span id="cb147-8"><a href="#cb147-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">precip_mean =</span> <span class="fu">mean</span>(precip),</span>
-<span id="cb147-9"><a href="#cb147-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">precip_sd =</span> <span class="fu">sd</span>(precip)</span>
-<span id="cb147-10"><a href="#cb147-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb147-11"><a href="#cb147-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb147-12"><a href="#cb147-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(</span>
-<span id="cb147-13"><a href="#cb147-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> month_abb, <span class="at">y =</span> precip_mean),</span>
-<span id="cb147-14"><a href="#cb147-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">stat=</span><span class="st">"identity"</span>,</span>
-<span id="cb147-15"><a href="#cb147-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span><span class="st">"#5482AB"</span>, <span class="at">alpha=</span><span class="fl">0.7</span></span>
-<span id="cb147-16"><a href="#cb147-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb147-17"><a href="#cb147-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(</span>
-<span id="cb147-18"><a href="#cb147-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb147-19"><a href="#cb147-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> month_abb,</span>
-<span id="cb147-20"><a href="#cb147-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> precip_mean <span class="sc">-</span> precip_sd,</span>
-<span id="cb147-21"><a href="#cb147-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> precip_mean <span class="sc">+</span> precip_sd</span>
-<span id="cb147-22"><a href="#cb147-22" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb147-23"><a href="#cb147-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">"#005A8B"</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">linewidth =</span> <span class="fl">1.3</span></span>
-<span id="cb147-24"><a href="#cb147-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb147-25"><a href="#cb147-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
-<span id="cb147-26"><a href="#cb147-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb149"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb149-1"><a href="#cb149-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb149-2"><a href="#cb149-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
+<span id="cb149-3"><a href="#cb149-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb149-4"><a href="#cb149-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_abb =</span> <span class="fu">factor</span>(month.abb[month], <span class="at">levels =</span> month.abb)</span>
+<span id="cb149-5"><a href="#cb149-5" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb149-6"><a href="#cb149-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(month_abb) <span class="sc">|&gt;</span> </span>
+<span id="cb149-7"><a href="#cb149-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb149-8"><a href="#cb149-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">precip_mean =</span> <span class="fu">mean</span>(precip),</span>
+<span id="cb149-9"><a href="#cb149-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">precip_sd =</span> <span class="fu">sd</span>(precip)</span>
+<span id="cb149-10"><a href="#cb149-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb149-11"><a href="#cb149-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb149-12"><a href="#cb149-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(</span>
+<span id="cb149-13"><a href="#cb149-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> month_abb, <span class="at">y =</span> precip_mean),</span>
+<span id="cb149-14"><a href="#cb149-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">stat=</span><span class="st">"identity"</span>,</span>
+<span id="cb149-15"><a href="#cb149-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span><span class="st">"#5482AB"</span>, <span class="at">alpha=</span><span class="fl">0.7</span></span>
+<span id="cb149-16"><a href="#cb149-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb149-17"><a href="#cb149-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(</span>
+<span id="cb149-18"><a href="#cb149-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb149-19"><a href="#cb149-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> month_abb,</span>
+<span id="cb149-20"><a href="#cb149-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> precip_mean <span class="sc">-</span> precip_sd,</span>
+<span id="cb149-21"><a href="#cb149-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> precip_mean <span class="sc">+</span> precip_sd</span>
+<span id="cb149-22"><a href="#cb149-22" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb149-23"><a href="#cb149-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="fl">0.4</span>, <span class="at">colour =</span> <span class="st">"#005A8B"</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">linewidth =</span> <span class="fl">1.3</span></span>
+<span id="cb149-24"><a href="#cb149-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb149-25"><a href="#cb149-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Precipitation (mm)"</span>) <span class="sc">+</span></span>
+<span id="cb149-26"><a href="#cb149-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-precip-nz-monthly-barplot" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3513,14 +3553,14 @@ Figure&nbsp;5.34: Barplot of precipitation in New Zealand on a monthly basis (19
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
-<span id="cb148-3"><a href="#cb148-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month)),</span>
-<span id="cb148-4"><a href="#cb148-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI)) <span class="sc">+</span></span>
-<span id="cb148-5"><a href="#cb148-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb148-6"><a href="#cb148-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"3 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
-<span id="cb148-7"><a href="#cb148-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>) <span class="sc">+</span></span>
-<span id="cb148-8"><a href="#cb148-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_monthly <span class="sc">|&gt;</span> </span>
+<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month)),</span>
+<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI)) <span class="sc">+</span></span>
+<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"3 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
+<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>) <span class="sc">+</span></span>
+<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-SMDI-nz-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3539,14 +3579,14 @@ Figure&nbsp;5.35: Soil Moisture Deficit Index in New Zealand, monthly basis.
 <div class="cell">
 <details class="code-fold">
 <summary>Codes to create the Figure.</summary>
-<div class="sourceCode cell-code" id="cb149"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb149-1"><a href="#cb149-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb149-2"><a href="#cb149-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_quarterly <span class="sc">|&gt;</span> </span>
-<span id="cb149-3"><a href="#cb149-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> quarter<span class="sc">/</span><span class="dv">4</span>),</span>
-<span id="cb149-4"><a href="#cb149-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI)) <span class="sc">+</span></span>
-<span id="cb149-5"><a href="#cb149-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb149-6"><a href="#cb149-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb149-7"><a href="#cb149-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>) <span class="sc">+</span></span>
-<span id="cb149-8"><a href="#cb149-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb151-2"><a href="#cb151-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> national_weather_quarterly <span class="sc">|&gt;</span> </span>
+<span id="cb151-3"><a href="#cb151-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> year <span class="sc">+</span> quarter<span class="sc">/</span><span class="dv">4</span>),</span>
+<span id="cb151-4"><a href="#cb151-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> SMDI)) <span class="sc">+</span></span>
+<span id="cb151-5"><a href="#cb151-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb151-6"><a href="#cb151-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb151-7"><a href="#cb151-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"SMDI"</span>) <span class="sc">+</span></span>
+<span id="cb151-8"><a href="#cb151-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_paper</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-SMDI-nz-quarterly" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -3569,25 +3609,25 @@ Figure&nbsp;5.36: Soil Moisture Deficit Index in New Zealand, quarterly basis.
 <h2 data-number="5.7" class="anchored" data-anchor-id="saving-the-datasets"><span class="header-section-number">5.7</span> Saving the Datasets</h2>
 <p>To finish, let us export the two datasets. If those datasets are to be used in R later on, they can be saved as RData files to save space and importing time.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(</span>
-<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>  national_weather_monthly, </span>
-<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_monthly.rda"</span></span>
-<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(</span>
-<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a>  national_weather_quarterly, </span>
-<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_quarterly.rda"</span></span>
-<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(</span>
+<span id="cb152-2"><a href="#cb152-2" aria-hidden="true" tabindex="-1"></a>  national_weather_monthly, </span>
+<span id="cb152-3"><a href="#cb152-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_monthly.rda"</span></span>
+<span id="cb152-4"><a href="#cb152-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb152-5"><a href="#cb152-5" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(</span>
+<span id="cb152-6"><a href="#cb152-6" aria-hidden="true" tabindex="-1"></a>  national_weather_quarterly, </span>
+<span id="cb152-7"><a href="#cb152-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_quarterly.rda"</span></span>
+<span id="cb152-8"><a href="#cb152-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>If one wants to share the dataset for use in another software, a CSV file is also possible:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
-<span id="cb151-2"><a href="#cb151-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> national_weather_monthly, </span>
-<span id="cb151-3"><a href="#cb151-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_monthly.csv"</span></span>
-<span id="cb151-4"><a href="#cb151-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb151-5"><a href="#cb151-5" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
-<span id="cb151-6"><a href="#cb151-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> national_weather_quarterly, </span>
-<span id="cb151-7"><a href="#cb151-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_quarterly.csv"</span></span>
-<span id="cb151-8"><a href="#cb151-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb153-1"><a href="#cb153-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
+<span id="cb153-2"><a href="#cb153-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> national_weather_monthly, </span>
+<span id="cb153-3"><a href="#cb153-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_monthly.csv"</span></span>
+<span id="cb153-4"><a href="#cb153-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb153-5"><a href="#cb153-5" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
+<span id="cb153-6"><a href="#cb153-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> national_weather_quarterly, </span>
+<span id="cb153-7"><a href="#cb153-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../data/Weather/national_weather_quarterly.csv"</span></span>
+<span id="cb153-8"><a href="#cb153-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tbl-dict-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -3804,6 +3844,150 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
   toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
   const icon = "";
   const anchorJS = new window.AnchorJS();
   anchorJS.options = {
@@ -4208,8 +4392,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./data-merge.html" class="pagination-link" aria-label="Merge">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merge</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./data-macro.html" class="pagination-link" aria-label="Merge With Macroeconomic Data">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merge With Macroeconomic Data</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
