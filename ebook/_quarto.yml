@@ -23,13 +23,14 @@ book:
       - data-weather-download.qmd
       - data-weather-missing.qmd
       - data-weather-metrics.qmd
-      - data-merge.qmd
+      - data-macro.qmd
+      - data-climate-projections.qmd
     - part: VAR
       chapters:
       - var-estimation.qmd
     - part: DSGE
       chapters:
-      - dsge-essai.qmd
+      - dsge.qmd
     - references.qmd
   navbar:
     right:
@@ -43,7 +44,9 @@ format:
   html:
     toc-depth: 4
     fig-cap-location: top
-    theme: cosmo
+    theme:
+      light: [litera, styles-light.scss]
+      dark: [darkly, styles-dark.scss]
     html-math-method: mathjax
     include-in-header:
     - file: mathjax-color.html
