@@ -133,7 +133,7 @@ df_finale <-
 # Restrain to the variables of interest
 df_finale <- 
   df_finale |> 
-  select(YEARS, !!variables_exo)
+  dplyr::select(YEARS, !!variables_exo)
 
 # And to the time period of interest
 df_finale <- df_finale |> 
@@ -165,7 +165,7 @@ end_date_sample <- end_date_raw_data
 # Finally turning it to a ts object
 raw_data <- 
   df_finale |> 
-  select(!!variables_exo) |> 
+  dplyr::select(!!variables_exo) |> 
   ts(frequency = frequency_raw_data, start = start_date_raw_data)
 
 # Let us call the data used in the estimation: data
@@ -196,11 +196,11 @@ var_res <- restrict(var_1, method = "manual", resmat = A_l_restrict)
 # Each row of this matrix sets the constraints for an equation of the previously estimated VAR
 # For example, the line `y_a_obs` states that the agricultural output can contemporaneously depend
 # only on the weather, foreign GDP and domestic output
-amat <- A_l_restrict
+amat <- A_l_restrictions
 amat[amat == 1] <- NA
-amat <- amat[, -which(colnames(amat) == "const")]
 amat[upper.tri(amat)] <- 0
 diag(amat) <- 1
+amat
 
 svar_est <- SVAR(x = var_res, Amat = amat, Bmat = NULL, estmethod = "direct")
 
@@ -230,7 +230,7 @@ fisher_test <- function(variables_rest,
   data_tmp <- as_tibble(data)
   data_tmp <- 
     data_tmp |> 
-    select(!!variables)
+    dplyr::select(!!variables)
   
   form <- str_c(variables_interest, " ~ 1")
   
@@ -242,7 +242,7 @@ fisher_test <- function(variables_rest,
     # Contemporaneous effect
     if (contemp) {
       ind <- which(rownames(amat) == variables_interest)
-      if (is.na(amat[ind, which(colnames(amat) == var_name_new)])) {
+      if (is.na(amat[ind, which(colnames(amat) == var_name)])) {
         form <- str_c(form, var_name, sep = " + ")
       }
     }
@@ -266,7 +266,7 @@ fisher_test <- function(variables_rest,
   variables_r <- c(variables_rest_r, variables_interest)
   
   data_tmp_r <- as_tibble(data) |> 
-    select(c(!!variables_rest_r, !!variables_interest))
+    dplyr::select(c(!!variables_rest_r, !!variables_interest))
   
   form_r <- str_c(variables_interest, " ~ 1")
   
@@ -278,7 +278,7 @@ fisher_test <- function(variables_rest,
     # Contemporaneous effect
     if (contemp) {
       ind <- which(rownames(amat) == variables_interest)
-      if (is.na(amat[ind, which(colnames(amat) == var_name_new)])) {
+      if (is.na(amat[ind, which(colnames(amat) == var_name)])) {
         form_r <- str_c(form_r, var_name, sep = " + ")
       }
     }
