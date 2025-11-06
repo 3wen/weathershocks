@@ -1,0 +1,48 @@
+
+::: {.hidden}
+$$
+\usepackage{xcolor}
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongBlack}{RGB}{0,0,0}
+\definecolor{wongGold}{RGB}{230, 159, 0}
+\definecolor{wongLightBlue}{RGB}{86, 180, 233}
+\definecolor{wongGreen}{RGB}{0, 158, 115}
+\definecolor{wongYellow}{RGB}{240, 228, 66}
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongOrange}{RGB}{213, 94, 0}
+\definecolor{wongPurple}{RGB}{204, 121, 167}
+\definecolor{gris}{HTML}{949698}
+\definecolor{rcp26}{RGB}{39, 55, 122}
+\definecolor{rcp45}{RGB}{112, 159, 200}
+\definecolor{rcp60}{RGB}{222, 99, 43}
+\definecolor{rcp85}{RGB}{205, 16, 32}
+
+\newcommand*\grasO[1]{\textbf{\textcolor{wongOrange}{#1}}} 
+\newcommand*\grasG[1]{\textbf{\textcolor{wongGreen}{#1}}} 
+\newcommand*\grasB[1]{\textbf{\textcolor{wongBlue}{#1}}} 
+\newcommand*\grasLB[1]{\textbf{\textcolor{wongLightBlue}{#1}}} 
+\newcommand*\grasJ[1]{\textbf{\textcolor{wongGold}{#1}}} 
+\newcommand*\grasP[1]{\textbf{\textcolor{wongPurple}{#1}}} 
+\newcommand*\grasRCPa[1]{\textbf{\textcolor{rcp26}{#1}}}
+\newcommand*\grasRCPb[1]{\textbf{\textcolor{rcp45}{#1}}} 
+\newcommand*\grasRCPc[1]{\textbf{\textcolor{rcp60}{#1}}} 
+\newcommand*\grasRCPd[1]{\textbf{\textcolor{rcp85}{#1}}} 
+
+\newcommand{\highlight}[2]{\colorbox{#1!17}{#2}}
+
+\newcommand{\highlightorange}[1]{\highlight{wongOrange}{\grasO{#1}}}
+\newcommand{\highlightgreen}[1]{\highlight{wongGreen}{\grasG{#1}}}
+\newcommand{\highlightblue}[1]{\highlight{wongBlue}{\grasB{#1}}}
+\newcommand{\highlightlightblue}[1]{\highlight{wongLightBlue}{\grasLB{#1}}}
+\newcommand{\highlightgold}[1]{\highlight{wongGold}{\grasJ{#1}}}
+\newcommand{\highlightpurple}[1]{\highlight{wongPurple}{\grasP{#1}}}
+\newcommand{\highlightgris}[1]{\highlight{gris}{\grasGris{#1}}}
+
+\newcommand*\important[1]{\textbf{\textcolor{wongGreen}{#1}}}
+\newcommand{\highlightimportant}[1]{\highlight{wongGreen}{\important{#1}}}
+
+\newcommand*\subimportant[1]{\textbf{\textcolor{wongBlue}{#1}}}
+\newcommand{\highlightsubimportant}[1]{\highlight{wongBlue}{\subimportant{#1}}}
+
+$$
+:::

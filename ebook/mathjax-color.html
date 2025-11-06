@@ -1,5 +1,18 @@
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({ TeX: { extensions: ["color.js"] }});
+  MathJax.Hub.Config({
+    TeX: {
+      extensions: ["color.js", "bbox.js"],
+      Macros: {
+        highlightpurple: ["\\bbox[5px,border:0px,background:#F3E6EF]{\\color{wongPurple}{\\mathbf{#1}}}", 1],
+        highlightgreen:  ["\\bbox[5px,border:0px,background:#E9F5EF]{\\color{wongGreen}{\\mathbf{#1}}}", 1],
+        highlightblue:   ["\\bbox[5px,border:0px,background:#E6F1F9]{\\color{wongBlue}{\\mathbf{#1}}}", 1],
+        highlightorange: ["\\bbox[5px,border:0px,background:#FBEFE5]{\\color{wongOrange}{\\mathbf{#1}}}", 1],
+        highlightgold:   ["\\bbox[5px,border:0px,background:#FFF5E0]{\\color{wongGold}{\\mathbf{#1}}}", 1],
+        highlightlightblue:["\\bbox[5px,border:0px,background:#EEF8FD]{\\color{wongLightBlue}{\\mathbf{#1}}}", 1],
+        highlightgris:   ["\\bbox[5px,border:0px,background:#F1F2F3]{\\color{gris}{\\mathbf{#1}}}", 1]
+      }
+    }
+  });
 </script>
 <script type="text/x-mathjax-config">
 	MathJax.Hub.Register.StartupHook("TeX color Ready", function() {
@@ -20,3 +33,4 @@
 		 MathJax.Extension["TeX/color"].colors["IBMYellow"] = '#FFB000';
 	});
 </script>
+
