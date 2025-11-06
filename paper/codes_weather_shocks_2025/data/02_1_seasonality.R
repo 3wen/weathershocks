@@ -19,11 +19,13 @@ remove_season <- function(x, name, start, freq = 4){
     seasonal::seas()
 }
 
-# Extraire les composantes de temps de l'objet ts
-#' Extract components of ts object
+
+#' Extract components of ts object (year and quarter)
 #' 
 #' @param x An object of class ts.
-#' 
+#' @returns A tibble with two columns: the year and the quarter of the dates of
+#'  the observations in the ts object.
+#'  
 extract_temps <- function(x) {
   years <- 
     x |> 
@@ -40,11 +42,16 @@ extract_temps <- function(x) {
   tibble::tibble(year = years, quarter = quarters)
 }
 
-# Transformer l'objet seas en data.frame
-#' Transform an object of class seas
+#' Extract the trend from an object of class seas (using X-13ARIMA-SEATS).
 #' 
 #' @param x An object of class seas.
-#' @param name Desired name for the variable column
+#' @param name Desired name for the variable column.
+#' 
+#' @returns A tibble with three columns:
+#' * `year`: The year.
+#' * `quarter`: The quarter.
+#' * a column named accordingly with the value given to the parameter `"name"`,
+#'   with the trend component of the time series.
 seas_to_df <- function(x, name) {
   res <- 
     seasonal::final(x) |> 
@@ -68,7 +75,7 @@ unseason <- function(x, name, start) {
   )
 }
 
-#' Remove seasonnality
+#' Remove seasonality
 #' 
 #' @param x A data frame.
 #' @param variable Name of the variable for which to remove seasonnality.
@@ -104,15 +111,19 @@ myfilter <- function(x, type = c("hp", "ols")) {
 
 #' Applies the HP filter on a quarterly time serie
 #' 
-#' @param x Series for which to retrieve 
-hp_filter <- function(x){
+#' @param x Series for which to retrieve the trend.
+#' @returns The trend part of the series.
+#' 
+#' @importFrom mFilter hpfilter
+#' 
+hp_filter <- function(x) {
   serie <- x
-  if(any(is.na(x))){
+  if (any(is.na(x))) {
     serie <- x[!is.na(x)]
   }
   
-  res <- hpfilter(serie, freq=1600, type = "lambda")$trend %>% as.vector()
-  if(any(is.na(x))){
+  res <- hpfilter(serie, freq = 1600, type = "lambda")$trend |> as.vector()
+  if (any(is.na(x))) {
     x[!is.na(x)] <- res
     res <- x
   }
