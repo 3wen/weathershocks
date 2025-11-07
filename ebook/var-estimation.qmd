@@ -1,4 +1,4 @@
-# VAR {#sec-var}
+# Estimation {#sec-var}
 
 {{< include macros.qmd >}}
 

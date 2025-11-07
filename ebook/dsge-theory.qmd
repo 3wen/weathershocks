@@ -1,0 +1,109 @@
+# The Theoretical Model {#sec-dsge-theory}
+
+{{< include macros.qmd >}}
+
+::: {.hidden}
+$$
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongBlack}{RGB}{0,0,0}
+\definecolor{wongGold}{RGB}{230, 159, 0}
+\definecolor{wongLightBlue}{RGB}{86, 180, 233}
+\definecolor{wongGreen}{RGB}{0, 158, 115}
+\definecolor{wongYellow}{RGB}{240, 228, 66}
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongOrange}{RGB}{213, 94, 0}
+\definecolor{wongPurple}{RGB}{204, 121, 167}
+\definecolor{gris}{HTML}{949698}
+\definecolor{rcp26}{RGB}{39, 55, 122}
+\definecolor{rcp45}{RGB}{112, 159, 200}
+\definecolor{rcp60}{RGB}{222, 99, 43}
+\definecolor{rcp85}{RGB}{205, 16, 32}
+$$
+:::
+
+:::{.callout-note}
+
+## Objectives of this page
+
+This page presents the DSGE model. The model is built in an RBC framework (no nominal effects+rational expectations). It is designed for a small open economy (home vs. world). There are two sectors in it: a weather-dependent agricultural sector, and a standard non-agricultural sector. It is assumed that [weather shocks]{#highlight-purple} affect the agricultural sector through a damage function.
+
+:::
+
+
+## Overview of the Model
+
+Our model is a two-sector, two-good economy in a small open economy setup with a flexible exchange rate regime. The home economy is populated by households and firms. The latter operate in the agricultural and the non-agricultural sectors. Workers from the agricultural sector face [unexpected weather conditions]{#highlight-purple} that affect the productivity of their land. Households consume both home and foreign varieties of goods, thus creating a trading channel adjusted by the real exchange rate. The general structure of the model is summarized in @fig-sketch-model.
+
+```{r}
+#| fig-cap: Prior distributions.
+#| label: fig-sketch-model
+#| out.width: 600
+#| fig-align: "center"
+#| echo: false
+knitr::include_graphics("figs/schemas.png")
+```
+
+
+:::{.callout-important}
+
+Please refer to [the paper](https://github.com/3wen/weathershocks/blob/main/paper/Gallic_Vermandel-Weather_Shocks_2020.pdf) for a full description of the model.
+
+In this notebook, we only remind the main specificities of the model.
+
+:::
+
+
+## Agricultural sector and the weather
+
+We assume the weather follows an univariate stochastic exogenous process:
+$$
+\log(\highlightpurple{$\varepsilon_{t}^{W}$})=\rho_{W}\log(\highlightpurple{$\varepsilon_{t-1}^{W}$})+\sigma_{W}\eta_{t}^{W},\text{\ \ \ \ \ }\eta_{t}^{W}\sim\mathcal{N}\left(  0,1\right)
+$$ {#eq-farmer-weather-shock}
+
+where $\color{wongPurple}\varepsilon_{t}^{W}>1$ features a [drought]{#highlight-purple}.
+
+Each farmer $i\in\left[  n,1\right]$ has a [land endowment]{#highlight-green} $\color{wongGreen}\ell_{it}$ whose time-varying productivity (or efficiency) writes:
+$$
+{\color{wongGreen}\ell_{it}}=\left(  1-\delta_{\ell}\right)  {\color{wongOrange}\Omega\left(  \varepsilon_{t}^{W}\right)}  {\color{wongGreen}\ell_{it-1}} + x_{it},
+$$ {#eq-land-endowment}
+
+where $\delta_{\ell}\in(0,1)$ is the rate of decay of land efficiency,  $x_{it}$ are intermediate goods to maintain land efficiency (crops, water, fertilizers...), $\color{wongOrange}\Omega\left( \varepsilon_{t}^{W}\right)$ is a [weather damage function]{#highlight-orange}. We opt for a simple functional form for this [weather damage function]{#highlight-orange}:
+$$
+{\color{wongOrange}\Omega\left(  \varepsilon_{t}^{W}\right)}  =\left(  {\color{wongPurple}\varepsilon_{t}^{W}}\right)^{-{\color{wongLightBlue}\theta}},
+$$ {#eq-farmer-damage}
+
+where $\color{wongLightBlue}\theta$ is the [elasticity of land productivity]{#highlight-light-blue} with respect to the weather variations.
+
+Following IAMs models pioneered by @nordhaus1991slow, the [damage function]{#highlight-orange} bridges the weather with economic conditions. To avoid concerns from @pindyck2017use :
+
+1. Our setup is linear (i.e., we don't exploit the non-linearity of the damage function).
+2. $\color{wongLightBlue}\theta$ is estimated agnostically (through a very diffuse prior).
+
+The [profits of the farmer]{#highlight-blue} write:
+$$
+{\color{wongBlue}d_{it}^{A}}=p_{t}^{A}y_{it}^{A}-p_{t}^{N}\left(  i_{it}^{A}+S\left(\varepsilon_{t}^{i}\frac{i_{it}^{A}}{i_{it-1}^{A}}\right)  i_{it-1}^{A}\right)-w_{t}^{A}h_{it}^{A}-p_{t}^{N}{\color{wongGreen}v\left(  x_{it}\right)},
+$$ {#eq-profits-farmer}
+
+For the [land cost function]{#highlight-gris} $\color{gris}v\left(  x_{it}\right)$, we opt for an unopiniated form:
+$$
+{\color{gris}v\left(  x_{it}\right)}  =\frac{\tau}{1+{\color{wongOrange}\phi}}x_{it}^{1+{\color{wongOrange}\phi}}
+$$ {#eq-land-cost}
+
+where $\tau>0$ is a scale parameter; $\color{wongOrange}\phi$ is the  [elasticity of intermediate input to land]{#highlight-orange}:
+
+- $\color{wongOrange}\phi>0$ land costs exhibits increasing returns, $\color{wongOrange}\phi=0$ linear returns and $\color{wongOrange}\phi<0$ decreasing returns.
+- Data favors $\color{wongOrange}\phi\geq0$ (as weather shocks generate recessions).
+
+Lastly, the optimization of profits is given by:
+$$
+\begin{align*}
+  &  \max_{\left\{  h_{it}^{A},i_{it}^{A},k_{it}^{A},\ell_{it}\right\}  }%
+  E_{t}\sum\limits_{\tau=0}^{\infty}\left\{  \Lambda_{t,t+\tau}{\color{wongLightBlue}d_{it+\tau}^{A}}\right\}  \\
+  \text{s.t. } y_{it}^{A} &  =\varepsilon_{t}^{Z}{\color{wongGreen}\ell_{it-1}^{\omega}}\left[
+  \left(  k_{it-1}^{A}\right)  ^{\alpha}\left(  \kappa_{A}h_{it}^{A}\right)^{1-\alpha}\right]  ^{1-\omega}\\
+  \text{s.t. }i_{it}^{A} &= k_{it}^{A}-\left(  1-\delta_{K}\right) k_{it-1}^{A}
+\end{align*}
+$$
+First Order Conditions on [land]{#highlight-green} $\color{wongGreen}\ell_{it}$:
+
+$\underset{\text{current marginal land cost}}{\underbrace{\underset{}{p_{t}^{N}}{\color{gris}v^{\prime}\left(  x_{it}\right)}}} = \underset{\text{expected marginal gains}}{\underbrace{E_{t}\left\{\Lambda_{t,t+1}\left[\omega p_{t+1}^{A}\frac{y_{it+1}^{N}}{\ell_{it}}+\left(1-\delta_{\ell}\right){\color{wongOrange}\Omega\left(  \varepsilon_{t+1}^{W}\right)}  p_{t+1}^{N}{\color{gris}v^{\prime}\left(x_{it+1}\right)}\right]\right\}  }}$

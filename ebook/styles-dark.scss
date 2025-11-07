@@ -43,6 +43,20 @@ $code-color: #ffa07a;
   font-weight: bold;
 }
 
+#highlight-light-blue {
+  background-color: lighten(#56B4E9, 30%);
+  color: #56B4E9;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-gris {
+  background-color: lighten(#949698, 30%);
+  color: #949698;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
 #highlight-rcpa {
   background-color: lighten(#27377a, 60%);
   color: #27377a;

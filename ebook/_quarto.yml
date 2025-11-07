@@ -17,7 +17,7 @@ book:
   chapters:
     - index.qmd
     - utils.qmd
-    - part: Data
+    - part: I. Data
       chapters:
       - data-maps.qmd
       - data-weather-download.qmd
@@ -25,11 +25,12 @@ book:
       - data-weather-metrics.qmd
       - data-macro.qmd
       - data-climate-projections.qmd
-    - part: VAR
+    - part: II. VAR
       chapters:
       - var-estimation.qmd
-    - part: DSGE
+    - part: III. DSGE
       chapters:
+      - dsge-theory.qmd
       - dsge.qmd
     - references.qmd
   navbar:

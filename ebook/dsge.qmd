@@ -1,4 +1,4 @@
-# DSGE {#sec-dsge}
+# Estimation {#sec-dsge}
 
 
 
