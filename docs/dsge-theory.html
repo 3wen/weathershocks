@@ -320,8 +320,34 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#overview-of-the-model" id="toc-overview-of-the-model" class="nav-link active" data-scroll-target="#overview-of-the-model"><span class="header-section-number">9.1</span> Overview of the Model</a></li>
-  <li><a href="#agricultural-sector-and-the-weather" id="toc-agricultural-sector-and-the-weather" class="nav-link" data-scroll-target="#agricultural-sector-and-the-weather"><span class="header-section-number">9.2</span> Agricultural sector and the weather</a></li>
+  <li><a href="#model-used-in-the-paper" id="toc-model-used-in-the-paper" class="nav-link active" data-scroll-target="#model-used-in-the-paper"><span class="header-section-number">9.1</span> Model Used in the Paper</a>
+  <ul>
+  <li><a href="#overview-of-the-model" id="toc-overview-of-the-model" class="nav-link" data-scroll-target="#overview-of-the-model"><span class="header-section-number">9.1.1</span> Overview of the Model</a></li>
+  <li><a href="#agricultural-sector-and-the-weather" id="toc-agricultural-sector-and-the-weather" class="nav-link" data-scroll-target="#agricultural-sector-and-the-weather"><span class="header-section-number">9.1.2</span> Agricultural sector and the weather</a></li>
+  </ul></li>
+  <li><a href="#simplified-two-sector-weather-rbc-model" id="toc-simplified-two-sector-weather-rbc-model" class="nav-link" data-scroll-target="#simplified-two-sector-weather-rbc-model"><span class="header-section-number">9.2</span> Simplified Two-Sector Weather RBC Model</a>
+  <ul>
+  <li><a href="#households" id="toc-households" class="nav-link" data-scroll-target="#households"><span class="header-section-number">9.2.1</span> Households</a></li>
+  <li><a href="#production" id="toc-production" class="nav-link" data-scroll-target="#production"><span class="header-section-number">9.2.2</span> Production</a></li>
+  <li><a href="#aggregation-and-prices" id="toc-aggregation-and-prices" class="nav-link" data-scroll-target="#aggregation-and-prices"><span class="header-section-number">9.2.3</span> Aggregation and Prices</a></li>
+  </ul></li>
+  <li><a href="#two-sector-new-keynesian-model-with-weather-shocks-and-land" id="toc-two-sector-new-keynesian-model-with-weather-shocks-and-land" class="nav-link" data-scroll-target="#two-sector-new-keynesian-model-with-weather-shocks-and-land"><span class="header-section-number">9.3</span> Two Sector New Keynesian Model with Weather Shocks and Land</a>
+  <ul>
+  <li><a href="#households-1" id="toc-households-1" class="nav-link" data-scroll-target="#households-1"><span class="header-section-number">9.3.1</span> Households</a></li>
+  <li><a href="#production-1" id="toc-production-1" class="nav-link" data-scroll-target="#production-1"><span class="header-section-number">9.3.2</span> Production</a>
+  <ul class="collapse">
+  <li><a href="#non-agricultural-sector" id="toc-non-agricultural-sector" class="nav-link" data-scroll-target="#non-agricultural-sector"><span class="header-section-number">9.3.2.1</span> Non-Agricultural Sector</a></li>
+  <li><a href="#agricultural-sector-with-land-and-weather-damage." id="toc-agricultural-sector-with-land-and-weather-damage." class="nav-link" data-scroll-target="#agricultural-sector-with-land-and-weather-damage."><span class="header-section-number">9.3.2.2</span> Agricultural sector with land and weather damage.</a></li>
+  </ul></li>
+  <li><a href="#price-setting-and-nominal-rigidities" id="toc-price-setting-and-nominal-rigidities" class="nav-link" data-scroll-target="#price-setting-and-nominal-rigidities"><span class="header-section-number">9.3.3</span> Price setting and nominal rigidities</a></li>
+  <li><a href="#land-land-costs-and-damage" id="toc-land-land-costs-and-damage" class="nav-link" data-scroll-target="#land-land-costs-and-damage"><span class="header-section-number">9.3.4</span> Land, land costs, and damage</a></li>
+  <li><a href="#aggregation-demand-and-prices" id="toc-aggregation-demand-and-prices" class="nav-link" data-scroll-target="#aggregation-demand-and-prices"><span class="header-section-number">9.3.5</span> Aggregation, demand, and prices</a>
+  <ul class="collapse">
+  <li><a href="#relative-price-index" id="toc-relative-price-index" class="nav-link" data-scroll-target="#relative-price-index"><span class="header-section-number">9.3.5.1</span> Relative price index</a></li>
+  </ul></li>
+  <li><a href="#monetary-policy" id="toc-monetary-policy" class="nav-link" data-scroll-target="#monetary-policy"><span class="header-section-number">9.3.6</span> Monetary policy</a></li>
+  <li><a href="#shock-processes" id="toc-shock-processes" class="nav-link" data-scroll-target="#shock-processes"><span class="header-section-number">9.3.7</span> Shock processes</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -379,11 +405,14 @@ Objectives of this page
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page presents the DSGE model. The model is built in an RBC framework (no nominal effects+rational expectations). It is designed for a small open economy (home vs.&nbsp;world). There are two sectors in it: a weather-dependent agricultural sector, and a standard non-agricultural sector. It is assumed that <span id="highlight-purple">weather shocks</span> affect the agricultural sector through a damage function.</p>
+<p>This page presents the DSGE model from the paper and two simplified versions (an RBC model and a New Keynesian model).</p>
+<p>The model in the paper is built in an RBC framework (no nominal effects+rational expectations). It is designed for a small open economy (home vs.&nbsp;world). There are two sectors in it: a weather-dependent agricultural sector, and a standard non-agricultural sector. It is assumed that <span id="highlight-purple">weather shocks</span> affect the agricultural sector through a damage function.</p>
 </div>
 </div>
-<section id="overview-of-the-model" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="overview-of-the-model"><span class="header-section-number">9.1</span> Overview of the Model</h2>
+<section id="model-used-in-the-paper" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="model-used-in-the-paper"><span class="header-section-number">9.1</span> Model Used in the Paper</h2>
+<section id="overview-of-the-model" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="overview-of-the-model"><span class="header-section-number">9.1.1</span> Overview of the Model</h3>
 <p>Our model is a two-sector, two-good economy in a small open economy setup with a flexible exchange rate regime. The home economy is populated by households and firms. The latter operate in the agricultural and the non-agricultural sectors. Workers from the agricultural sector face <span id="highlight-purple">unexpected weather conditions</span> that affect the productivity of their land. Households consume both home and foreign varieties of goods, thus creating a trading channel adjusted by the real exchange rate. The general structure of the model is summarized in <a href="#fig-sketch-model" class="quarto-xref">Figure&nbsp;<span>9.1</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -414,8 +443,8 @@ Important
 </div>
 </div>
 </section>
-<section id="agricultural-sector-and-the-weather" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="agricultural-sector-and-the-weather"><span class="header-section-number">9.2</span> Agricultural sector and the weather</h2>
+<section id="agricultural-sector-and-the-weather" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="agricultural-sector-and-the-weather"><span class="header-section-number">9.1.2</span> Agricultural sector and the weather</h3>
 <p>We assume the weather follows an univariate stochastic exogenous process: <span id="eq-farmer-weather-shock"><span class="math display">\[
 \log(\colorbox{wongPurple!17}{\textbf{\textcolor{wongPurple}{$\varepsilon_{t}^{W}$}}})=\rho_{W}\log(\colorbox{wongPurple!17}{\textbf{\textcolor{wongPurple}{$\varepsilon_{t-1}^{W}$}}})+\sigma_{W}\eta_{t}^{W},\text{\ \ \ \ \ }\eta_{t}^{W}\sim\mathcal{N}\left(  0,1\right)
 \tag{9.1}\]</span></span></p>
@@ -453,6 +482,303 @@ Important
 \end{align*}
 \]</span> First Order Conditions on <span id="highlight-green">land</span> <span class="math inline">\(\color{wongGreen}\ell_{it}\)</span>:</p>
 <p><span class="math inline">\(\underset{\text{current marginal land cost}}{\underbrace{\underset{}{p_{t}^{N}}{\color{gris}v^{\prime}\left(  x_{it}\right)}}} = \underset{\text{expected marginal gains}}{\underbrace{E_{t}\left\{\Lambda_{t,t+1}\left[\omega p_{t+1}^{A}\frac{y_{it+1}^{N}}{\ell_{it}}+\left(1-\delta_{\ell}\right){\color{wongOrange}\Omega\left(  \varepsilon_{t+1}^{W}\right)}  p_{t+1}^{N}{\color{gris}v^{\prime}\left(x_{it+1}\right)}\right]\right\}  }}\)</span></p>
+</section>
+</section>
+<section id="simplified-two-sector-weather-rbc-model" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="simplified-two-sector-weather-rbc-model"><span class="header-section-number">9.2</span> Simplified Two-Sector Weather RBC Model</h2>
+<section id="households" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="households"><span class="header-section-number">9.2.1</span> Households</h3>
+<p>A representative household consumes a CES bundle of agricultural and non-agricultural goods. Consumption with habits is defined as <span id="eq-rbc-consumption"><span class="math display">\[
+\tilde c_t = c_t - b c_{t-1}.
+\tag{9.6}\]</span></span></p>
+<p>Preferences are <span id="eq-rbc-utility"><span class="math display">\[
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+\tag{9.7}\]</span></span> where the labor aggregator, capturing reallocation costs, is <span id="eq-rbc-labour"><span class="math display">\[
+h_{u,t}
+= \left(h_{N,t}^{1+\iota} + h_{A,t}^{1+\iota}\right)^{\frac{1}{1+\iota}}.
+\tag{9.8}\]</span></span></p>
+<p>The marginal utility of consumption and the stochastic discount factor are <span id="eq-rbc-mgc"><span class="math display">\[
+u_{c,t} = \tilde c_t^{-\sigma_C},
+\qquad
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+\tag{9.9}\]</span></span></p>
+<p>Intratemporal optimality conditions: <span id="eq-rbc-intratemp-opt-cond"><span class="math display">\[
+w^N_t\, u_{c,t} = u^N_t,
+\qquad
+w^A_t\, u_{c,t} = u^A_t,
+\tag{9.10}\]</span></span> with <span id="eq-rbc-intratemp-opt-cond-details"><span class="math display">\[
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+\tag{9.11}\]</span></span></p>
+<p>Euler equation: <span id="eq-rbc-euler"><span class="math display">\[
+m_{t+1} r_{t+1} = 1.
+\tag{9.12}\]</span></span></p>
+</section>
+<section id="production" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="production"><span class="header-section-number">9.2.2</span> Production</h3>
+<p>There are two sectors: non-agriculture and agriculture.</p>
+<p>Non-agricultural production:</p>
+<p><span id="eq-rbc-prod-non-ag"><span class="math display">\[
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+\tag{9.13}\]</span></span></p>
+<p>Optimal labor demand: <span id="eq-rbc-prod-opt-labour"><span class="math display">\[
+w^N_t = (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}}.
+\tag{9.14}\]</span></span></p>
+<p>Agricultural output is <span id="eq-rbc-prod-ag-output"><span class="math display">\[
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega},
+\tag{9.15}\]</span></span> where the weather damage factor is <span id="eq-rbc-prod-damage-function"><span class="math display">\[
+d_t = (e^s_t)^{-\theta_1}.
+\tag{9.16}\]</span></span></p>
+<p>Labor demand: <span id="eq-rbc-prod-labour-demand"><span class="math display">\[
+w^A_t
+= (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}}.
+\tag{9.17}\]</span></span></p>
+<p>Land evolves according to <span id="eq-rbc-prod-land"><span class="math display">\[
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+\tag{9.18}\]</span></span> where <span class="math inline">\(\phi_t\)</span> is land investment.</p>
+<p>Land cost function: <span id="eq-rbc-prod-land-cost"><span class="math display">\[
+\phi_t
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1}.
+\tag{9.19}\]</span></span></p>
+<p>Shadow value of land <span class="math inline">\(\varrho_t\)</span> satisfies <span id="eq-rbc-prod-land-shadow-value"><span class="math display">\[
+\varrho_t
+=
+m_{t+1}
+\left[
+\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right].
+\tag{9.20}\]</span></span></p>
+<p>FOC for land investment <span class="math inline">\(x_t\)</span>: <span id="eq-rbc-prod-foc-land"><span class="math display">\[
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+\tag{9.21}\]</span></span></p>
+</section>
+<section id="aggregation-and-prices" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="aggregation-and-prices"><span class="header-section-number">9.2.3</span> Aggregation and Prices</h3>
+<p>Let <span class="math inline">\(n_t\)</span> be the agricultural sector share: <span id="eq-rbc-aggreg-ag-share"><span class="math display">\[
+n_t = \bar n\, e^n_t.
+\tag{9.22}\]</span></span></p>
+<p>Aggregate output: <span id="eq-rbc-aggreg-output"><span class="math display">\[
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+\tag{9.23}\]</span></span></p>
+<p>Aggregate hours: <span id="eq-rbc-aggreg-hours"><span class="math display">\[
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+\tag{9.24}\]</span></span></p>
+<p>Consumption demand across sectors, with non-agricultural goods: <span id="eq-rbc-aggreg-cons-demand-wo-ag"><span class="math display">\[
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t
++ g_y\, \bar y^N\, e^g_t.
+\tag{9.25}\]</span></span></p>
+<p>and agricultural goods: <span id="eq-rbc-aggreg-w-ag"><span class="math display">\[
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+\tag{9.26}\]</span></span></p>
+<p>Relative price index:</p>
+<p><span id="eq-rbc-rl-prices"><span class="math display">\[
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+\tag{9.27}\]</span></span></p>
+<p>Gross Domestic Product:</p>
+<p><span id="eq-rbc-aggreg-gdp"><span class="math display">\[
+GDP_t = y_t - n_t p^N_t x_t.
+\tag{9.28}\]</span></span></p>
+<p>Shock processes:</p>
+<p>All shocks follow AR(1) laws of motion: <span id="eq-rbc-shock-z"><span class="math display">\[
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+\tag{9.29}\]</span></span> <span id="eq-rbc-shock-h"><span class="math display">\[
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+\tag{9.30}\]</span></span> <span id="eq-rbc-shock-g"><span class="math display">\[
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+\tag{9.31}\]</span></span> <span id="eq-rbc-shock-n"><span class="math display">\[
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+\tag{9.32}\]</span></span> <span id="eq-rbc-shock-s"><span class="math display">\[
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+\tag{9.33}\]</span></span></p>
+<p>All innovations <span class="math inline">\(\eta^j_t\)</span> are i.i.d. standard normal.</p>
+</section>
+</section>
+<section id="two-sector-new-keynesian-model-with-weather-shocks-and-land" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="two-sector-new-keynesian-model-with-weather-shocks-and-land"><span class="header-section-number">9.3</span> Two Sector New Keynesian Model with Weather Shocks and Land</h2>
+<section id="households-1" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="households-1"><span class="header-section-number">9.3.1</span> Households</h3>
+<p>A representative household consumes a CES bundle of agricultural and non agricultural goods and supplies differentiated labor to the two sectors.</p>
+<p>Habit adjusted consumption: <span id="eq-nk-hh-consumption"><span class="math display">\[
+\tilde c_t = c_t - b c_{t-1}.
+\tag{9.34}\]</span></span></p>
+<p>Preferences: <span id="eq-nk-hh-utility"><span class="math display">\[
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+\tag{9.35}\]</span></span> where the labor aggregator with reallocation costs is <span id="eq-nk-hh-labour"><span class="math display">\[
+h_{u,t}
+= \left(h_{N,t}^{1+\\iota} + h_{A,t}^{1+\\iota}\right)^{\frac{1}{1+\\iota}}.
+\tag{9.36}\]</span></span></p>
+<p>Marginal utility of consumption and stochastic discount factor: <span id="eq-nk-hh-mgc"><span class="math display">\[
+u_{c,t} = \tilde c_t^{-\sigma_C},
+\qquad
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+\tag{9.37}\]</span></span></p>
+<p>Intratemporal optimality: <span id="eq-nk-hh-intratemp-opt"><span class="math display">\[
+w^N_t\, u_{c,t} = u^N_t,
+\qquad
+w^A_t\, u_{c,t} = u^A_t,
+\tag{9.38}\]</span></span> with sector specific marginal disutilities of labor <span id="eq-nk-hh-mg-labour-disutility"><span class="math display">\[
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+\tag{9.39}\]</span></span></p>
+<p>Nominal Euler equation (one period nominal bond): <span id="eq-nk-hh-euler"><span class="math display">\[
+m_{t+1} \frac{R_t}{\pi_{t+1}} = 1,
+\tag{9.40}\]</span></span> where <span class="math inline">\(R_t\)</span> is the gross nominal interest rate and <span class="math inline">\(\pi_t\)</span> is gross aggregate inflation.</p>
+</section>
+<section id="production-1" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="production-1"><span class="header-section-number">9.3.2</span> Production</h3>
+<p>The economy has two producing sectors: non agriculture (<span class="math inline">\(N\)</span>) and agriculture (<span class="math inline">\(A\)</span>).</p>
+<section id="non-agricultural-sector" class="level4" data-number="9.3.2.1">
+<h4 data-number="9.3.2.1" class="anchored" data-anchor-id="non-agricultural-sector"><span class="header-section-number">9.3.2.1</span> Non-Agricultural Sector</h4>
+<p>Production is linear in TFP and concave in labor: <span id="eq-nk-prod-output"><span class="math display">\[
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+\tag{9.41}\]</span></span></p>
+<p>With real marginal cost <span class="math inline">\(mc^N_t\)</span>, cost minimization implies: <span id="eq-nk-prod-labour-demand-non-ag"><span class="math display">\[
+w^N_t = mc^N_t (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}},
+\tag{9.42}\]</span></span> where <span class="math inline">\(p^N_t\)</span> is the relative price of non agricultural goods.</p>
+</section>
+<section id="agricultural-sector-with-land-and-weather-damage." class="level4" data-number="9.3.2.2">
+<h4 data-number="9.3.2.2" class="anchored" data-anchor-id="agricultural-sector-with-land-and-weather-damage."><span class="header-section-number">9.3.2.2</span> Agricultural sector with land and weather damage.</h4>
+<p>Weather affects agricultural production through a damage function. Let <span class="math inline">\(d_t\)</span> denote the weather damage factor <span id="eq-nk-prod-weather-damage-factor"><span class="math display">\[
+d_t = (e^s_t)^{-\theta_1}.
+\tag{9.43}\]</span></span></p>
+<p>Agricultural output: <span id="eq-nk-prod-ag-output"><span class="math display">\[
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega}.
+\tag{9.44}\]</span></span></p>
+<p>With real marginal cost <span class="math inline">\(mc^A_t\)</span>, labor demand in agriculture: <span id="eq-nk-prod-labour-demand-ag"><span class="math display">\[
+w^A_t
+= mc^A_t (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}},
+\tag{9.45}\]</span></span> where <span class="math inline">\(p^A_t\)</span> is the relative price of agricultural goods.</p>
+</section>
+</section>
+<section id="price-setting-and-nominal-rigidities" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="price-setting-and-nominal-rigidities"><span class="header-section-number">9.3.3</span> Price setting and nominal rigidities</h3>
+<p>Prices are sticky in both sectors. We adopt Rotemberg type quadratic adjustment costs on inflation. For sector <span class="math inline">\(j \in \{N,A\}\)</span>, let <span class="math inline">\(\epsilon_j\)</span> denote the elasticity of substitution and <span class="math inline">\(\kappa_j\)</span> the adjustment cost parameter.</p>
+<p>Denote sectoral inflation by <span class="math inline">\(\pi_{j,t}\)</span> and aggregate inflation by <span class="math inline">\(\pi_t\)</span>. The New Keynesian Phillips curves in each sector take the form <span id="eq-nk-prices-phillips-curve"><span class="math display">\[
+(1-\epsilon_j)\, p^j_t y^j_t
++ \epsilon_j\, mc^j_t y^j_t
+- \kappa_j\, p^j_t \pi_{j,t}(\pi_{j,t}-1)\, y^j_t
++ \kappa_j\, \mathbb{E}_t\left[ m_{t+1} p^j_{t+1} \pi_{j,t+1}(\pi_{j,t+1}-1)\, y^j_{t+1} \right]
+= 0,
+\tag{9.46}\]</span></span> for <span class="math inline">\(j = N,A\)</span>.</p>
+</section>
+<section id="land-land-costs-and-damage" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="land-land-costs-and-damage"><span class="header-section-number">9.3.4</span> Land, land costs, and damage</h3>
+<p>Land evolves according to <span id="eq-nk-land"><span class="math display">\[
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+\tag{9.47}\]</span></span> where <span class="math inline">\(\phi_t\)</span> is land investment.</p>
+<p>Land cost function: <span id="eq-nk-land-cost-function"><span class="math display">\[
+\phi_t
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1},
+\tag{9.48}\]</span></span> with <span class="math inline">\(x_t\)</span> the land investment intensity.</p>
+<p>Shadow value of land <span class="math inline">\(\varrho_t\)</span> satisfies <span id="eq-nk-land-shadow-value"><span class="math display">\[
+\varrho_t
+=
+\mathbb{E}_t\left\{
+m_{t+1}
+\left[
+mc^A_{t+1}\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right]
+\right\}.
+\tag{9.49}\]</span></span></p>
+<p>FOC for land investment <span class="math inline">\(x_t\)</span>: <span id="eq-nk-land-foc"><span class="math display">\[
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+\tag{9.50}\]</span></span></p>
+</section>
+<section id="aggregation-demand-and-prices" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="aggregation-demand-and-prices"><span class="header-section-number">9.3.5</span> Aggregation, demand, and prices</h3>
+<p>Let <span class="math inline">\(n_t\)</span> be the agricultural sector share, driven by a reallocation shock: <span id="eq-nk-ag-share"><span class="math display">\[
+n_t = \bar n\, e^n_t.
+\tag{9.51}\]</span></span></p>
+<p>Aggregate output: <span id="eq-nk-aggreg-output"><span class="math display">\[
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+\tag{9.52}\]</span></span></p>
+<p>Aggregate hours: <span id="eq-nk-aggreg-hours"><span class="math display">\[
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+\tag{9.53}\]</span></span></p>
+<p>Non agricultural goods: <span id="eq-nk-aggreg-nonag-goods"><span class="math display">\[
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t
++ g_y\, \bar y^N\, e^g_t.
+\tag{9.54}\]</span></span></p>
+<p>Agricultural goods: <span id="eq-nk-aggreg-ag-goods"><span class="math display">\[
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+\tag{9.55}\]</span></span></p>
+<section id="relative-price-index" class="level4" data-number="9.3.5.1">
+<h4 data-number="9.3.5.1" class="anchored" data-anchor-id="relative-price-index"><span class="header-section-number">9.3.5.1</span> Relative price index</h4>
+<p>The CES price index is <span id="eq-nk-ces-price-index"><span class="math display">\[
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+\tag{9.56}\]</span></span></p>
+<p>Inflation measures, let <span class="math inline">\(P_t\)</span> denote the aggregate price index. Gross inflation is <span id="eq-nk-inflation"><span class="math display">\[
+\pi_t = \frac{P_t}{P_{t-1}}.
+\tag{9.57}\]</span></span> Sectoral inflation rates are <span id="eq-nk-sectoral-inflation"><span class="math display">\[
+\pi_{N,t} = \frac{P^N_t}{P^N_{t-1}},
+\qquad
+\pi_{A,t} = \frac{P^A_t}{P^A_{t-1}}.
+\tag{9.58}\]</span></span></p>
+<p>Gross Domestic Product:</p>
+<p><span id="eq-aggreg-gdp"><span class="math display">\[
+GDP_t = y_t - n_t p^N_t x_t.
+\tag{9.59}\]</span></span></p>
+</section>
+</section>
+<section id="monetary-policy" class="level3" data-number="9.3.6">
+<h3 data-number="9.3.6" class="anchored" data-anchor-id="monetary-policy"><span class="header-section-number">9.3.6</span> Monetary policy</h3>
+<p>Monetary policy follows a Taylor rule in logs around the steady state: <span id="eq-nk-taylor-rule-steady-state"><span class="math display">\[
+\log\left(\frac{R_t}{\bar R}\right)
+= \rho\, \log\left(\frac{R_{t-1}}{\bar R}\right)
++ (1-\rho)\left[
+\phi_y \log\left(\frac{GDP_t}{\overline{GDP}}\right)
++ \phi_\pi \log(\pi_t)
+\right],
+\tag{9.60}\]</span></span> where <span class="math inline">\(\bar R\)</span> and <span class="math inline">\(\overline{GDP}\)</span> denote steady state values.</p>
+</section>
+<section id="shock-processes" class="level3" data-number="9.3.7">
+<h3 data-number="9.3.7" class="anchored" data-anchor-id="shock-processes"><span class="header-section-number">9.3.7</span> Shock processes</h3>
+<p>All exogenous processes follow AR(1) dynamics: <span id="eq-nk-shock-z"><span class="math display">\[
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+\tag{9.61}\]</span></span> <span id="eq-nk-shock-h"><span class="math display">\[
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+\tag{9.62}\]</span></span> <span id="eq-nk-shock-g"><span class="math display">\[
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+\tag{9.63}\]</span></span> <span id="eq-nk-shock-n"><span class="math display">\[
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+\tag{9.64}\]</span></span> <span id="eq-nk-shock-s"><span class="math display">\[
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+\tag{9.65}\]</span></span></p>
+<p>All innovations <span class="math inline">\(\eta^j_t\)</span> are iid standard normal.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
@@ -463,6 +789,7 @@ Nordhaus, William D. 1991. <span>“To Slow or Not to Slow: The Economics of the
 Pindyck, Robert S. 2017. <span>“The Use and Misuse of Models for Climate Policy.”</span> <em>Review of Environmental Economics and Policy</em> 11 (1): 100–114.
 </div>
 </div>
+</section>
 </section>
 
 </main> <!-- /main -->
