@@ -1,0 +1,194 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=2cm}
+
+\title{Simplified Two-Sector Weather RBC Model}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Households}
+
+A representative household consumes a CES bundle of agricultural and non-agricultural goods.
+Consumption with habits is defined as
+\[
+\tilde c_t = c_t - b c_{t-1}.
+\]
+
+Preferences are
+\[
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t 
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+\]
+where the labor aggregator, capturing reallocation costs, is
+\[
+h_{u,t}
+= \left(h_{N,t}^{1+\iota} + h_{A,t}^{1+\iota}\right)^{\frac{1}{1+\iota}}.
+\]
+
+The marginal utility of consumption and the stochastic discount factor are
+\[
+u_{c,t} = \tilde c_t^{-\sigma_C}, 
+\qquad 
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+\]
+
+Intratemporal optimality conditions:
+\[
+w^N_t\, u_{c,t} = u^N_t, 
+\qquad 
+w^A_t\, u_{c,t} = u^A_t,
+\]
+with
+\[
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+\]
+
+Euler equation:
+\[
+m_{t+1} r_{t+1} = 1.
+\]
+
+\section{Production}
+
+There are two sectors: non-agriculture and agriculture.
+
+Non-agricultural production:
+
+\[
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+\]
+
+Optimal labor demand:
+\[
+w^N_t = (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}}.
+\]
+
+Agricultural output is
+\[
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega},
+\]
+where the weather damage factor is
+\[
+d_t = (e^s_t)^{-\theta_1}.
+\]
+
+Labor demand:
+\[
+w^A_t 
+= (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}}.
+\]
+
+Land evolves according to
+\[
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+\]
+where $\phi_t$ is land investment.
+
+Land cost function:
+\[
+\phi_t 
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1}.
+\]
+
+Shadow value of land $\varrho_t$ satisfies
+\[
+\varrho_t
+=
+m_{t+1}
+\left[
+\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right].
+\]
+
+FOC for land investment $x_t$:
+\[
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+\]
+
+\section{Aggregation and Prices}
+
+Let $n_t$ be the agricultural sector share:
+\[
+n_t = \bar n\, e^n_t.
+\]
+
+Aggregate output:
+\[
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+\]
+
+Aggregate hours:
+\[
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+\]
+
+Consumption demand across sectors, with non-agricultural goods:
+\[
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t 
++ g_y\, \bar y^N\, e^g_t.
+\]
+
+and agricultural goods:
+\[
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+\]
+
+Relative price index:
+
+\[
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+\]
+
+
+Gross Domestic Product:
+
+\[
+GDP_t = y_t - n_t p^N_t x_t.
+\]
+
+Shock processes:
+
+All shocks follow AR(1) laws of motion:
+\[
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+\]
+\[
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+\]
+\[
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+\]
+\[
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+\]
+\[
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+\]
+
+All innovations $\eta^j_t$ are iid standard normal.
+
+\end{document}
