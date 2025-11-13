@@ -1,0 +1,529 @@
+# The Theoretical Model {#sec-dsge-theory}
+
+{{< include macros.qmd >}}
+
+::: {.hidden}
+$$
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongBlack}{RGB}{0,0,0}
+\definecolor{wongGold}{RGB}{230, 159, 0}
+\definecolor{wongLightBlue}{RGB}{86, 180, 233}
+\definecolor{wongGreen}{RGB}{0, 158, 115}
+\definecolor{wongYellow}{RGB}{240, 228, 66}
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongOrange}{RGB}{213, 94, 0}
+\definecolor{wongPurple}{RGB}{204, 121, 167}
+\definecolor{gris}{HTML}{949698}
+\definecolor{rcp26}{RGB}{39, 55, 122}
+\definecolor{rcp45}{RGB}{112, 159, 200}
+\definecolor{rcp60}{RGB}{222, 99, 43}
+\definecolor{rcp85}{RGB}{205, 16, 32}
+$$
+:::
+
+:::{.callout-note}
+
+## Objectives of this page
+
+This page presents the DSGE model from the paper and two simplified versions (an RBC model and a New Keynesian model). 
+
+The model in the paper is built in an RBC framework (no nominal effects+rational expectations). It is designed for a small open economy (home vs. world). There are two sectors in it: a weather-dependent agricultural sector, and a standard non-agricultural sector. It is assumed that [weather shocks]{#highlight-purple} affect the agricultural sector through a damage function.
+
+:::
+
+## Model Used in the Paper
+
+### Overview of the Model
+
+Our model is a two-sector, two-good economy in a small open economy setup with a flexible exchange rate regime. The home economy is populated by households and firms. The latter operate in the agricultural and the non-agricultural sectors. Workers from the agricultural sector face [unexpected weather conditions]{#highlight-purple} that affect the productivity of their land. Households consume both home and foreign varieties of goods, thus creating a trading channel adjusted by the real exchange rate. The general structure of the model is summarized in @fig-sketch-model.
+
+```{r}
+#| fig-cap: Prior distributions.
+#| label: fig-sketch-model
+#| out.width: 600
+#| fig-align: "center"
+#| echo: false
+knitr::include_graphics("figs/schemas.png")
+```
+
+
+:::{.callout-important}
+
+Please refer to [the paper](https://github.com/3wen/weathershocks/blob/main/paper/Gallic_Vermandel-Weather_Shocks_2020.pdf) for a full description of the model.
+
+In this notebook, we only remind the main specificities of the model.
+
+:::
+
+
+### Agricultural sector and the weather
+
+We assume the weather follows an univariate stochastic exogenous process:
+$$
+\log(\highlightpurple{$\varepsilon_{t}^{W}$})=\rho_{W}\log(\highlightpurple{$\varepsilon_{t-1}^{W}$})+\sigma_{W}\eta_{t}^{W},\text{\ \ \ \ \ }\eta_{t}^{W}\sim\mathcal{N}\left(  0,1\right)
+$$ {#eq-farmer-weather-shock}
+
+where $\color{wongPurple}\varepsilon_{t}^{W}>1$ features a [drought]{#highlight-purple}.
+
+Each farmer $i\in\left[  n,1\right]$ has a [land endowment]{#highlight-green} $\color{wongGreen}\ell_{it}$ whose time-varying productivity (or efficiency) writes:
+$$
+{\color{wongGreen}\ell_{it}}=\left(  1-\delta_{\ell}\right)  {\color{wongOrange}\Omega\left(  \varepsilon_{t}^{W}\right)}  {\color{wongGreen}\ell_{it-1}} + x_{it},
+$$ {#eq-land-endowment}
+
+where $\delta_{\ell}\in(0,1)$ is the rate of decay of land efficiency,  $x_{it}$ are intermediate goods to maintain land efficiency (crops, water, fertilizers...), $\color{wongOrange}\Omega\left( \varepsilon_{t}^{W}\right)$ is a [weather damage function]{#highlight-orange}. We opt for a simple functional form for this [weather damage function]{#highlight-orange}:
+$$
+{\color{wongOrange}\Omega\left(  \varepsilon_{t}^{W}\right)}  =\left(  {\color{wongPurple}\varepsilon_{t}^{W}}\right)^{-{\color{wongLightBlue}\theta}},
+$$ {#eq-farmer-damage}
+
+where $\color{wongLightBlue}\theta$ is the [elasticity of land productivity]{#highlight-light-blue} with respect to the weather variations.
+
+Following IAMs models pioneered by @nordhaus1991slow, the [damage function]{#highlight-orange} bridges the weather with economic conditions. To avoid concerns from @pindyck2017use :
+
+1. Our setup is linear (i.e., we don't exploit the non-linearity of the damage function).
+2. $\color{wongLightBlue}\theta$ is estimated agnostically (through a very diffuse prior).
+
+The [profits of the farmer]{#highlight-blue} write:
+$$
+{\color{wongBlue}d_{it}^{A}}=p_{t}^{A}y_{it}^{A}-p_{t}^{N}\left(  i_{it}^{A}+S\left(\varepsilon_{t}^{i}\frac{i_{it}^{A}}{i_{it-1}^{A}}\right)  i_{it-1}^{A}\right)-w_{t}^{A}h_{it}^{A}-p_{t}^{N}{\color{wongGreen}v\left(  x_{it}\right)},
+$$ {#eq-profits-farmer}
+
+For the [land cost function]{#highlight-gris} $\color{gris}v\left(  x_{it}\right)$, we opt for an unopiniated form:
+$$
+{\color{gris}v\left(  x_{it}\right)}  =\frac{\tau}{1+{\color{wongOrange}\phi}}x_{it}^{1+{\color{wongOrange}\phi}}
+$$ {#eq-land-cost}
+
+where $\tau>0$ is a scale parameter; $\color{wongOrange}\phi$ is the  [elasticity of intermediate input to land]{#highlight-orange}:
+
+- $\color{wongOrange}\phi>0$ land costs exhibits increasing returns, $\color{wongOrange}\phi=0$ linear returns and $\color{wongOrange}\phi<0$ decreasing returns.
+- Data favors $\color{wongOrange}\phi\geq0$ (as weather shocks generate recessions).
+
+Lastly, the optimization of profits is given by:
+$$
+\begin{align*}
+  &  \max_{\left\{  h_{it}^{A},i_{it}^{A},k_{it}^{A},\ell_{it}\right\}  }%
+  E_{t}\sum\limits_{\tau=0}^{\infty}\left\{  \Lambda_{t,t+\tau}{\color{wongLightBlue}d_{it+\tau}^{A}}\right\}  \\
+  \text{s.t. } y_{it}^{A} &  =\varepsilon_{t}^{Z}{\color{wongGreen}\ell_{it-1}^{\omega}}\left[
+  \left(  k_{it-1}^{A}\right)  ^{\alpha}\left(  \kappa_{A}h_{it}^{A}\right)^{1-\alpha}\right]  ^{1-\omega}\\
+  \text{s.t. }i_{it}^{A} &= k_{it}^{A}-\left(  1-\delta_{K}\right) k_{it-1}^{A}
+\end{align*}
+$$
+First Order Conditions on [land]{#highlight-green} $\color{wongGreen}\ell_{it}$:
+
+$\underset{\text{current marginal land cost}}{\underbrace{\underset{}{p_{t}^{N}}{\color{gris}v^{\prime}\left(  x_{it}\right)}}} = \underset{\text{expected marginal gains}}{\underbrace{E_{t}\left\{\Lambda_{t,t+1}\left[\omega p_{t+1}^{A}\frac{y_{it+1}^{N}}{\ell_{it}}+\left(1-\delta_{\ell}\right){\color{wongOrange}\Omega\left(  \varepsilon_{t+1}^{W}\right)}  p_{t+1}^{N}{\color{gris}v^{\prime}\left(x_{it+1}\right)}\right]\right\}  }}$
+
+## Simplified Two-Sector Weather RBC Model
+
+### Households
+
+A representative household consumes a CES bundle of agricultural and non-agricultural goods.
+Consumption with habits is defined as
+$$
+\tilde c_t = c_t - b c_{t-1}.
+$$ {#eq-rbc-consumption}
+
+Preferences are
+$$
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t 
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+$$ {#eq-rbc-utility}
+where the labor aggregator, capturing reallocation costs, is
+$$
+h_{u,t}
+= \left(h_{N,t}^{1+\iota} + h_{A,t}^{1+\iota}\right)^{\frac{1}{1+\iota}}.
+$$ {#eq-rbc-labour}
+
+The marginal utility of consumption and the stochastic discount factor are
+$$
+u_{c,t} = \tilde c_t^{-\sigma_C}, 
+\qquad 
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+$$ {#eq-rbc-mgc}
+
+Intratemporal optimality conditions:
+$$
+w^N_t\, u_{c,t} = u^N_t, 
+\qquad 
+w^A_t\, u_{c,t} = u^A_t,
+$$ {#eq-rbc-intratemp-opt-cond}
+with
+$$
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+$$ {#eq-rbc-intratemp-opt-cond-details}
+
+Euler equation:
+$$
+m_{t+1} r_{t+1} = 1.
+$$ {#eq-rbc-euler}
+
+### Production
+
+There are two sectors: non-agriculture and agriculture.
+
+Non-agricultural production:
+
+$$
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+$$ {#eq-rbc-prod-non-ag}
+
+Optimal labor demand:
+$$
+w^N_t = (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}}.
+$$ {#eq-rbc-prod-opt-labour}
+
+Agricultural output is
+$$
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega},
+$$ {#eq-rbc-prod-ag-output}
+where the weather damage factor is
+$$
+d_t = (e^s_t)^{-\theta_1}.
+$$ {#eq-rbc-prod-damage-function}
+
+Labor demand:
+$$
+w^A_t 
+= (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}}.
+$$ {#eq-rbc-prod-labour-demand}
+
+Land evolves according to
+$$
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+$$ {#eq-rbc-prod-land}
+where $\phi_t$ is land investment.
+
+Land cost function:
+$$
+\phi_t 
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1}.
+$$ {#eq-rbc-prod-land-cost}
+
+Shadow value of land $\varrho_t$ satisfies
+$$
+\varrho_t
+=
+m_{t+1}
+\left[
+\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right].
+$$ {#eq-rbc-prod-land-shadow-value}
+
+FOC for land investment $x_t$:
+$$
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+$$ {#eq-rbc-prod-foc-land}
+
+### Aggregation and Prices
+
+Let $n_t$ be the agricultural sector share:
+$$
+n_t = \bar n\, e^n_t.
+$$ {#eq-rbc-aggreg-ag-share}
+
+Aggregate output:
+$$
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+$$ {#eq-rbc-aggreg-output}
+
+Aggregate hours:
+$$
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+$$ {#eq-rbc-aggreg-hours}
+
+Consumption demand across sectors, with non-agricultural goods:
+$$
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t 
++ g_y\, \bar y^N\, e^g_t.
+$$ {#eq-rbc-aggreg-cons-demand-wo-ag}
+
+and agricultural goods:
+$$
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+$$ {#eq-rbc-aggreg-w-ag}
+
+Relative price index:
+
+$$
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+$$ {#eq-rbc-rl-prices}
+
+
+Gross Domestic Product:
+
+$$
+GDP_t = y_t - n_t p^N_t x_t.
+$$ {#eq-rbc-aggreg-gdp}
+
+Shock processes:
+
+All shocks follow AR(1) laws of motion:
+$$
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+$$ {#eq-rbc-shock-z}
+$$
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+$$ {#eq-rbc-shock-h}
+$$
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+$$ {#eq-rbc-shock-g}
+$$
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+$$ {#eq-rbc-shock-n}
+$$
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+$$ {#eq-rbc-shock-s}
+
+All innovations $\eta^j_t$ are i.i.d. standard normal.
+
+
+## Two Sector New Keynesian Model with Weather Shocks and Land
+
+### Households
+
+A representative household consumes a CES bundle of agricultural and non agricultural
+goods and supplies differentiated labor to the two sectors.
+
+Habit adjusted consumption:
+$$
+\tilde c_t = c_t - b c_{t-1}.
+$$ {#eq-nk-hh-consumption}
+
+Preferences:
+$$
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t 
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+$$ {#eq-nk-hh-utility}
+where the labor aggregator with reallocation costs is
+$$
+h_{u,t}
+= \left(h_{N,t}^{1+\\iota} + h_{A,t}^{1+\\iota}\right)^{\frac{1}{1+\\iota}}.
+$$ {#eq-nk-hh-labour}
+
+Marginal utility of consumption and stochastic discount factor:
+$$
+u_{c,t} = \tilde c_t^{-\sigma_C}, 
+\qquad 
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+$$ {#eq-nk-hh-mgc}
+
+Intratemporal optimality:
+$$
+w^N_t\, u_{c,t} = u^N_t, 
+\qquad 
+w^A_t\, u_{c,t} = u^A_t,
+$$ {#eq-nk-hh-intratemp-opt}
+with sector specific marginal disutilities of labor
+$$
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+$$ {#eq-nk-hh-mg-labour-disutility}
+
+Nominal Euler equation (one period nominal bond):
+$$
+m_{t+1} \frac{R_t}{\pi_{t+1}} = 1,
+$$ {#eq-nk-hh-euler}
+where $R_t$ is the gross nominal interest rate and $\pi_t$ is gross aggregate inflation.
+
+### Production
+
+The economy has two producing sectors: non agriculture ($N$) and agriculture ($A$).
+
+#### Non-Agricultural Sector
+
+Production is linear in TFP and concave in labor:
+$$
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+$$ {#eq-nk-prod-output}
+
+With real marginal cost $mc^N_t$, cost minimization implies:
+$$
+w^N_t = mc^N_t (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}},
+$$ {#eq-nk-prod-labour-demand-non-ag}
+where $p^N_t$ is the relative price of non agricultural goods.
+
+#### Agricultural sector with land and weather damage.
+
+Weather affects agricultural production through a damage function. Let $d_t$ denote the weather damage factor
+$$
+d_t = (e^s_t)^{-\theta_1}.
+$$ {#eq-nk-prod-weather-damage-factor}
+
+Agricultural output:
+$$
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega}.
+$$ {#eq-nk-prod-ag-output}
+
+With real marginal cost $mc^A_t$, labor demand in agriculture:
+$$
+w^A_t 
+= mc^A_t (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}},
+$$ {#eq-nk-prod-labour-demand-ag}
+where $p^A_t$ is the relative price of agricultural goods.
+
+### Price setting and nominal rigidities
+
+Prices are sticky in both sectors. We adopt Rotemberg type quadratic adjustment costs
+on inflation. For sector $j \in \{N,A\}$, let $\epsilon_j$ denote the elasticity of substitution
+and $\kappa_j$ the adjustment cost parameter.
+
+Denote sectoral inflation by $\pi_{j,t}$ and aggregate inflation by $\pi_t$.
+The New Keynesian Phillips curves in each sector take the form
+$$
+(1-\epsilon_j)\, p^j_t y^j_t 
++ \epsilon_j\, mc^j_t y^j_t
+- \kappa_j\, p^j_t \pi_{j,t}(\pi_{j,t}-1)\, y^j_t
++ \kappa_j\, \mathbb{E}_t\left[ m_{t+1} p^j_{t+1} \pi_{j,t+1}(\pi_{j,t+1}-1)\, y^j_{t+1} \right]
+= 0,
+$$ {#eq-nk-prices-phillips-curve}
+for $j = N,A$.
+
+### Land, land costs, and damage
+
+Land evolves according to
+$$
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+$$ {#eq-nk-land}
+where $\phi_t$ is land investment.
+
+Land cost function:
+$$
+\phi_t 
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1},
+$$ {#eq-nk-land-cost-function}
+with $x_t$ the land investment intensity.
+
+Shadow value of land $\varrho_t$ satisfies
+$$
+\varrho_t
+=
+\mathbb{E}_t\left\{
+m_{t+1}
+\left[
+mc^A_{t+1}\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right]
+\right\}.
+$$ {#eq-nk-land-shadow-value}
+
+FOC for land investment $x_t$:
+$$
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+$$ {#eq-nk-land-foc}
+
+### Aggregation, demand, and prices
+
+Let $n_t$ be the agricultural sector share, driven by a reallocation shock:
+$$
+n_t = \bar n\, e^n_t.
+$$ {#eq-nk-ag-share}
+
+Aggregate output:
+$$
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+$$ {#eq-nk-aggreg-output}
+
+Aggregate hours:
+$$
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+$$ {#eq-nk-aggreg-hours}
+
+
+Non agricultural goods:
+$$
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t 
++ g_y\, \bar y^N\, e^g_t.
+$$ {#eq-nk-aggreg-nonag-goods}
+
+Agricultural goods:
+$$
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+$$ {#eq-nk-aggreg-ag-goods}
+
+#### Relative price index
+
+The CES price index is
+$$
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+$$ {#eq-nk-ces-price-index}
+
+Inflation measures, let $P_t$ denote the aggregate price index. Gross inflation is
+$$
+\pi_t = \frac{P_t}{P_{t-1}}.
+$$ {#eq-nk-inflation}
+Sectoral inflation rates are
+$$
+\pi_{N,t} = \frac{P^N_t}{P^N_{t-1}},
+\qquad
+\pi_{A,t} = \frac{P^A_t}{P^A_{t-1}}.
+$$ {#eq-nk-sectoral-inflation}
+
+Gross Domestic Product:
+
+$$
+GDP_t = y_t - n_t p^N_t x_t.
+$$ {#eq-aggreg-gdp}
+
+### Monetary policy
+
+Monetary policy follows a Taylor rule in logs around the steady state:
+$$
+\log\left(\frac{R_t}{\bar R}\right)
+= \rho\, \log\left(\frac{R_{t-1}}{\bar R}\right)
++ (1-\rho)\left[
+\phi_y \log\left(\frac{GDP_t}{\overline{GDP}}\right)
++ \phi_\pi \log(\pi_t)
+\right],
+$$ {#eq-nk-taylor-rule-steady-state}
+where $\bar R$ and $\overline{GDP}$ denote steady state values.
+
+### Shock processes
+
+All exogenous processes follow AR(1) dynamics:
+$$
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+$$ {#eq-nk-shock-z}
+$$
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+$$ {#eq-nk-shock-h}
+$$
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+$$ {#eq-nk-shock-g}
+$$
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+$$ {#eq-nk-shock-n}
+$$
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+$$ {#eq-nk-shock-s}
+
+All innovations $\eta^j_t$ are iid standard normal.

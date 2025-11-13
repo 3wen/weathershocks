@@ -1,3 +1,1258 @@
-# VAR {#sec-var}
+# Estimation {#sec-var}
 
-TBD
+{{< include macros.qmd >}}
+
+::: {.hidden}
+$$
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongBlack}{RGB}{0,0,0}
+\definecolor{wongGold}{RGB}{230, 159, 0}
+\definecolor{wongLightBlue}{RGB}{86, 180, 233}
+\definecolor{wongGreen}{RGB}{0, 158, 115}
+\definecolor{wongYellow}{RGB}{240, 228, 66}
+\definecolor{wongBlue}{RGB}{0, 114, 178}
+\definecolor{wongOrange}{RGB}{213, 94, 0}
+\definecolor{wongPurple}{RGB}{204, 121, 167}
+\definecolor{gris}{HTML}{949698}
+\definecolor{rcp26}{RGB}{39, 55, 122}
+\definecolor{rcp45}{RGB}{112, 159, 200}
+\definecolor{rcp60}{RGB}{222, 99, 43}
+\definecolor{rcp85}{RGB}{205, 16, 32}
+$$
+:::
+
+:::{.callout-note}
+
+## Objectives of this page
+
+This page presents the estimation of a VAR model using the dataset built in [Chapter -@sec-data-merge].  
+
+We first estimate a restricted VAR (@sec-restricted-var) to encode block exogeneity: [the weather]{#highlight-purple} sits in one exogenous block, [trading-partners' output]{#highlight-orange} in a second exogenous block, and [national variables]{#highlight-blue} in a third block that can be influenced by the first two.
+
+We then impose contemporaneous restrictions and **estimate a SVAR** (@sec-svar).
+
+Finally, we shock the weather equation and examine transmission to the rest of the system through **impulse response functions** (IRFs) (@sec-var-irfs).
+
+:::
+
+```{r}
+library(tidyverse)
+```
+
+## Settings {#sec-var-settions}
+
+We will use the following variables in the VAR model.
+```{r define-variables_types}
+variables_types <-
+  matrix(
+    c("smdi_obs", "climate",
+      "wy_obs", "world",
+      "y_obs", "domestic",
+      "y_a_obs", "domestic",
+      "h_obs", "domestic",
+      "c_obs", "domestic",
+      "i_obs", "domestic",
+      "reer_obs", "domestic"),
+    ncol = 2, byrow = T
+  )
+```
+
+Note that their order is important. Also, we identified them with respect to the block they will be in:
+
+- [Weather block]{#highlight-purple}: drought index $(\hat{\omega}_t)$. The climate block is going to be exogenous.
+- [Foreign block]{#highlight-orange}: rest-of-world GDP $(\hat{y}_t^\star)$. The variable that represents the rest of the world (here, the top trading partners). This block will not be influenced by the variations of the national weather, to reflect the idea that the country of interest is a small open economy.
+- [Domestic block]{#highlight-blue}: $\{\hat{y}_t, \hat{y}_t^A, \hat{\imath}_t, \hat{h}_t, \hat{q}_t, \widehat{rer}_t\}$.
+
+
+To impose the restictions in the VAR, we will set to $0$ some coefficients in the matrix of lag coefficients.
+$$
+\begin{equation}%
+\begin{bmatrix}
+\highlightpurple{$X_t^W$}\\
+\highlightorange{$X_t^\star$}\\
+\highlightsubimportant{$X_{t}^{D}$}%
+\end{bmatrix}
+=C+\sum_{l=1}^{p}%
+\begin{bmatrix}
+A_{l}^{11} & \highlightgold{$0$} & \highlightgold{$0$}\\
+\highlightgold{$0$} & A_{l}^{22} & \highlightgold{$0$}\\
+A_{l}^{31} & A_{l}^{32} & A_{l}^{33}%
+\end{bmatrix}%
+\begin{bmatrix}
+\highlightpurple{$X_{t-l}^W$}\\
+\highlightorange{$X_{t-l}^{\star}$}\\
+\highlightsubimportant{$X_{t-l}^{D}$}%
+\end{bmatrix}
++%
+\begin{bmatrix}
+\eta_{t}^{W}\\
+\eta_{t}^{\star}\\
+\eta_{t}^{D}%
+\end{bmatrix}
+,
+\end{equation}
+$$ {#eq-VAR}
+
+
+
+
+Let us put the name of the exogenous variables in a vector of characters:
+```{r define-variables_exo}
+variables_exo <- variables_types[,1]
+```
+
+We set the number of lags to 1:
+```{r set-lags}
+L <- 1
+```
+
+The number of variables:
+```{r number-variables}
+N <- length(variables_exo)
+```
+
+We define a function, `find_block()`{.R} to be able to return in which block a variable belongs to:
+```{r define-find_block}
+#| code-summary: The `find_block()`{.R} function.
+#' Returns the corresponding name of the block for a variable
+#' 
+#' @param name Variable name (string).
+find_block <- function(name) {
+  variables_types[variables_types[, 1] == name, 2]
+}
+```
+
+For example:
+```{r example-find_block}
+find_block("wy_obs")
+```
+
+We create a matrix with the constraints on coefficients to ensure the exogeneity of blocks:
+$$
+\begin{bmatrix}
+    A_{l}^{11} & \highlightgold{$0$} & \highlightgold{$0$}\\
+    \highlightgold{$0$} & A_{l}^{22} & \highlightgold{$0$}\\
+    A_{l}^{31} & A_{l}^{32} & A_{l}^{33}%
+\end{bmatrix}
+$$ {#eq-restriction-matrix}
+
+The equations will be written in columns in this matrix. Hence, at element $[i,j]$, the coefficient indicates whether the j$^\text{th}$ variable can affect the i$^\text{th}$ one. If so, the element $[i,j]$ will take the value 1; 0 otherwise.
+
+```{r define-A_l_restrictions}
+A_l_restrictions <- 
+  matrix(NA, ncol = N, nrow = N)
+colnames(A_l_restrictions) <- rownames(A_l_restrictions) <- variables_exo
+
+
+# i_column <- 1 ; i_row <- 2
+for (i_column in 1:nrow(A_l_restrictions)) {
+  name_eq <- colnames(A_l_restrictions)[i_column]
+  
+  for (i_row in 1:ncol(A_l_restrictions)) {
+    nom_expl <- rownames(A_l_restrictions)[i_row]
+    value_to_set <- 1
+    # Climate block
+    if (find_block(name_eq) == "climate") {
+      if(find_block(nom_expl) != "climate") value_to_set <- 0
+    }
+    
+    # Rest of the world block
+    if (find_block(name_eq) == "world") {
+      if(find_block(nom_expl) != "world") value_to_set <- 0
+    }
+    
+    A_l_restrictions[i_row, i_column] <- value_to_set
+  }
+}
+
+# The equations by rows:
+A_l_restrictions <- t(A_l_restrictions)
+A_l_restrictions
+```
+
+Depending on the number of desired lags, this matrix needs to be replicated so that all the constraints imposed apply to each lag. Again, equations are written in rows.
+
+```{r define-A_l_restrict}
+A_l_restrict <- parse(
+  text = str_c(
+    "cbind(",
+    str_c(rep("A_l_restrictions", L), collapse = ", "),
+    ")"
+  )
+) |> 
+  eval()
+
+A_l_restrict <- do.call(cbind, rep(list(A_l_restrictions), L))
+base_nms <- colnames(A_l_restrictions)
+colnames(A_l_restrict) <- paste0(
+  base_nms, "_", rep(seq_len(L), each = length(base_nms))
+)
+
+# Let us add an intercept (const)
+A_l_restrict <- cbind(A_l_restrict, const = rep(1, nrow(A_l_restrict)))
+A_l_restrict
+```
+
+## Load Data
+
+Let us load the data obtained gathered in [Chapter -@sec-data-merge].
+```{r}
+load('../data/df_finale_ebook.rda')
+```
+
+Total production is denoted `y_tot_obs` in the base we just loaded, let us change this to simply `y_obs`. Then, let us keep only the variables of interest.
+```{r keep-variables-of-interest}
+df_finale <-
+  df_finale |> 
+  mutate(
+    y_obs = y_tot_obs) |> 
+  dplyr::select(YEARS, !!variables_exo)
+```
+
+:::{.callout-warning}
+
+In [Chapter -@sec-data-merge], we made sure that positive values of the Soil Moisture Deficit index depict droughts. In the impulse response functions, we will impulse positive standard deviation shocks. This ensures that a positive shock depicts an increase in dryness.
+
+
+:::
+
+
+
+We know there is no missing values between different dates so, we can use `na.omit()`{.R} without risk. There is only one missing value for the reer.
+
+```{r remove-na-df_finale}
+df_finale <- na.omit(df_finale)
+```
+
+It will be more convenient to cast the series into a time series object (of class `ts`).
+
+```{r data-as-ts}
+start_date_raw_data <- c(
+  df_finale$YEARS[1] %/% 1,
+  df_finale$YEARS[1] %% 1 * 4 + 1
+)
+end_date_raw_data <- c(
+  df_finale$YEARS[nrow(df_finale)] %/% 1,
+  df_finale$YEARS[nrow(df_finale)] %% 1 * 4 + 1
+)
+frequency_raw_data <- 4 # quarterly
+
+start_date_sample <- c(
+  df_finale$YEARS[1] %/% 1,
+  df_finale$YEARS[1] %% 1 * 4 + 1
+)
+end_date_sample <- end_date_raw_data
+
+# Turning it to a ts object
+raw_data <- 
+  df_finale |> 
+  dplyr::select(!!variables_exo) |> 
+  ts(frequency = frequency_raw_data, start = start_date_raw_data)
+```
+
+Let us call the data used in the estimation `"data"`:
+```{r define-data}
+data <- raw_data
+```
+
+
+```{r show-cor-data}
+cor(data)
+```
+
+
+## Estimation
+
+
+We will use the functions from {vars} to estimate the VAR (note that it masks the function `select()` from {dplyr}, which leads us to use `dplyr::select()` afterwards, if needed).
+
+```{r load-package-vars}
+library(vars)
+```
+The function `VARselect()`{.R} estimates infomation criteria and final prediction error for sequential increasing the lag order up to a VAR(p)-proccess.
+
+```{r show-carselect}
+VARselect(data, lag.max = 4, type = "const")
+```
+:::{.callout-note}
+
+If the number of lags that produces the best fit with respect to the criterion you want to use is different from 1, set the value to `L` to the desired value in @sec-var-settions, and run the above codes again.
+
+:::
+
+### Restricted VAR {#sec-restricted-var}
+
+We first need to estimate the VAR without constraints, i.e., without imposing $0$ coefficients in the matrix shown in @eq-restriction-matrix:
+
+```{r define-var_1}
+var_1 <- VAR(data, p = L, type = "const")
+```
+
+The restrictions can be added to estimate the model shown in @eq-VAR:
+```{r define-var_res}
+var_res <- restrict(var_1, method = "manual", resmat = A_l_restrict)
+```
+
+### Structural VAR {#sec-svar}
+
+We further need to impose structure on the contemporaneous relationships amont variables. We estimate a Structural VAR (SVAR) model to do so:
+$$
+\begin{equation*}
+    \highlightgreen{$A_{0}$} X_{t} = C + \sum_{l=1}^{p} A_{l} X_{t-l} + \highlightgold{$\eta_{t}$},
+\end{equation*}
+$$ {#eq-svar}
+
+The matrix $\textcolor{wongGreen}{A_0}$ is a lower triangular matrix which encodes the [contemporaneous restrictions]{#highlight-green}, and $\textcolor{wongGold}{\eta_{t}}$ are the [orthogonal structural shocks]{#highlight-gold}. It ensures the contemporaneous exogeneity of the weather and of foreign variables. Those variables do not react within the quarter to domestic shocks, while domestic variables may react instantly to them. The order of the variables matters. Variables ordered earlier can contemporaneously affect variables ordered later, but not the other way around. In addition, we put 1s on the diagonal to fix the scale of each equation so that the shocks $\eta_t$ are structural shocks, i.e., orthogonal and scaled, which is required to compute the IRFs.
+
+The SVAR model can be estimate, by specifying the $A_0$ matrix. Each row of this matrix sets the constraints for an equation of the previously estimated VAR.
+$$
+\begin{equation*}
+  {\color{wongGreen}A_{0}}=
+  \begin{bmatrix}
+  1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+  0 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\
+  b_{31} & b_{32} & 1 & 0 & 0 & 0 & 0 & 0\\
+  b_{41} & b_{42} & b_{43} & 1 & 0 & 0 & 0 & 0\\
+  b_{51} & b_{52} & b_{53} & b_{54} & 1 & 0 & 0 & 0\\
+  b_{61} & b_{62} & b_{63} & b_{64} & b_{65} & 1 & 0 & 0\\
+  b_{71} & b_{72} & b_{73} & b_{74} & b_{75} & b_{76} & 1 & 0\\
+  b_{81} & b_{82} & b_{83} & b_{84} & b_{85} & b_{86} & b_{87} & 1
+  \end{bmatrix}
+\end{equation*}
+$$ {#eq-azero}
+
+For example, the 4th row (row for `y_a_obs`) states that the agricultural output can contemporaneously depend only on the weather (first column), foreign GDP (second column) and domestic output (third column).
+```{r define-amat}
+amat <- A_l_restrictions
+amat[amat == 1] <- NA
+amat[upper.tri(amat)] <- 0
+diag(amat) <- 1
+amat
+```
+
+
+
+\item \grasB{Restricted VAR}: we enforce weather/foreign as exogenous blocks in the lag structure.
+        \item \grasB{$A_0$}: 
+        \begin{itemize}
+            \item 
+        \end{itemize}
+        \item \grasB{1s in the diagonal}: 
+        \begin{itemize}
+            \item to have 1 s.d. structural shock in the IRFs
+
+The estimation of the SVAR:
+```{r define-svar_est}
+svar_est <- SVAR(x = var_res, Amat = amat, Bmat = NULL, estmethod = "direct")
+```
+
+
+:::{.callout-note collapse=true}
+
+#### Estimation Results
+
+The estimation results:
+```{r}
+summary(svar_est)
+```
+
+:::
+
+
+The data can be exported for use in the DSGE
+```{r}
+write_delim(df_finale, file = "../data/df_finale_var_ebook.csv", delim = ";")
+```
+
+
+We can have a look at the observed weather series and the fitted one:
+```{r}
+ggplot(
+  data = tibble(
+    time = zoo::as.Date(time(var_res$y))[-(1: var_res$p)],
+    obs =  var_res$datamat$smdi_obs,
+    fitted = fitted(var_res$varresult$smdi_obs)
+  ) |> 
+    pivot_longer(cols = -time, names_to = "type") |> 
+    mutate(type = factor(type, levels = c("obs", "fitted"))),
+  mapping = aes(x = time, y = value, colour = type)
+) +
+  geom_line() +
+  scale_colour_manual(
+    name = NULL, values = c("obs" = "black", "fitted" = "blue")
+  )
+```
+
+
+### Fisher Test
+
+We use a nested-model F-test to assess whether the weather variable (`smdi_obs`) improves fit for each target variable (output, agri output, hours, consumption, investment, REER). 
+
+To do so, we define a function, `fisher_test()`{.R}, that builds two linear regressions:
+
+1. A complete model, which includes the target's admissible contemporaneous regressors (from the SVAR $\color{wongGreen}A_0$ pattern in `amat`, if `contemp = TRUE`) and admissible lagged regressors (from the VAR mask `A_l_restrict`).
+- A restricted model, with the same specification, but with `smdi_obs` removed (both its contemporaneous and/or lag terms, depending on the setting).
+
+It then compares the residual sums of squares (RSS) to form
+$$
+F = \frac{(\text{RSS}_R - \text{RSS}_C)/k}{\text{RSS}_C/(n - p - k)},
+$$ {#eq-f-test}
+where $k$ is the number of coefficients dropped and $p$ the number in the restricted model. A small p-value indicates that weather adds information.
+
+
+
+```{r definefisher_test}
+#| code-fold: true
+#| code-summary: The `fisher_test()`{.R} function.
+
+#' Fisher Test for the Inclusion of the Weather Variable
+#' 
+#' @description
+#' Performs a nested-model Fisher test to evaluate whether including the weather
+#' variable (`smdi_obs`) improves the fit of an equation in the restricted 
+#' VAR/SVAR system.
+#' The function compares a complete model (including all admissible 
+#' contemporaneous and lagged regressors) to a restricted model where the 
+#' weather variable (and optionally its lags) is removed.
+#' 
+#' @param variables_rest Character vector of variables included in the baseline
+#'  (restricted) model. Include the weather variable `"smdi_obs"` and possibly 
+#'  other variables.
+#' @param variables_interest Character string giving the dependent variable 
+#'  to test.
+#' @param print_res If `TRUE` (default), the equations of the models and the
+#'  summary of the results are printed in the console.
+#' @param contemp If `TRUE` (default), for the target equation (row in `amat`), 
+#'  any entry that is `NA` (i.e., free to estimate) is included; zeros are
+#'  excluded. If `FALSE`, only lagged effects are considered.
+#'  
+#' @details
+#' The admissible regressors are determined from the restriction matrices:
+#' * The contemporaneous matrix `amat` (from the SVAR): if a coefficient
+#'   is `NA` in the row corresponding to the dependent variable, the associated
+#'   variable is included.
+#' * The lag restriction matrix _A_l_restrict_ (from the restricted VAR):
+#'   if the entry equals `1` in that row, the corresponding lagged variable
+#'   is included.
+#' For each dependent variable, two linear models are estimated:
+#' * Complete model: includes all admissible contemporaneous and lagged 
+#'   regressors.
+#' * Restricted model: same as the complete model but with the weather variable
+#'   (and its lags, if any) removed.
+#'   
+#' The Fisher test statistic is computed as:
+#' \deqn{
+#' F = \frac{(RSS_R - RSS_C)/k}{RSS_C / (n - p - k)},
+#' }
+#' where \eqn{RSS_R} and \eqn{RSS_C} are the residual sums of squares of the
+#' restricted and complete models, respectively; \eqn{k} is the number of
+#' restrictions, and \eqn{p} is the number of estimated parameters in the
+#' restricted model.
+#' 
+#' @returns  A tibble with the following columns:
+#' * `var`: tested dependent variable,
+#' * `F`: computed F-statistic,
+#' * `Pr(>F)`: associated p-value.
+#' 
+fisher_test <- function(variables_rest, 
+                        variables_interest, 
+                        print_res = TRUE, 
+                        contemp = TRUE) {
+  
+  variables <- c(variables_rest, variables_interest)
+  
+  # Complete model
+  data_tmp <- as_tibble(data)
+  data_tmp <- 
+    data_tmp |> 
+    dplyr::select(!!variables)
+  
+  form <- str_c(variables_interest, " ~ 1")
+  
+  # i <- 1
+  for (i in 1:length(variables)) {
+    var_name <- variables[i]
+    var_name_new <- str_c(variables[i], "_1")
+    
+    # Contemporaneous effect
+    if (contemp) {
+      ind <- which(rownames(amat) == variables_interest)
+      if (is.na(amat[ind, which(colnames(amat) == var_name)])) {
+        form <- str_c(form, var_name, sep = " + ")
+      }
+    }
+    
+    # Lagged effect
+    ind <- which(rownames(A_l_restrict) == variables_interest)
+    
+    if (A_l_restrict[ind, which(colnames(A_l_restrict) == var_name_new)] == 1) {
+      data_tmp <- 
+        data_tmp |> 
+        mutate(!!var_name_new := dplyr::lag(!!sym(var_name),1))
+      
+      form <- str_c(form, var_name_new, sep = " + ")
+    }
+  }
+  
+  mod_complete <- lm(as.formula(form), data = data_tmp)
+  
+  # Restricted model
+  variables_rest_r <- variables_rest[-which(variables_rest == "smdi_obs")]
+  variables_r <- c(variables_rest_r, variables_interest)
+  
+  data_tmp_r <- as_tibble(data) |> 
+    dplyr::select(c(!!variables_rest_r, !!variables_interest))
+  
+  form_r <- str_c(variables_interest, " ~ 1")
+  
+  # i <- 1
+  for (i in 1:length(variables_r)) {
+    var_name <- variables_r[i]
+    var_name_new <- str_c(variables_r[i], "_1")
+    
+    # Contemporaneous effect
+    if (contemp) {
+      ind <- which(rownames(amat) == variables_interest)
+      if (is.na(amat[ind, which(colnames(amat) == var_name)])) {
+        form_r <- str_c(form_r, var_name, sep = " + ")
+      }
+    }
+    
+    # Lagged effect
+    if (A_l_restrict[ind, which(colnames(A_l_restrict) == var_name_new)] == 1) {
+      data_tmp_r <- 
+        data_tmp_r |> 
+        mutate(!!var_name_new := dplyr::lag(!!sym(var_name),1))
+      
+      form_r <- str_c(form_r, var_name_new, sep = " + ")
+    }
+  }
+  
+  mod_restricted <- lm(as.formula(form_r), data = data_tmp_r)
+  
+  rss_r <- sum(mod_restricted$residuals^2)
+  rss_c <- sum(mod_complete$residuals^2)
+  const <- 0
+  p <- mod_restricted$rank-const
+  k <- mod_complete$rank - const - p
+  n <- length(mod_restricted$residuals)
+  F_obs <- ((rss_r - rss_c) / k) / (rss_c / (n - (k+p+const)))
+  (F_tab <- qf(p = 1-0.05, df1 = p, df2 = n - (k+p+1)))
+  p_value <- (1 - pf(q = F_obs, df1 = p, df2 = n - (k+p+const)))
+  
+  cat("Complete model:\n---------------\n")
+  cat(form)
+  cat("\n\nRestricted model:\n---------------\n")
+  cat(form_r)
+  cat("\n")
+  if(print_res)
+    texreg::screenreg(
+      l = list(mod_complete, mod_restricted),
+      custom.model.names = c("Complete", "Restricted")
+    ) |> 
+    print()
+  
+  tibble(var = !!variables_interest, F = F_obs, `Pr(>F)` = p_value)
+}
+
+
+```
+
+
+We consider three testing setups:
+
+1. Bivariate, past + current: we test whether weather (contemporaneous and its lags, as allowed) improves a bivariate regression (target on itself and weather).
+2. Multivariate, past only: we test whether lagged weather adds predictive power beyond the full set of other lagged variables.
+3. Multivariate, past + current: we test whether both contemporaneous and lagged weather terms improve fit in the SVAR-consistent equation.
+
+```{r}
+variables_rest <- c("smdi_obs")
+```
+
+
+:::{.callout-note collapse=true}
+
+#### Bivariate, past + current
+
+```{r define-f_test}
+f_test <- NULL
+for (v in c("y_obs", "y_a_obs", "h_obs", "c_obs", "i_obs", "reer_obs")) {
+  f_test_tmp <- fisher_test(
+    variables_rest = variables_rest,
+    variables_interest = v, print_res = F
+  )
+  f_test <- f_test |> 
+    bind_rows(f_test_tmp)
+}
+```
+
+
+
+:::
+
+:::{.callout-note collapse=true}
+
+#### Multivariate, past only
+
+
+```{r define-variables_rest}
+variables_rest <- c(
+  "smdi_obs", "wy_obs", "y_obs", "y_a_obs", "h_obs", "c_obs", "i_obs", "reer_obs"
+)
+f_test_2 <- NULL
+for (v in c("y_obs", "y_a_obs", "h_obs", "c_obs", "i_obs", "reer_obs")) {
+  f_test_tmp <- fisher_test(
+    variables_rest = variables_rest,
+    variables_interest = v, print_res = F, contemp = F
+  )
+  f_test_2 <- f_test_2 |> bind_rows(f_test_tmp)
+}
+```
+
+:::
+
+:::{.callout-note collapse=true}
+
+#### Multivariate, past + current
+
+```{r}
+variables_rest <- c(
+  "smdi_obs", "wy_obs", "y_obs", "y_a_obs", "h_obs", "c_obs", "i_obs", "reer_obs"
+)
+f_test_3 <- NULL
+for (v in c("y_obs", "y_a_obs", "h_obs", "c_obs", "i_obs", "reer_obs")) {
+  f_test_tmp <- fisher_test(
+    variables_rest = variables_rest,
+    variables_interest = v, print_res = F
+  )
+  f_test_3 <- f_test_3 |> bind_rows(f_test_tmp)
+}
+```
+
+
+:::
+
+The results:
+
+```{r}
+#| tbl-cap: Inclusion tests of the (lagged) weather variable (F-test for nested models).
+#| label: tbl-f-test-weather
+#| code-fold: true
+#| code-summary: Codes to create the Table.
+f_test |> 
+  left_join(
+    f_test_2 |> 
+      rename(F_2 = F, `Pr(>F)_2` = `Pr(>F)`), 
+    by = "var"
+  ) |> 
+  left_join(
+    f_test_3 |> 
+      rename(F_3 = F, `Pr(>F)_3` = `Pr(>F)`), 
+      by = "var"
+  ) |> 
+  kableExtra::kbl(digits = 2) |> 
+  kableExtra::kable_paper("hover") |> 
+  kableExtra::add_header_above(
+    c(
+      " " = 1, 
+      "bivariate\n past only " = 2, 
+      "multivariate\n past only " = 2, 
+      "multivariate\n past + current" = 2
+    )
+  )
+```
+
+## IRFs {#sec-var-irfs}
+
+We now turn to the impulse response functions. We set the number of lags for the impulse response analysis to 30.
+
+
+
+```{r define-last_lag}
+last_lag <- 30
+```
+
+To calculate confidence intervals, we perform Monte Carlo simulations, with 10,000 runs.
+```{r define-no-runs-mc}
+runs <- 10000
+```
+
+```{r define-irf_varest}
+#| code-fold: true
+#| code-summary: The `irf_varest()`{.R}, `irf_internal()`{.R}, and `boot_internal()`{.R} functions.
+# This set of functions is the replication of the code found in the function
+# irf.varest package vars to compute the IRFs.
+# But we correct it so that it works with restricted vars.
+
+#' irf_varest
+irf_varest <- function(x,
+                       impulse = NULL,
+                       response = NULL,
+                       n.ahead = 10,
+                       ortho = TRUE,
+                       cumulative = FALSE,
+                       boot = TRUE,
+                       ci = 0.95,
+                       runs = 100,
+                       seed = NULL,
+                       restrict = NULL, ...) {
+  if (!(class(x) == "varest")) {
+    stop("\nPlease provide an object of class 'varest', generated by 'VAR()'.\n")
+  }
+  y.names <- colnames(x$y)
+  if (is.null(impulse)) {
+    impulse <- y.names
+  } else {
+    impulse <- as.vector(as.character(impulse))
+    if(any(!(impulse %in% y.names))) {
+      stop("\nPlease provide variables names in impulse\nthat are in the set of endogenous variables.\n")
+    }
+    impulse <- subset(y.names, subset = y.names %in% impulse)
+  }
+  if (is.null(response)) {
+    response <- y.names
+  } else {
+    response <- as.vector(as.character(response))
+    if(any(!(response %in% y.names))){
+      stop("\nPlease provide variables names in response\nthat are in the set of endogenous variables.\n")
+    }
+    response <- subset(y.names, subset = y.names %in% response)
+  }
+  ## Getting the irf
+  irs <- irf_internal(
+    x = x,
+    impulse = impulse,
+    response = response,
+    y.names = y.names,
+    n.ahead = n.ahead,
+    ortho = ortho,
+    cumulative = cumulative
+  )
+  ## Bootstrapping
+  Lower <- NULL
+  Upper <- NULL
+  std_err <- NULL
+  if (boot) {
+    ci <- as.numeric(ci)
+    if((ci <= 0)|(ci >= 1)){
+      stop("\nPlease provide a number between 0 and 1 for the confidence interval.\n")
+    }
+    ci <- 1 - ci
+    BOOT <- boot_internal(x = x, n.ahead = n.ahead, runs = runs, ortho = ortho, cumulative = cumulative, impulse = impulse, response = response, ci = ci, seed = seed, y.names = y.names, restrict = restrict)
+    Lower <- BOOT$Lower
+    Upper <- BOOT$Upper
+    std_err <- BOOT$sd
+  }
+  result <- list(
+    irf = irs,
+    Lower = Lower,
+    Upper = Upper,
+    sd = std_err,
+    response = response,
+    impulse = impulse,
+    ortho = ortho,
+    cumulative = cumulative,
+    runs = runs, ci = ci,
+    boot = boot,
+    model = class(x)
+  )
+  class(result) <- "varirf"
+
+  return(result)
+}
+
+
+#' irf (internal)
+irf_internal <- function(x,
+                         impulse,
+                         response,
+                         y.names,
+                         n.ahead,
+                         ortho,
+                         cumulative) {
+  if ((class(x) == "varest") || (class(x) == "vec2var")) {
+    if(ortho){
+      irf <- Psi(x, nstep = n.ahead)
+    } else {
+      irf <- Phi(x, nstep = n.ahead)
+    }
+  } else if ((class(x) == "svarest") || (class(x) == "svecest")) {
+    irf <- Phi(x, nstep = n.ahead)
+  }
+  dimnames(irf) <- list(y.names, y.names, NULL)
+  idx <- length(impulse)
+  irs <- list()
+  for (i in 1 : idx) {
+    irs[[i]] <- matrix(
+      t(irf[response , impulse[i], 1 : (n.ahead + 1)]),
+      nrow = n.ahead+1
+    )
+    colnames(irs[[i]]) <- response
+    if (cumulative) {
+      if(length(response) > 1) irs[[i]] <- apply(irs[[i]], 2, cumsum)
+      if(length(response) == 1){
+        tmp <- matrix(cumsum(irs[[1]]))
+        colnames(tmp) <- response
+        irs[[1]] <- tmp
+      }
+    }
+  }
+  names(irs) <- impulse
+  result <- irs
+
+  return(result)
+}
+
+
+#' boot_internal
+#' Bootstrapping IRF for VAR and SVAR
+#'
+boot_internal <- function(x,
+                          n.ahead,
+                          runs,
+                          ortho,
+                          cumulative,
+                          impulse,
+                          response,
+                          ci,
+                          seed,
+                          y.names,
+                          restrict = NULL) {
+  if (!(is.null(seed))) set.seed(abs(as.integer(seed)))
+  if (class(x) == "varest") {
+    VAR <- eval.parent(x)
+  } else if (class(x) == "svarest") {
+    VAR <- eval.parent(x$var)
+  } else {
+    stop("Bootstrap not implemented for this class.\n")
+  }
+  p <- VAR$p
+  K <- VAR$K
+  obs <- VAR$obs
+  total <- VAR$totobs
+  type <- VAR$type
+  B <- Bcoef(VAR)
+  BOOT <- vector("list", runs)
+  ysampled <- matrix(0, nrow = total, ncol = K)
+  colnames(ysampled) <- colnames(VAR$y)
+  Zdet <- NULL
+  if (ncol(VAR$datamat) > (K * (p+1))) {
+    Zdet <- as.matrix(VAR$datamat[, (K * (p + 1) + 1):ncol(VAR$datamat)])
+  }
+  resorig <- scale(resid(VAR), scale = FALSE)
+  B <- Bcoef(VAR)
+  for (i in 1:runs) {
+    booted <- sample(c(1 : obs), replace=TRUE)
+    resid <- resorig[booted, ]
+    lasty <- c(t(VAR$y[p : 1, ]))
+    ysampled[c(1 : p), ] <- VAR$y[c(1 : p), ]
+    for(j in 1 : obs){
+      lasty <- lasty[1 : (K * p)]
+      Z <- c(lasty, Zdet[j, ])
+      ysampled[j + p, ] <- B %*% Z + resid[j, ]
+      lasty <- c(ysampled[j + p, ], lasty)
+    }
+
+    varboot <- update(VAR, y = ysampled)
+    if (!is.null(restrict))
+      varboot <- restrict(varboot, method = "man", resmat = restrict)
+    if (class(x) == "svarest") {
+      varboot <- update(x, x = varboot)
+    }
+    BOOT[[i]] <- irf_internal(
+      x = varboot,
+      n.ahead = n.ahead,
+      ortho = ortho,
+      cumulative = cumulative,
+      impulse = impulse,
+      response = response,
+      y.names = y.names
+    )
+  }
+  lower <- ci / 2
+  upper <- 1 - ci / 2
+  mat.l <- matrix(NA, nrow = n.ahead + 1, ncol = length(response))
+  mat.u <- matrix(NA, nrow = n.ahead + 1, ncol = length(response))
+  mat.sd <- matrix(NA, nrow = n.ahead + 1, ncol = length(response))
+  Lower <- list()
+  Upper <- list()
+  std_err <- list()
+  idx1 <- length(impulse)
+  idx2 <- length(response)
+  idx3 <- n.ahead + 1
+  temp <- rep(NA, runs)
+  for (j in 1 : idx1) {
+    for (m in 1 : idx2) {
+      for (l in 1 : idx3) {
+        for (i in 1 : runs) {
+          if (idx2 > 1) {
+            temp[i] <- BOOT[[i]][[j]][l, m]
+          } else {
+            temp[i] <- matrix(BOOT[[i]][[j]])[l, m]
+          }
+        }
+        mat.l[l, m] <- quantile(temp, lower, na.rm = TRUE)
+        mat.u[l, m] <- quantile(temp, upper, na.rm = TRUE)
+        mat.sd[l, m] <- sd(temp, na.rm = TRUE)
+      }
+    }
+    colnames(mat.l) <- response
+    colnames(mat.u) <- response
+    colnames(mat.sd) <- response
+    Lower[[j]] <- mat.l
+    Upper[[j]] <- mat.u
+    std_err[[j]] <- mat.sd
+  }
+  names(Lower) <- impulse
+  names(Upper) <- impulse
+  names(std_err) <- impulse
+  result <- list(Lower = Lower, Upper = Upper, sd = std_err)
+
+  return(result)
+}
+```
+
+
+Compute the IRFs (pointwise estimations):
+```{r define-irfs}
+irfs <- irf(
+  svar_est,
+  n.ahead = last_lag,
+  boot = FALSE,
+  cumulative = FALSE,
+  ortho = TRUE,
+  seed = 1
+)
+```
+
+### Monte Carlo Simulations
+
+We define a function, `irfs_mc()`{.R}, which draws multiple shocks from a Normal distribution for a given shocked variable and compute the response to the system for each of the shocks.
+
+The simulated responses are summarized into 68% and 95% credible intervals:
+$$
+  \text{IRF}_{h}^{(s)} = \varepsilon_s \cdot \text{IRF}_h,
+  \quad \varepsilon_s \sim \mathcal{N}(0,1)
+$$
+
+```{r define-irfs_mc}
+#' Returns a tibble with the IRFs values for a shocked variable
+#' and the credible intervals as computed with Monte-Carlo simulations
+#'
+#' @param irfs IRFs obtained with `irf_varest()`
+#' @param var_shocked Name of the variable shocked in `irfs$irf`
+#' @param runs No. draws for the Monte-Carlo simulations (default: 10,000)
+#'
+irfs_mc <- function(var_shocked,
+                    irfs,
+                    runs = 10000) {
+  sim <- vector("list", runs)
+  n_variables <- ncol(irfs$irf[[var_shocked]])
+
+  for (i in 1:length(sim)) {
+    x <- matrix(0, ncol = n_variables, nrow = nrow(irfs$irf[[var_shocked]]))
+    x[1,1] <- sqrt(abs(rnorm(n = 1, mean = 0, sd = 1))) # Generate a random shock
+    sim[[i]] <- x[1,1] * irfs$irf[[var_shocked]] |> as_tibble()
+    sim[[i]]$horizon <- 1:nrow(irfs$irf[[var_shocked]])
+  }
+
+  sim <-
+    sim |> bind_rows() |>
+    gather(var_response, value, -horizon) |>
+    group_by(horizon, var_response) |>
+    summarise(
+      mean = mean(value),
+      sd = sd(value),
+      lower_95 = quantile(value, probs = .05),
+      upper_95 = quantile(value, probs = .95),
+      lower_68 = quantile(value, probs = .32),
+      upper_68 = quantile(value, probs = .68),
+      .groups = "drop"
+    ) |>
+    mutate(var_shocked = !!var_shocked) |>
+    rename(value = mean)
+
+  sim
+}
+```
+
+
+:::{.callout-important}
+
+In the function `irfs_mc()`{.R}, since `irfs$irf[[var_shocked]]` already gives the response to a one–standard deviation shock, multiplying by a random $\mathcal{N}(0,1)$ means that we are simulating IRFs for random shock magnitudes drawn in standard deviation units. So the simulated values are expressed in the same units as the variables themselves (e.g., percentage deviations, log-deviations, etc.), per one-standard deviation of the shocked variable. 
+
+In our model, since the macro variables are detrended and expressed as log-deviations from trend, the IRFs of the weather shock measure approximatively the percentage responses to a one standard-deviation drought shock.
+
+:::
+
+We apply this function to perform 10,000 draws so as to get the 0.95% and 68% credible intervals for the IRFs to a shock to the weather variable.
+
+```{r define-df_irfs}
+# This takes about 30sec to run
+df_irfs <-
+  # pbapply::pblapply(names(irfs$irf), irfs_mc, irfs = irfs) |>
+  lapply(names(irfs$irf), irfs_mc, irfs = irfs) |>
+  bind_rows()
+```
+
+Let us have a look at the beginning of these IRFs. We begin with looking at the response of the rest-of-the-world GDP, which is supposed to be 0 because of all our restrictions.
+
+```{r}
+df_irfs |> filter(var_shocked == "smdi_obs", var_response == "wy_obs") |> head()
+```
+
+The response of national GDP:
+```{r}
+df_irfs |> filter(var_shocked == "smdi_obs", var_response == "y_obs") |> head()
+```
+
+The response of hours worked:
+```{r}
+df_irfs |> filter(var_shocked == "smdi_obs", var_response == "h_obs") |> head()
+```
+
+```{r define-corresp_names}
+#| code-fold: true
+#| code-summary: The table `corresp_names` with variable names and different labels (long, short, formulas), and the table `possibilites` with all combinations of two variables.
+corresp_names <- tribble(
+  ~name_r, ~long_name, ~short_name, ~pm_name,
+  "wy_obs", "Foreign Output", "$\\Delta log\\left(Y_t^*\\right)$", "hat(y)[t]^F",
+  "wp_obs", "Foreign CPI Inflation", "$\\pi_t^*$", "hat(pi)[t]^F",
+  "wr_obs", "Foreign Interest Rate", "r_t^*", "hat(r)[t]^F",
+  "wp_a_obs", "Foreign Ag. Price Infl.", "\\Delta log \\left(p_t^{A*}\\right)$", "p[t]^D",
+  "wy_a_obs", "Foreign Ag. Output", "$\\Delta log \\left(Y_t^{A*}\\right)$", "Y[t]^D",
+  "oil_obs", "Crude Oil Inflation", "$oil_t$", "hat(oil)[t]",
+  "y_obs", "Output", "$\\Delta log \\left(Y_t^d\\right)$", "hat(y)[t]",
+  "y_a_obs", "Ag. Output", "$\\Delta log \\left(X_t^A\\right)$", "hat(y)[t]^A",
+  "p_obs", "CPI Inflation", "$\\pi_t^C$", "hat(pi)[t]",
+  "ratio_p_obs", "Rel. Prices", "$\\pi_{x,t}^A / \\pi_t^C$", "hat(pi)[t] / hat(pi)[t]^A",
+  "p_a_obs", "Ag. Inflation", "$log \\left(\\pi_{x,t}^A\\right)$", "hat(pi)[t]^A",
+  "c_obs", "Consumption", "$log \\left(c_{t}\\right)$", "hat(c)[t]",
+  "h_obs", "Hours Worked", "\\Delta log \\left($h_t\\right)$", "hat(h)[t]",
+  "i_obs", "Investment", "$\\Delta log \\left(i_t\\right)$", "hat(i)[t]",
+  "q_obs", "Stock Prices", "q_t", "hat(q)[t]",
+  "im_obs", "Imports", "\\Delta log \\left(im_{t}\\right)$", "hat(im)[t]",
+  "x_obs", "Exports", "$\\Delta log \\left(x_{t}\\right)$", "hat(x)[t]",
+  "tb_obs", "Trade Balance", "$tb_{t}$", "hat(tb)[t]",
+  "ex_rate_obs", "Real Ex. Rate", "$rer_t$", "hat(e)[t]",
+  "reer_obs", "Real Eff. Ex. Rate", "$reer_$", "hat(e)[t]",
+  "r_obs", "Interest Rate", "$r_t$", "hat(r)[t]",
+  "smdi_obs", "Weather", "$\\varepsilon_{t}^{W}$", "hat(s)[t]",
+  "r_y_hp", "GDP Deviation From HP Filter Trend", "$y_t$", "y[t]",
+  "r_y_a_hp", "agricultural GDP Deviation From HP Filter Trend", "$y_t^A$", "y[t]^A",
+  "smdi", "Wheater", "$\\varepsilon_{t}^{W}$", "hat(s)[t]",
+  "y_w", "Foreign Output", "$\\Delta log\\left(Y_t^*\\right)$", "hat(y)[t]^F",
+  "y", "Output", "$\\Delta log \\left(Y_t^d\\right)$", "hat(y)[t]"
+)
+# We put the variables in a specific order when creating `corresp_names`.
+# Let us make sure, by casting column `name_r` as a factor, that the order is
+# preserved.
+noms_ordonnees <- corresp_names$name_r
+corresp_names <-
+  corresp_names |>
+  mutate(name_r = factor(name_r, levels = noms_ordonnees))
+
+# Listing all possible subsets of 2 variables
+possibilites <- expand.grid(
+  Var1 = levels(corresp_names$name_r),
+  Var2 = levels(corresp_names$name_r)
+) |>
+  arrange(Var1, Var2) |>
+  mutate(title = str_c(Var1, "-", Var2)) |>
+  as_tibble()
+```
+
+We define a small function, `c_name()`{.R}, to retrieve the label of a variable in the tibble `corresp_names`.
+```{r define-c_name}
+#| code-fold: true
+#| code-summary: The `c_name()`{.R} function.
+#' Returns the label of a variable by looking it up in `corresp_names`
+#' @param x Variable name (column `name_r` in `corresp_names`)
+#' @param type Type of desired label (`"pm"`, `"short"`, `"long"`). See details.
+#'
+#' @returns A character vector with the label of the variable.
+#' @details
+#' The desired type corresponds to the prefix of the column names of
+#' `corresp_names`: `"pm"` for R formulas, `"short"` for LaTeX formulas, and
+#' `"long"` for a string describing the variable.
+#'
+#' @examples
+#' c_name("wy_obs", "pm")
+#'
+c_name <- function(x, type = c("pm", "short", "long")){
+  type <- match.arg(type)
+  type <- type %>% str_c("_name")
+  ind <- match(x, corresp_names$name_r)
+  corresp_names[ind, ] |> pull(type)
+}
+```
+
+We define a function, `get_df_plot()`{.R} to reshape the IRFs results for later use in a ggplot graph.
+```{r define-get_df_plot}
+#| code-fold: true
+#| code-summary: The `get_df_plot()`{.R}
+#' Reshape IRF table
+get_df_plot <- function(df_irfs) {
+
+  df_plot <-
+    df_irfs |>
+    mutate(
+      title = str_c(var_shocked, "-", var_response),
+      title2 = str_c(
+        c_name(var_shocked, type = "pm"), " %->% ",
+        c_name(var_response, type = "pm")
+      ),
+      title = factor(title, levels = possibilites$title)
+    ) |>
+    arrange(title) |>
+    ungroup() |>
+    rename(lower = lower_95, upper = upper_95) |>
+    mutate(
+      lower = as.numeric(lower),
+      upper = as.numeric(upper),
+      var_shocked = factor(var_shocked, levels = corresp_names$name_r),
+      var_response = factor(var_response, levels = corresp_names$name_r)
+    ) |>
+    arrange(var_shocked, var_response, horizon)
+
+  ordered_titles <- df_plot |> pull("title2") |> unique()
+
+  df_plot <-
+    df_plot |>
+    mutate(title2 = factor(title2, levels = ordered_titles))
+}
+```
+
+```{r define-df_irfs_plot}
+df_irfs_plot <- get_df_plot(df_irfs)
+```
+
+The plot with all the IRFs is shown in @fig-irf-all.
+
+```{r}
+#| fig-width: 20
+#| fig-height: 20
+#| label: fig-irf-all
+#| fig-cap: VAR impulse response to a standard shock. Shocked variables are in rows.
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+# IRFs with all the shocked variables
+# **Beware**: this may take a lot of time to be displayed
+# And requires a very large screen
+p <- ggplot(
+  data = df_irfs_plot |>
+    unite(values_95, lower, upper, sep = "@") |>
+    unite(values_68, lower_68, upper_68, sep = "@") |>
+    gather(band, value_bounds, values_95, values_68) |>
+    separate(value_bounds, into = c("lower", "upper"), sep = "@", convert = T),
+  mapping = aes(x = horizon, y = value)
+) +
+  geom_ribbon(
+    mapping = aes(
+      ymin = lower, ymax = upper,
+      fill = band, group = band), alpha = .5
+  ) +
+  geom_line(colour = "blue") +
+  geom_line(aes(x = horizon, y = lower, group = band, linetype = band)) +
+  geom_line(aes(x = horizon, y = upper, group = band, linetype = band)) +
+  facet_wrap(~ title2, scales="free_y", labeller = label_parsed) +
+  geom_hline(yintercept = 0, col = "black") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_manual(
+    name="C.I. Level",
+    values = c("values_95" = "#1E90FF", "values_68" = "#005A9C"),
+    labels = c("values_95" = "95%", "values_68" = "68%")
+  ) +
+  scale_linetype_manual(
+    name="C.I. Level",
+    values = c("values_95" = "dashed", "values_68" = "dotted"),
+    labels = c("values_95" = "95%", "values_68" = "68%")
+  ) +
+  theme(
+    strip.background = element_rect(fill=NA),
+    legend.position = "bottom",
+    strip.text.x = element_text(size = 25)
+  )
+p
+```
+
+It is more useful to create a function that will only display the IRFs for one equation.
+```{r define-print_irf}
+#| code-fold: true
+#| code-summary: The `print_irf()`{.R} function.
+#' Displays the IRFs for one equation
+#'
+#' @param df_plot (data.frame) the data containing the IRFs (obtained from get_df_plot())
+#' @param shocked variable shocked
+#' df_plot <- df_irfs_plot ; shocked <- "smdi_obs" ; ci <- 95
+print_irf <- function(df_plot, shocked) {
+
+  df_tmp <-
+    df_plot |>
+    filter(var_shocked == !!shocked) |>
+    mutate(title2 = c_name(var_response, type = "pm")) |>
+    arrange(var_shocked, var_response, horizon)
+
+  ordered_titles <- df_tmp |> pull("title2") |> unique()
+
+  df_tmp <-
+    df_tmp |>
+    mutate(title2 = factor(title2, levels = ordered_titles))
+
+  ggplot(
+    data = df_tmp |>
+      unite(values_95, lower, upper, sep = "@") |>
+      unite(values_68, lower_68, upper_68, sep = "@") |>
+      gather(band, value_bounds, values_95, values_68) |>
+      separate(value_bounds, into = c("lower", "upper"), sep = "@", convert = T),
+    mapping = aes(x = horizon, y = value)
+  ) +
+    geom_ribbon(
+      mapping = aes(ymin = lower, ymax = upper, fill = band, group = band),
+      alpha=.5
+    ) +
+    geom_line(colour = "blue") +
+    geom_line(aes(x = horizon, y = lower, group = band, linetype = band)) +
+    geom_line(aes(x = horizon, y = upper, group = band, linetype = band)) +
+    facet_wrap(~title2, scales="free", labeller = label_parsed) +
+    geom_hline(yintercept = 0, col = "black") +
+    labs(x = NULL, y = NULL) +
+    scale_fill_manual(
+      name = "C.I. Level",
+      values = c("values_95" = "#1E90FF", "values_68" = "#005A9C"),
+      labels = c("values_95" = "95%", "values_68" = "68%")
+    ) +
+    scale_linetype_manual(
+      name="C.I. Level",
+      values = c("values_95" = "dashed", "values_68" = "dotted"),
+      labels = c("values_95" = "95%", "values_68" = "68%")
+    ) +
+    theme(
+      strip.background = element_rect(fill = NA),
+      legend.position = "bottom",
+      strip.text.x = element_text(size = 25)
+    )
+}
+```
+
+The response of the system to a 1-sd shock to the weather variable is shown in @fig-irf-smdi.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 10
+#| fig-cap: VAR impulse response to a standard drought shock. For macro variables expressed in log-deviations from their trend, the y-axis represents, approximatively, the percentage response to a one-standard deviation weather shock.
+#| label: fig-irf-smdi
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+#| message: false
+#| warning: false
+print_irf(shocked = "smdi_obs", df_plot = df_irfs_plot) +
+  xlim(c(0, 20))
+```
+
+
+```{r}
+# Export the IRFs
+readr::write_csv(df_irfs, file = "../data/var_irfs_ebook.csv")
+```
+

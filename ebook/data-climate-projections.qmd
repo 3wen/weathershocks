@@ -1,0 +1,553 @@
+# Climate Projection {#sec-climate-projections}
+
+
+:::{.callout-note}
+
+## Objectives of this page
+
+In this page, we estimate the average growth rate of the standard error of quarterly precipitation under different climate scenarios (RCP 2.6, RCP 4.5, RCP 6.0, and RCP 8.5).
+
+:::
+
+According to the IPCC:
+
+> A change in the state of the climate that can be identified (_e.g._, by using statistical tests) by changes in the mean and/or the variability of its properties, and that persists for an extended period, typically decades or longer.
+
+In our DSGE framework ([Chapter @sec-dsge]), climate is supposed to be stationary.  Our set-up is irrelevant for analyzing changes in **mean climate values**. However, it allows for changes in the **variance of climate**.
+
+In the paper, we used monthly precipitation (pr) simulated by the NCAR Community Climate System Model, version 4 (CCSM4) under four different scenarios: 
+
+- [RCP 2.6]{#highlight-rcpa}: strong mitigation (radiative forcing peaks at 2.6~W/m$^2$),
+- [RCP 4.5]{#highlight-rcpb}: stabilization without overshoot (4.5~W/m$^2$),
+- [RCP 6.0]{#highlight-rcpc}: intermediate scenario (6.0~W/m$^2$),
+- [RCP 8.5]{#highlight-rcpd}: high-emission `business-as-usual' (8.5~W/m$^2$).
+
+Values for soil water deficit were not provided, so we estimated the variance of precipitation instead.
+
+Datasets for historical values (1850–2005) and projected values up to various horizons (we use 2006–2100) can be downloaded from here: <https://aims2.llnl.gov/search/cmip5/>. The data we use are saved in NetCDF files, and are provided on a monthly basis.
+
+The name of the file is informative. For example: `pr_Amon_CCSM4_rcp45_r6i1p1_200601-210012.nc`:
+
+- `pr`: The variable is precipitation (kg\,m$^{-2}$\,s$^{-1}$),
+- `Amon`: Atmospheric variable, monthly frequency,
+- `CCSM4`: Model: \textit{Community Climate System Model}, version 4 (NCAR);
+- `rcp45`: Scenario: [RCP 4.5]{#highlight-rcpb},
+- `r6i1p1`: Ensemble member: run 6, initialization 1, physics 1,
+- `200601-210012`: Time period: Jan. 2006 -- Dec. 2100.
+
+
+:::{.callout-note}
+
+The files must be downloaded manually and saved in the `data/Weather/Projections` folder.
+
+:::
+pr_Amon_CCSM4_historical_r1i1p1_185001-200512
+
+:::{.callout-warning}
+
+In the paper, we used `r1i1p1` files (run 1, initialization 1, physics 1). In 2025, those can be downloaded here, for example:
+
+- Historical: <https://tds.gisclimatechange.ucar.edu/thredds/catalog/globalmonthly/files/catalog.html?dataset=globalmonthly/files/pr_Amon_CCSM4_historical_r1i1p1_185001-200512.nc> (using the HTTPServer link, for example),
+- [RCP 2.6]{#highlight-rcpa}: <https://tds.gisclimatechange.ucar.edu/thredds/catalog/globalmonthly/files/catalog.html?dataset=globalmonthly/files/pr_Amon_CCSM4_rcp26_r1i1p1_200601-210012.nc> (same),
+- [RCP 4.5]{#highlight-rcpb}: <https://data.cig.uw.edu/rocinante/CMIP5/rcp45/CCSM4/pr_Amon_CCSM4_rcp45_r1i1p1_200601-210012.nc>
+- [RCP 6.0]{#highlight-rcpc}: <https://data.cig.uw.edu/rocinante/CMIP5/rcp60/CCSM4/pr_Amon_CCSM4_rcp60_r1i1p1_200601-210012.nc>
+- [RCP 8.5]{#highlight-rcpd}: <https://data.cig.uw.edu/rocinante/CMIP5/rcp85/CCSM4/pr_Amon_CCSM4_rcp85_r1i1p1_200601-210012.nc>
+
+
+:::
+
+We are going to need a few R packages:
+```{r load-packages}
+library(tidyverse)
+library(terra)
+library(sf)
+library(exactextractr)
+library(slider) # for rolling windows
+```
+
+We define some colours for the scenarios:
+```{r define-colour_scenarios}
+colour_scenarios <- c(
+  "RCP 2.6" = "#27377A",
+  "RCP 4.5" = "#709FC8",
+  "RCP 6.0" = "#DE632B",
+  "RCP 8.5" = "#CD1020"
+)
+```
+
+Let us load the graphs theme functions (See [Chapter -@sec-utils]):
+```{r source_utils}
+source("../scripts/functions/utils.R")
+```
+
+Let us also load the maps for the countries of interest (See [Chapter -@sec-countries-maps]).
+```{r load-maps_level_0}
+load("../data/Maps/GADM-4.1/maps_level_1.RData")
+maps_level_1_NZ <- st_shift_longitude(maps_level_1$NZL)
+```
+
+## Load Projection Data
+
+
+We define a function, `get_netcfd_ccsm()`{.R} to import the data from an `.nc` file that contains projected precipitation data.
+
+
+```{r define-get_netcfd_ccsm}
+#| code-fold: true
+#| code-summary: The `get_netcfd_ccsm()`{.R} function.
+#' Compute area-weighted regional means of precipitation from CMIP5 NetCDF files
+#' 
+#' @description
+#' This function reads monthly precipitation data (in kg/m2/s) from a CMIP5
+#' NetCDF file and computes area-weighted averages for each region of a country.
+#' The results are expressed in millimeters per month.
+#' 
+#' @param nc_path Path to the NetCDF file containing the precipitation data.
+#' @param map_country An `sf` object defining the regions of the country.
+#' @param region_id Name of the column in `map_country` identifying the regions.
+#' @param start_date Optional. A `Date` object indicating the first date to
+#'   include in the output. If `NULL`, all available dates are kept.
+#' 
+#' @returns A tibble with the following columns:
+#' * `region_id`: Region identifier
+#' * `date`: Date (corresponding to a month, even if given as a Date object).
+#' * `pr_mean`: Area-weighted mean precipitation (in millimeters).
+#'   
+get_netcfd_ccsm <- function(nc_path, 
+                            map_country, 
+                            region_id,
+                            start_date = NULL) {
+  pr <- rast(nc_path)
+  # Extract time
+  dates <- terra::time(pr)
+  
+  if (!is.null(start_date)) {
+    idx <- which(dates >= start_date)
+    pr <- pr[[idx]]
+    dates <- dates[idx]
+    time(pr) <- dates
+  }
+  
+  # Focus on the country of interest
+  # Reproject shapefile to match NetCDF raster CRS if necessary
+  map_country <- st_transform(map_country, crs(pr))
+  # Cropping
+  pr_country <- crop(pr, vect(map_country))
+  # Compute cell areas (used as weights)
+  cell_area <- cellSize(pr_country, unit = "km")
+  
+  # Area-weighted means for each region
+  res_mat <- exact_extract(
+    pr,
+    map_country,
+    fun = "weighted_mean",
+    weights = cell_area,
+    progress = FALSE
+  )
+  
+  # Bind region IDs
+  res_mat <- dplyr::bind_cols(
+    map_country |> 
+      st_drop_geometry() |> 
+      dplyr::select(!!region_id),
+    res_mat
+  )
+  
+  # Tidy to long format, with dates
+  names(res_mat)[-1] <- as.character(dates)
+  
+  region_daily_pr <- res_mat |>
+    tidyr::pivot_longer(
+      cols = -!!region_id,
+      names_to = "date",
+      values_to = "pr_mean"
+    ) |>
+    dplyr::mutate(date = as.Date(date)) |> 
+    # Express in mm
+    mutate(pr_mean = pr_mean * 86400 * 30) |> 
+    rename(region_id = !!region_id)
+  
+  region_daily_pr
+}
+```
+
+:::{.callout-note}
+
+If you want to use this function to import another type of variable, you need to change the last operation in the `get_netcfd_ccsm()`{.R} function:
+
+1. the name of the column should not be `"pr_mean"`,
+2. the values may not be converted in mm.
+
+:::
+
+We use that function to import the data for the historical values and for the projected values under the four RCP scenarios.
+
+```{r import-projections}
+# Adapt this path according to where you saved the NetCDF files.
+path_to_nc_files <- "../paper/codes_weather_shocks/data/climate_data/projections/"
+
+precip_hist <- get_netcfd_ccsm(
+  nc_path = paste0(
+    path_to_nc_files, "pr_Amon_CCSM4_historical_r1i1p1_185001-200512.nc"
+  ),
+  map_country = maps_level_1_NZ, 
+  region_id = "NAME_1", 
+  start_date = as.Date("1960-01-01")
+)
+
+precip_rcp26 <- get_netcfd_ccsm(
+  nc_path = paste0(
+    path_to_nc_files, 
+    "pr_Amon_CCSM4_rcp26_r1i1p1_200601-210012.nc"
+  ), 
+  map_country = maps_level_1_NZ, 
+  region_id = "NAME_1", 
+  start_date = NULL
+)
+precip_rcp45 <- get_netcfd_ccsm(
+  nc_path = paste0(
+    path_to_nc_files, 
+    "pr_Amon_CCSM4_rcp45_r1i1p1_200601-210012.nc"
+  ), 
+  map_country = maps_level_1_NZ, 
+  region_id = "NAME_1", 
+  start_date = NULL
+)
+precip_rcp60 <- get_netcfd_ccsm(
+  nc_path = paste0(
+    path_to_nc_files, 
+    "pr_Amon_CCSM4_rcp60_r1i1p1_200601-210012.nc"
+  ), 
+  map_country = maps_level_1_NZ, 
+  region_id = "NAME_1", 
+  start_date = NULL
+)
+precip_rcp85 <- get_netcfd_ccsm(
+  nc_path = paste0(
+    path_to_nc_files, 
+    "pr_Amon_CCSM4_rcp85_r1i1p1_200601-210012.nc"
+  ), 
+  map_country = maps_level_1_NZ, 
+  region_id = "NAME_1", 
+  start_date = NULL
+)
+```
+
+## Regional Weights Depending on Agricultural Production
+
+
+In [Chapter -@sec-weather-data], we computed regional agricultural intensity for each year between 1987 and 2025. Let us compute the average regional agricultural intensity over the period 1987--2014, as in the paper. The restriction to this period can be changed depending on the sample used. 
+```{r load-tb_agri_shares}
+load("../data/Agriculture/tb_agri_shares.rda")
+```
+
+```{r filter-tb_agri_shares}
+tb_agri_shares <- 
+  tb_agri_shares |> filter(year %in% 1987:2014)
+```
+
+We compute the average agricultural production for each region over the whole period:
+```{r define-cultures_weights}
+cultures_weights <- 
+  tb_agri_shares |> 
+  group_by(region) |> 
+  summarise(gdp_a = mean(gdp_a)) |> 
+  mutate(weight = gdp_a / sum(gdp_a)) |> 
+  select(-gdp_a) |> 
+  rename(region_id = region)
+cultures_weights
+```
+
+
+## National Aggregation
+
+
+We have precipitation values at the month-region level. For each dataset (historical values and RCP scenarios), we perform a quarterly aggregation at the national level, using a function we define, `national_quaterly_aggreg()`{.R}. This functions first performs the national aggregation, by means of a weighted mean, using the regional agrilcultural weights that were just computed (`cultures_weights`). Then, it sums the national monthly values at the quarter level for each year.
+
+```{r define-national_quaterly_aggreg}
+#| code-fold: true
+#| code-summary: The `national_quaterly_aggreg()`{.R} function.
+#' Computes quarterly aggregation at the national level of precipitation.
+#' 
+#' @param x Tibble with monthly precipitation (see details).
+#' @param regional_weights Tibble witht the regional weights to use.
+#' 
+#' @details
+#' The tibble `x` must contain the following columns:
+#' * `region_id`: Region identifier.
+#' * `date`: Date (corresponding to a month, even if given as a Date object).
+#' * `pr_mean`: Area-weighted mean precipitation (in millimeters).
+#' The tibble `regional_weights` must contain the following columns:
+#' * `region_id`: Region identifier.
+#' * `weight`: The weight to use for national aggregation.
+#' 
+national_quaterly_aggreg <- function(x, regional_weights) {
+  x |> 
+    left_join(regional_weights, by = c("region_id")) |> 
+    group_by(date) |> 
+    summarise(
+      pr_mean = sum(pr_mean * weight, na.rm = TRUE),
+      .groups = "drop"
+    ) |> 
+    mutate(
+      year = year(date),
+      quarter = quarter(date)
+    ) |> 
+    group_by(year, quarter) |> 
+    summarise(
+      pr_mean = sum(pr_mean, na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+```
+
+We loop over each of the datasets to apply the `national_quaterly_aggreg()`{.R} function.
+```{r define-precip_nat_q}
+precip_nat_q <- list(
+  `Historical` = precip_hist,
+  `RCP 2.6` = precip_rcp26,
+  `RCP 4.5` = precip_rcp45,
+  `RCP 6.0` = precip_rcp60,
+  `RCP 8.5` = precip_rcp85
+) |> 
+  map(
+    .f = ~national_quaterly_aggreg(x = .x, regional_weights = cultures_weights)
+  )
+```
+
+
+## Change in the Variance of the Weather
+
+We now turn to the estimation of the volatility of the weather shock. Estimating this volatility will be useful to assess the welfare impact of climate change under different climate scenarios.
+
+To estimate the volatility of the weather shock, for each scenario, we use a rolling window of 102 quarters (25.5 years), matching the DSGE sample size (see [Chapter -@sec-dsge]). Within each window, we fit an AR(1) model, using the `sd_resid_ar1()`{.R} function (defined below):
+$$
+P_\tau = \mu + \phi\,P_{\tau-1} + \varepsilon_\tau,
+$$
+and we store $\widehat{\sigma}_t = \text{sd}(\widehat{\varepsilon}_\tau)$. The stored values give a time-varying standard deviation of the weather shock.
+
+### Helper Functions
+
+We define a few helper functions:
+
+- `as_quarter_end()`{.R}: to create a `Date` object corresponding to the end of a quarter in a given year.
+- `bind_hist_and_rcp()`{.R}: to build a continuous series for one scenario, binding together historical values and a dataset with projections under a specific scenario.
+- `sd_resid_ar1`: to fit an AR(1) model in a window and return the standard deviation of the residuals.
+- `sd_resid_scenario`{.R}: the core function, which computes the rolling standard deviations of AR(1) residuals for a given scenario.
+
+```{r define-as_quarter_end}
+#| code-fold: true
+#| code-summary: The `as_quarter_end()`{.R} function.
+#' Make a Date at the end of each quarter
+#' @param y Year (integer).
+#' @param q Quarter (integer).
+#' @returns The date at the end of the quarter.
+#' 
+as_quarter_end <- function(y, q) {
+  # first day of the quarter
+  yq <- yq(paste(y, q))
+  # last day of the quarter
+  (yq %m+% months(3)) - days(1)
+}
+```
+
+```{r define-bind_hist_and_rcp}
+#| code-fold: true
+#| code-summary: The `bind_hist_and_rcp()`{.R} function.
+#' Build a continuous series for one scenario
+#' 
+#' @description
+#' concatenates Historical data (up to 2005Q4) and data from a scenario (from 
+#' 2006Q1).
+#' 
+#' @param hist_tb Tibble with precipitation data for the historical period.
+#' @param rcp_tb Tibble with precipitation data for a scenario.
+bind_hist_and_rcp <- function(hist_tb, 
+                              rcp_tb) {
+  bind_rows(
+    hist_tb,
+    rcp_tb
+  ) |> 
+    arrange(year, quarter) |> 
+    mutate(date = as_quarter_end(year, quarter))
+}
+```
+
+
+```{r define-sd_resid_ar1}
+#| code-fold: true
+#| code-summary: The `sd_resid_ar1()`{.R} function.
+#' Fit AR(1) in a window and return sd of residuals
+#' 
+#' @param x Series with quarterly precipitation.
+#' 
+#' @returns Returns the standard deviation of the residuals of the AR(1), or 
+#' `NA` if the number of observation is lower than 102 (window smaller than 
+#' that used in the DSGE model).
+sd_resid_ar1 <- function(x) {
+  if (length(x) < 102) {
+    return(NA)
+  } else {
+    fit <- stats::arima(x, order = c(1, 0, 0), include.mean = TRUE)
+    sd_resid <- stats::sd(stats::residuals(fit), na.rm = TRUE)
+    return(sd_resid)
+  }
+}
+```
+
+
+
+```{r define-sd_resid_scenario}
+#| code-fold: true
+#| code-summary: The `sd_resid_scenario()`{.R} function.
+#' Compute rolling standard deviations of AR(1) residuals for scenario scaling
+#' 
+#' @description
+#' This function computes the time-varying volatility of precipitation by
+#' estimating, within each rolling window, an AR(1) model and extracting the 
+#' standard deviation of its residuals. We will use the resulting series to
+#' derive scenario multipliers (RCP-based scaling factors) for weather shock 
+#' variances.
+#'
+#' @param tb A tibble (ordered by increasing dates) with precipitation for 
+#' historical values and projected values under a climate scenario. The tibble 
+#' must contain at least the following column:
+#'  * `pr_mean`: precipitation values.
+#' @param reg_start
+#' @param reg_end
+#' 
+#' @return The initial tibble with an addition column:
+#'  * `sd_ar1`: the rolling-window standard deviation of AR(1) residuals.
+#' 
+sd_resid_scenario <- function(tb) {
+  
+  # rolling window std of AR(1) residuals (window size = 102 quarters)
+  # This size corresponds to the size of our sample in the DSGE model.
+  roll_sd <- slide(
+    .x = tb$pr_mean, 
+    .f = ~ sd_resid_ar1(.x), 
+    .before = 102, 
+    .complete = FALSE # we return NAs if incomplete
+  )
+  
+  tb |> 
+    mutate(sd_ar1 = unlist(roll_sd)) |> 
+    filter(!is.na(sd_ar1))
+  
+}
+```
+
+### Rolling Windows
+
+We compute the standard deviations of the AR(1) residuals on a rolling window of 25.5 years for each scenario (which corresponds to the length of the sample fed in the DSGE model (see [Chapter -@sec-dsge]). We loop over all the RCP scenarios (all the dataset except the dataset with historical values) and apply the `sd_resid_scenario()`{.R} function.
+
+```{r define-tb_sd_scenarios}
+tb_sd_scenarios <- map(
+  precip_nat_q[names(precip_nat_q) != "Historical"], 
+  ~sd_resid_scenario(
+    tb = bind_hist_and_rcp(hist_tb = precip_nat_q$Historical, rcp_tb = .x)
+  ), 
+  .progress = TRUE
+)
+```
+
+
+```{r}
+#| code-fold: true
+#| code-summary: Codes to create the Figure.
+#| fig-cap: Visualization of the estimates sd of the residuals computed on the rolling windows
+#| label: fig-sd-ar1
+p <- ggplot(
+  data = list_rbind(tb_sd_scenarios, names_to = "scenario") |> 
+    filter(year >= 2014),
+  mapping = aes(x = date, y = sd_ar1, colour = scenario)
+) +
+  geom_line() +
+  scale_colour_manual(NULL, values = colour_scenarios) +
+  labs(x = NULL, y = "sd of the AR(1) residuals") +
+  theme_paper()
+
+p
+```
+
+### Growth Rate of the Standard Deviation
+
+For each scenario, we estimate a log–linear trend in the rolling standard deviations:
+$$
+\ln(\widehat{\sigma}_t) = \alpha + \beta t + u_t,
+$$
+where $\beta$ gives theinstantaneous quarterly growth rate of the volatility of precipitation shocks.
+
+This translates to long-run growth rates:
+$$
+\sigma_{i,\eta^W} = e^{\beta} - 1.
+$$
+
+The average growth over 1989--2100 can then be computed:
+$$
+\overline{\Delta \sigma_{i,\eta^W}} = (1+\sigma_{i,\eta^W})^{q} - 1,
+\quad q = 347
+$$
+
+We define the function `compute_growth_stats()`{.R} to compute the instantaneous and the long-run growth rates.
+
+```{r define-compute_growth_stats}
+#' Compute instantaneous, compound, and total growth rates of rolling residual 
+#' volatility
+#'
+#' @description
+#' This function summarizes the time trend in the rolling standard deviations 
+#' of AR(1) residuals from the precipitation data under a scenario. 
+#' It estimates how the volatility of the underlying process evolves over time 
+#' by regressing the (log of) fitted standard deviations on time.
+#'
+#' @param tb_sd A tibble containing the estimated rolling standard deviations 
+#'  of residuals from AR(1) models (as produced by `sd_resid_scenario()`). It 
+#'  must include the following columns:
+#'  * `year`: Calendar year.
+#'  * `sd_ar1`: Standard deviation of AR(1) residuals.
+#'  
+#' @returns A tibble with three summary statistics:
+#'   * `instant_growth`: Estimated instantaneous quarterly growth rate of 
+#'      volatility (log-linear).
+#'   * `compound_growth`: Equivalent compound quarterly growth rate, computed 
+#'   as \eqn{e^{r} - 1}.
+#'   * `tot_growth`: Total cumulative growth (%) over the entire sample period 
+#'   since 2014.
+#' 
+compute_growth_stats <- function(tb_sd) {
+  
+  tb_sd <- tb_sd |> filter(year >= 2014) |> 
+    mutate(t = row_number())
+  
+  q_total <- nrow(tb_sd)
+  # regress ln(sd) on time
+  fit <- lm(sd_ar1 ~ t, data = tb_sd)
+  tb_sd$fitted <- fitted(fit)
+  
+  instant_growth <- coef(lm(log(fitted)~ 1 + t, data = tb_sd))[2]
+  # Equivalently
+  compound_growth <- exp(instant_growth) - 1
+  tot_growth <- ((1 + compound_growth)^q_total - 1) * 100
+  
+  tibble(
+    instant_growth = instant_growth,
+    compound_growth = compound_growth,
+    tot_growth = tot_growth
+  )
+}
+```
+
+We use the `compute_growth_stats()`{.R} to estimate the quarterly rate of growth of the standard deviation of the weather measure and the corresponding average growth rate over the whole 1989–2100 period:
+```{r define-growth_rates}
+growth_rates <- map(tb_sd_scenarios, compute_growth_stats) |> 
+  bind_rows()
+growth_rates
+```
+
+The values that can be used in the projection exercise with the DSGE model to represent the increase in the volatility of the weather shock:
+
+```{r show-values-for-welfare-counterfactual-analysis}
+1 + growth_rates$tot_growth / 100
+```
+

@@ -17,19 +17,21 @@ book:
   chapters:
     - index.qmd
     - utils.qmd
-    - part: Data
+    - part: I. Data
       chapters:
       - data-maps.qmd
       - data-weather-download.qmd
       - data-weather-missing.qmd
       - data-weather-metrics.qmd
-      - data-merge.qmd
-    - part: VAR
+      - data-macro.qmd
+      - data-climate-projections.qmd
+    - part: II. VAR
       chapters:
       - var-estimation.qmd
-    - part: DSGE
+    - part: III. DSGE
       chapters:
-      - dsge-essai.qmd
+      - dsge-theory.qmd
+      - dsge.qmd
     - references.qmd
   navbar:
     right:
@@ -43,7 +45,9 @@ format:
   html:
     toc-depth: 4
     fig-cap-location: top
-    theme: cosmo
+    theme:
+      light: [litera, styles-light.scss]
+      dark: [darkly, styles-dark.scss]
     html-math-method: mathjax
     include-in-header:
     - file: mathjax-color.html

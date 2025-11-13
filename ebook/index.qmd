@@ -2,4 +2,58 @@
 
 This ebook provides some notebooks to help adapting the methodology of our paper _Weather Shock_ (@GallicVermandel_2020_eer) to new contexts or datasets.
 
-The notebooks are in construction, this page will be filled soon.
+:::{.callout-warning}
+
+The notebooks are in construction. Their content is likely to change soon.
+
+
+:::
+
+## Links to Resources
+
+The codes presented in this notebook differ slightly from those used in the paper (and given in the replication codes). The paper and the content of this notebook was presented to the NGFS Workstream on Monetary Policy. The slides of the presentation of the paper can be accessed.
+
+<a href="https://www.sciencedirect.com/science/article/abs/pii/S0014292120300416?via%3Dihub" class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{< fa file-lines >}} Paper in the EER</a>
+<a href="https://github.com/3wen/weathershocks/blob/main/paper/Gallic_Vermandel-Weather_Shocks_2020.pdf" class="btn btn-success btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{< fa file-pdf >}} Author's version of the paper</a>
+<a href="https://github.com/3wen/weathershocks/blob/main/paper/Technical-Appendix.pdf" class="btn btn-info btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{< fa file-pdf >}} Technical Appendix</a>
+<a href="./https://github.com/3wen/weathershocks/raw/main/paper/codes_weather_shocks_2025.zip" class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{< fa file-zipper >}} Replication Codes (Zip archive)</a>
+<a href="https://raw.githubusercontent.com/3wen/weathershocks/main/slides/NGFS_Weather-Shocks_Session-1.pdf" class="btn btn-warning btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{< fa display >}} Slides</a>
+
+
+
+
+
+
+
+If you found this ebook useful, please consider sharing our paper:
+``` markdown
+@article{Gallic_2020_eer,
+  doi = {10.1016/j.euroecorev.2020.103409},
+  url = {https://doi.org/10.1016%2Fj.euroecorev.2020.103409},
+  year = 2020,
+  month = {may},
+  publisher = {Elsevier {BV}},
+  volume = {124},
+  pages = {103409},
+  author = {Gallic, Ewen and Vermandel, Gauthier},
+  title = {Weather shocks},
+  journal = {European Economic Review}
+}
+```
+
+## Structure of the Document
+
+
+This notebook is organized into three main parts:
+
+1. **Data**. This part gathers two types of data: weather and macroeconomic. The main challenge lies in constructing a weather variable with a temporal and spatial resolution consistent with quarterly national macroeconomic data.  
+Unlike in the paper, this notebook uses **gridded weather data** from NOAA to build the drought index. The data are available at a monthly frequency and for each grid cell, which can be matched to regional boundaries defined in [Chapter -@sec-countries-maps].  
+All instructions for downloading and importing NOAA data are provided in [Chapter -@sec-weather-data-download]. Missing observations at the cell level can be imputed using methods described in [Chapter -@sec-weather-data-missing].  
+Weather and climate metrics, including the SMDI (the main drought index used in the paper) and complementary indicators such as the SPEI at various horizons, are introduced in [Chapter -@sec-weather-data].  
+**Macroeconomic data**, primarily from the OECD and Statistics New Zealand, are cleaned and merged with the weather data in [Chapter -@sec-data-merge], producing the dataset used for subsequent analyses. Finally, [Chapter -@sec-climate-projections] presents climate projections under four Representative Concentration Pathways (RCPs).
+
+2. **VAR**. [Chapter -@sec-var] presents the empirical analysis using a **structural VAR model** to study the dynamic effects of a drought shock on New Zealand's economy.
+
+3. **DSGE**. The final part introduces the theoretical **DSGE model** ([Chapter -@sec-dsge-theory]) and its empirical implementation using **Dynare** (version 6.x, with MATLAB interface) in [Chapter -@sec-dsge].
+
+<!-- quarto add quarto-ext/fontawesome -->

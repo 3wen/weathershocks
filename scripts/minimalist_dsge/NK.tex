@@ -1,0 +1,247 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=2cm}
+
+\title{Two Sector New Keynesian Model with Weather Shocks and Land}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Households}
+
+A representative household consumes a CES bundle of agricultural and non agricultural
+goods and supplies differentiated labor to the two sectors.
+
+Habit adjusted consumption:
+\[
+\tilde c_t = c_t - b c_{t-1}.
+\]
+
+Preferences:
+\[
+U = \mathbb{E}_0 \sum_{t=0}^{\infty} \beta^t 
+\left[
+\frac{\tilde c_t^{\,1-\sigma_C}}{1-\sigma_C}
+- \chi\, h_{u,t}^{\,1+\sigma_H}
+\right],
+\]
+where the labor aggregator with reallocation costs is
+\[
+h_{u,t}
+= \left(h_{N,t}^{1+\\iota} + h_{A,t}^{1+\\iota}\right)^{\frac{1}{1+\\iota}}.
+\]
+
+Marginal utility of consumption and stochastic discount factor:
+\[
+u_{c,t} = \tilde c_t^{-\sigma_C}, 
+\qquad 
+m_t = \beta \frac{u_{c,t}}{u_{c,t-1}}.
+\]
+
+Intratemporal optimality:
+\[
+w^N_t\, u_{c,t} = u^N_t, 
+\qquad 
+w^A_t\, u_{c,t} = u^A_t,
+\]
+with sector specific marginal disutilities of labor
+\[
+u^N_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{N,t}}{h_{u,t}}\right)^\iota,
+\qquad
+u^A_t = e^h_t\, \chi\, h_{u,t}^{\sigma_H}\left(\frac{h_{A,t}}{h_{u,t}}\right)^\iota.
+\]
+
+Nominal Euler equation (one period nominal bond):
+\[
+m_{t+1} \frac{R_t}{\pi_{t+1}} = 1,
+\]
+where $R_t$ is the gross nominal interest rate and $\pi_t$ is gross aggregate inflation.
+
+\section{Production}
+
+The economy has two producing sectors: non agriculture ($N$) and agriculture ($A$).
+
+Production is linear in TFP and concave in labor:
+\[
+y^N_t = e^z_t\, h_{N,t}^{\,1-\alpha}.
+\]
+
+With real marginal cost $mc^N_t$, cost minimization implies:
+\[
+w^N_t = mc^N_t (1-\alpha)\, p^N_t \frac{y^N_t}{h_{N,t}},
+\]
+where $p^N_t$ is the relative price of non agricultural goods.
+
+Agricultural sector with land and weather damage. Weather affects agricultural production through a damage function. Let $d_t$ denote the
+weather damage factor
+\[
+d_t = (e^s_t)^{-\theta_1}.
+\]
+
+Agricultural output:
+\[
+y^A_t
+= (d_t\,\ell_{t-1})^{\omega}
+\left(e^z_t \kappa_A\, h_{A,t}^{\,1-\alpha}\right)^{1-\omega}.
+\]
+
+With real marginal cost $mc^A_t$, labor demand in agriculture:
+\[
+w^A_t 
+= mc^A_t (1-\omega)(1-\alpha)\, p^A_t\,\frac{y^A_t}{h_{A,t}},
+\]
+where $p^A_t$ is the relative price of agricultural goods.
+
+\section{Price setting and nominal rigidities}
+
+Prices are sticky in both sectors. We adopt Rotemberg type quadratic adjustment costs
+on inflation. For sector $j \in \{N,A\}$, let $\epsilon_j$ denote the elasticity of substitution
+and $\kappa_j$ the adjustment cost parameter.
+
+Denote sectoral inflation by $\pi_{j,t}$ and aggregate inflation by $\pi_t$.
+The New Keynesian Phillips curves in each sector take the form
+\[
+(1-\epsilon_j)\, p^j_t y^j_t 
++ \epsilon_j\, mc^j_t y^j_t
+- \kappa_j\, p^j_t \pi_{j,t}(\pi_{j,t}-1)\, y^j_t
++ \kappa_j\, \mathbb{E}_t\left[ m_{t+1} p^j_{t+1} \pi_{j,t+1}(\pi_{j,t+1}-1)\, y^j_{t+1} \right]
+= 0,
+\]
+for $j = N,A$.
+
+\section{Land, land costs, and damage}
+
+Land evolves according to
+\[
+\ell_t = (1-\delta_L)\,d_t\, \ell_{t-1} + \phi_t,
+\]
+where $\phi_t$ is land investment.
+
+Land cost function:
+\[
+\phi_t 
+= \frac{\tau}{\psi}\, x_t^{\psi}\, d_t\, \ell_{t-1},
+\]
+with $x_t$ the land investment intensity.
+
+Shadow value of land $\varrho_t$ satisfies
+\[
+\varrho_t
+=
+\mathbb{E}_t\left\{
+m_{t+1}
+\left[
+mc^A_{t+1}\frac{\omega\, p^A_{t+1} y^A_{t+1}}{\ell_t}
++
+(1-\delta_L)d_{t+1}\varrho_{t+1}
++
+\frac{\phi_{t+1}}{\ell_t}
+\right]
+\right\}.
+\]
+
+FOC for land investment $x_t$:
+\[
+p^N_t
+=
+\tau\, x_t^{\psi-1}\, \varrho_t\, d_t\, \ell_{t-1}.
+\]
+
+\section{Aggregation, demand, and prices}
+
+Let $n_t$ be the agricultural sector share, driven by a reallocation shock:
+\[
+n_t = \bar n\, e^n_t.
+\]
+
+Aggregate output:
+\[
+y_t
+= (1-n_t)\, p^N_t y^N_t + n_t\, p^A_t y^A_t.
+\]
+
+Aggregate hours:
+\[
+h_t = (1-n_t) h_{N,t} + n_t h_{A,t}.
+\]
+
+
+Non agricultural goods:
+\[
+(1-n_t) y^N_t
+= (1-\varphi)\, (p^N_t)^{-\mu}\, c_t
++ n_t x_t 
++ g_y\, \bar y^N\, e^g_t.
+\]
+
+Agricultural goods:
+\[
+n_t y^A_t
+= \varphi\, (p^A_t)^{-\mu}\, c_t.
+\]
+
+\subsection{Relative price index}
+
+The CES price index is
+\[
+1 = (1-\varphi) (p^N_t)^{1-\mu} + \varphi (p^A_t)^{1-\mu}.
+\]
+
+Inflation measures, let $P_t$ denote the aggregate price index. Gross inflation is
+\[
+\pi_t = \frac{P_t}{P_{t-1}}.
+\]
+Sectoral inflation rates are
+\[
+\pi_{N,t} = \frac{P^N_t}{P^N_{t-1}},
+\qquad
+\pi_{A,t} = \frac{P^A_t}{P^A_{t-1}}.
+\]
+
+Gross Domestic Product:
+
+\[
+GDP_t = y_t - n_t p^N_t x_t.
+\]
+
+\section{Monetary policy}
+
+Monetary policy follows a Taylor rule in logs around the steady state:
+\[
+\log\left(\frac{R_t}{\bar R}\right)
+= \rho\, \log\left(\frac{R_{t-1}}{\bar R}\right)
++ (1-\rho)\left[
+\phi_y \log\left(\frac{GDP_t}{\overline{GDP}}\right)
++ \phi_\pi \log(\pi_t)
+\right],
+\]
+where $\bar R$ and $\overline{GDP}$ denote steady state values.
+
+\section{Shock processes}
+
+All exogenous processes follow AR(1) dynamics:
+\[
+\log e^z_t = \rho_z \log e^z_{t-1} + \sigma_z\, \eta^z_t,
+\]
+\[
+\log e^h_t = \rho_h \log e^h_{t-1} + \sigma_h\, \eta^h_t,
+\]
+\[
+\log e^g_t = \rho_g \log e^g_{t-1} + \sigma_g\, \eta^g_t,
+\]
+\[
+\log e^n_t = \rho_n \log e^n_{t-1} + \sigma_n\, \eta^n_t,
+\]
+\[
+\log e^s_t = \rho_s \log e^s_{t-1} + \sigma_s\, \eta^s_t.
+\]
+
+All innovations $\eta^j_t$ are iid standard normal.
+
+\end{document}

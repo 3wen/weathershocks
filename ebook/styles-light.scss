@@ -1,0 +1,85 @@
+/*-- scss:defaults --*/
+
+@import url(http://fonts.googleapis.com/css?family=Montserrat:300,300italic,800,800italic);
+
+$font-family: "Source Sans Pro", "Helvetica", sans-serif;
+$font-family-monospace: "Source Code Pro", monospace;
+
+/*$code-bg: #34495e ;
+$code-color: #ffa07a;*/
+
+/*-- scss:rules --*/
+
+#highlight-green {
+  background-color: lighten(#009E73, 60%);
+  color: #009E73;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-gold {
+  background-color: lighten(#E69F00, 50%);
+  color: #E69F00;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-purple {
+  background-color: lighten(#CC79A7, 30%);
+  color: #CC79A7;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-orange {
+  background-color: lighten(#D55E00, 50%);
+  color: #D55E00;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-blue {
+  background-color: lighten(#0072B2, 50%);
+  color: #0072B2;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-light-blue {
+  background-color: lighten(#56B4E9, 30%);
+  color: #56B4E9;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-gris {
+  background-color: lighten(#949698, 30%);
+  color: #949698;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+
+#highlight-rcpa {
+  background-color: lighten(#27377a, 60%);
+  color: #27377a;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+#highlight-rcpb {
+  background-color: lighten(#709fc8, 30%);
+  color: #709fc8;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+#highlight-rcpc {
+  background-color: lighten(#de632b, 40%);
+  color: #de632b;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
+#highlight-rcpd {
+  background-color: lighten(#cd1020, 50%);
+  color: #cd1020;
+  padding: 0.1em 0.2em;
+  font-weight: bold;
+}
